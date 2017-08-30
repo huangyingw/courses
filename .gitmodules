@@ -1,0 +1,4 @@
+[submodule "deeplearning1/nbs/data/dogscats"]
+	path = deeplearning1/nbs/data/dogscats
+	url = git@github.com:huangyingw/dogscats.git
+	branch = dev.fix
