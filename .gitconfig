@@ -1,0 +1,8 @@
+[remote "fastai"]
+    url = https://github.com/fastai/courses.git 
+    fetch = +refs/heads/*:refs/remotes/fastai/*
+[push]
+    remote = origin
+[gsync]
+    remote = fastai
+    branch = master
