@@ -32,8 +32,8 @@ then
 fi 
 bash "Anaconda2-4.2.0-Linux-x86_64.sh" -b -p /media/volgrp/anaconda2
 
-echo "export PATH=\"$HOME/anaconda2/bin:\$PATH\"" >> ~/.bashrc
-export PATH="$HOME/anaconda2/bin:$PATH"
+#echo "export PATH=\"$HOME/anaconda2/bin:\$PATH\"" >> ~/.bashrc
+#export PATH="$HOME/anaconda2/bin:$PATH"
 conda install -y bcolz
 conda upgrade -y --all
 
@@ -73,8 +73,5 @@ echo "c.NotebookApp.password = u'"$jupass"'" >> $HOME/.jupyter/jupyter_notebook_
 echo "c.NotebookApp.ip = '*'
 c.NotebookApp.open_browser = False" >> $HOME/.jupyter/jupyter_notebook_config.py
 
-# clone the fast.ai course repo and prompt to start notebook
-cd ~
-git clone https://github.com/fastai/courses.git
 echo "\"jupyter notebook\" will start Jupyter on port 8888"
 echo "If you get an error instead, try restarting your session so your $PATH is updated"
