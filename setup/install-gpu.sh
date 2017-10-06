@@ -17,7 +17,10 @@ then
     wget "http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1604/x86_64/cuda-repo-ubuntu1604_8.0.44-1_amd64.deb" -O "cuda-repo-ubuntu1604_8.0.44-1_amd64.deb"
 fi 
 
-dpkg -i cuda-repo-ubuntu1604_8.0.44-1_amd64.deb
+#dpkg -i cuda-repo-ubuntu1604_8.0.44-1_amd64.deb
+add-apt-repository ppa:graphics-drivers/ppa -y
+apt-get update
+apt-get -y install $(ubuntu-drivers devices|awk '/recommended/{print $3}')
 apt-get update
 apt-get -y install cuda
 modprobe nvidia
