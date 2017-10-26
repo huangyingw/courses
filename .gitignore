@@ -6,6 +6,7 @@
 .sass-cache/
 _site/
 ai_aliases.sh
+deeplearning1/excel/.~lock.*
 deeplearning1/nbs/data/redux/
 deeplearning1/nbs/dogs-vs-cats-redux-kernels-edition/
 fast-ai-commands.txt
