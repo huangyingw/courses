@@ -10,6 +10,7 @@ import os
 import threading
 import warnings
 
+
 class Iterator(object):
 
     def __init__(self, n, batch_size, shuffle, seed):
@@ -27,7 +28,7 @@ class Iterator(object):
     def _flow_index(self, n, batch_size=32, shuffle=False, seed=None):
         # ensure self.batch_index is 0
         self.reset()
-        while 1:
+        while True:
             if seed is not None:
                 np.random.seed(seed + self.total_batches_seen)
             if self.batch_index == 0:
@@ -54,8 +55,10 @@ class Iterator(object):
     def __next__(self, *args, **kwargs):
         return self.next(*args, **kwargs)
 
+
 class Batcher(Iterator):
-    def __init__(self, x, y, batch_size=64, shuffle=False, seed=None, proc_fn=None):
+    def __init__(self, x, y, batch_size=64,
+                 shuffle=False, seed=None, proc_fn=None):
         if y is not None and len(x) != len(y):
             raise ValueError('X (images tensor) and y (labels) '
                              'should have the same length. '
@@ -66,16 +69,22 @@ class Batcher(Iterator):
         self.proc_fn = proc_fn
         super(Batcher, self).__init__(x.shape[0], batch_size, shuffle, seed)
 
-
     def next(self):
         with self.lock:
-            index_array, current_index, current_batch_size = next(self.index_generator)
-        batch_x = np.zeros(tuple([current_batch_size] + list(self.x.shape)[1:]), self.x.dtype)
+            index_array, current_index, current_batch_size = next(
+                self.index_generator)
+        batch_x = np.zeros(
+            tuple(
+                [current_batch_size] +
+                list(
+                    self.x.shape)[
+                    1:]),
+            self.x.dtype)
         for i, j in enumerate(index_array):
             x = self.x[j]
             #x = self.image_data_generator.standardize(x)
             batch_x[i] = x
         res = batch_x if self.y is None else batch_x, self.y[index_array]
-        if self.proc_fn: res=self.proc_fn(res)
+        if self.proc_fn:
+            res = self.proc_fn(res)
         return res
-

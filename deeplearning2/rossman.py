@@ -1,11 +1,15 @@
 
 # coding: utf-8
 
-# This notebook contains an implementation of the third place result in the Rossman Kaggle competition as detailed in Guo/Berkhahn's [Entity Embeddings of Categorical Variables](https://arxiv.org/abs/1604.06737).
+# This notebook contains an implementation of the third place result in
+# the Rossman Kaggle competition as detailed in Guo/Berkhahn's [Entity
+# Embeddings of Categorical Variables](https://arxiv.org/abs/1604.06737).
 
 # The motivation behind exploring this architecture is it's relevance to real-world application. Much of our focus has been computer-vision and NLP tasks, which largely deals with unstructured data.
-# 
-# However, most of the data informing KPI's in industry are structured, time-series data. Here we explore the end-to-end process of using neural networks with practical structured data problems.
+#
+# However, most of the data informing KPI's in industry are structured,
+# time-series data. Here we explore the end-to-end process of using neural
+# networks with practical structured data problems.
 
 # In[1]:
 
@@ -16,8 +20,17 @@ get_ipython().magic(u'matplotlib inline')
 # In[2]:
 
 
-import math, keras, datetime, pandas as pd, numpy as np, keras.backend as K
-import matplotlib.pyplot as plt, xgboost, operator, random, pickle
+import math
+import keras
+import datetime
+import pandas as pd
+import numpy as np
+import keras.backend as K
+import matplotlib.pyplot as plt
+import xgboost
+import operator
+import random
+import pickle
 
 
 # In[3]:
@@ -54,27 +67,28 @@ get_ipython().magic(u'cd /data/datasets/rossman/')
 # ## Create datasets
 
 # In addition to the provided data, we will be using external datasets put together by participants in the Kaggle competition. You can download all of them [here](http://files.fast.ai/part2/lesson14/rossmann.tgz).
-# 
-# For completeness, the implementation used to put them together is included below.
+#
+# For completeness, the implementation used to put them together is
+# included below.
 
 # In[11]:
 
 
 def concat_csvs(dirname):
     os.chdir(dirname)
-    filenames=glob.glob("*.csv")
+    filenames = glob.glob("*.csv")
 
     wrote_header = False
-    with open("../"+dirname+".csv","w") as outputfile:
+    with open("../" + dirname + ".csv", "w") as outputfile:
         for filename in filenames:
             name = filename.split(".")[0]
             with open(filename) as f:
                 line = f.readline()
                 if not wrote_header:
                     wrote_header = True
-                    outputfile.write("file,"+line)
+                    outputfile.write("file," + line)
                 for line in f:
-                     outputfile.write(name + "," + line)
+                    outputfile.write(name + "," + line)
                 outputfile.write("\n")
 
     os.chdir("..")
@@ -99,20 +113,23 @@ def concat_csvs(dirname):
 # In[42]:
 
 
-table_names = ['train', 'store', 'store_states', 'state_names', 
+table_names = ['train', 'store', 'store_states', 'state_names',
                'googletrend', 'weather', 'test']
 
 
 # We'll be using the popular data manipulation framework pandas.
-# 
-# Among other things, pandas allows you to manipulate tables/data frames in python as one would in a database.
+#
+# Among other things, pandas allows you to manipulate tables/data frames
+# in python as one would in a database.
 
-# We're going to go ahead and load all of our csv's as dataframes into a list `tables`.
+# We're going to go ahead and load all of our csv's as dataframes into a
+# list `tables`.
 
 # In[43]:
 
 
-tables = [pd.read_csv(fname+'.csv', low_memory=False) for fname in table_names]
+tables = [pd.read_csv(fname + '.csv', low_memory=False)
+          for fname in table_names]
 
 
 # In[16]:
@@ -129,27 +146,32 @@ from IPython.display import HTML
 # * googletrend: trend data for particular week/state
 # * weather: weather conditions for each state
 # * test: Same as training table, w/o sales and customers
-# 
+#
 
 # In[17]:
 
 
-for t in tables: display(t.head())
+for t in tables:
+    display(t.head())
 
 
 # This is very representative of a typical industry dataset.
 
-# The following returns summarized aggregate information to each table accross each field.
+# The following returns summarized aggregate information to each table
+# accross each field.
 
 # In[41]:
 
 
-for t in tables: display(DataFrameSummary(t).summary())
+for t in tables:
+    display(DataFrameSummary(t).summary())
 
 
 # ## Data Cleaning / Feature Engineering
 
-# As a structured data problem, we necessarily have to go through all the cleaning and feature engineering, even though we're using a neural network.
+# As a structured data problem, we necessarily have to go through all the
+# cleaning and feature engineering, even though we're using a neural
+# network.
 
 # In[44]:
 
@@ -160,7 +182,7 @@ train, store, store_states, state_names, googletrend, weather, test = tables
 # In[45]:
 
 
-len(train),len(test)
+len(train), len(test)
 
 
 # Turn state Holidays to Bool
@@ -168,22 +190,26 @@ len(train),len(test)
 # In[46]:
 
 
-train.StateHoliday = train.StateHoliday!='0'
-test.StateHoliday = test.StateHoliday!='0'
+train.StateHoliday = train.StateHoliday != '0'
+test.StateHoliday = test.StateHoliday != '0'
 
 
 # Define function for joining tables on specific fields.
-# 
+#
 # By default, we'll be doing a left outer join of `right` on the `left` argument using the given fields for each table.
-# 
-# Pandas does joins using the `merge` method. The `suffixes` argument describes the naming convention for duplicate fields. We've elected to leave the duplicate field names on the left untouched, and append a "_y" to those on the right.
+#
+# Pandas does joins using the `merge` method. The `suffixes` argument
+# describes the naming convention for duplicate fields. We've elected to
+# leave the duplicate field names on the left untouched, and append a "_y"
+# to those on the right.
 
 # In[47]:
 
 
 def join_df(left, right, left_on, right_on=None):
-    if right_on is None: right_on = left_on
-    return left.merge(right, how='left', left_on=left_on, right_on=right_on, 
+    if right_on is None:
+        right_on = left_on
+    return left.merge(right, how='left', left_on=left_on, right_on=right_on,
                       suffixes=("", "_y"))
 
 
@@ -196,20 +222,28 @@ weather = join_df(weather, state_names, "file", "StateName")
 
 
 # In pandas you can add new columns to a dataframe by simply defining it. We'll do this for googletrends by extracting dates and state names from the given data and adding those columns.
-# 
-# We're also going to replace all instances of state name 'NI' with the usage in the rest of the table, 'HB,NI'. This is a good opportunity to highlight pandas indexing. We can use `.ix[rows, cols]` to select a list of rows and a list of columns from the dataframe. In this case, we're selecting rows w/ statename 'NI' by using a boolean list `googletrend.State=='NI'` and selecting "State".
+#
+# We're also going to replace all instances of state name 'NI' with the
+# usage in the rest of the table, 'HB,NI'. This is a good opportunity to
+# highlight pandas indexing. We can use `.ix[rows, cols]` to select a list
+# of rows and a list of columns from the dataframe. In this case, we're
+# selecting rows w/ statename 'NI' by using a boolean list
+# `googletrend.State=='NI'` and selecting "State".
 
 # In[49]:
 
 
 googletrend['Date'] = googletrend.week.str.split(' - ', expand=True)[0]
 googletrend['State'] = googletrend.file.str.split('_', expand=True)[2]
-googletrend.loc[googletrend.State=='NI', "State"] = 'HB,NI'
+googletrend.loc[googletrend.State == 'NI', "State"] = 'HB,NI'
 
 
 # The following extracts particular date fields from a complete datetime for the purpose of constructing categoricals.
-# 
-# You should always consider this feature extraction step when working with date-time. Without expanding your date-time into these additional fields, you can't capture any trend/cyclical behavior as a function of time at any of these granularities.
+#
+# You should always consider this feature extraction step when working
+# with date-time. Without expanding your date-time into these additional
+# fields, you can't capture any trend/cyclical behavior as a function of
+# time at any of these granularities.
 
 # In[50]:
 
@@ -240,13 +274,18 @@ trend_de = googletrend[googletrend.file == 'Rossmann_DE']
 
 
 # Now we can outer join all of our data into a single dataframe.
-# 
+#
 # Recall that in outer joins everytime a value in the joining field on the left table does not have a corresponding value on the right table, the corresponding row in the new table has Null values for all right table fields.
-# 
+#
 # One way to check that all records are consistent and complete is to check for Null values post-join, as we do here.
-# 
+#
 # *Aside*: Why note just do an inner join?
-# If you are assuming that all records are complete and match on the field you desire, an inner join will do the same thing as an outer join. However, in the event you are wrong or a mistake is made, an outer join followed by a null-check will catch it. (Comparing before/after # of rows for inner join is equivalent, but requires keeping track of before/after row #'s. Outer join is easier.)
+# If you are assuming that all records are complete and match on the field
+# you desire, an inner join will do the same thing as an outer join.
+# However, in the event you are wrong or a mistake is made, an outer join
+# followed by a null-check will catch it. (Comparing before/after # of
+# rows for inner join is equivalent, but requires keeping track of
+# before/after row #'s. Outer join is easier.)
 
 # In[53]:
 
@@ -265,7 +304,7 @@ len(joined[joined.StoreType.isnull()])
 # In[55]:
 
 
-joined = join_df(joined, googletrend, ["State","Year", "Week"])
+joined = join_df(joined, googletrend, ["State", "Year", "Week"])
 len(joined[joined.trend.isnull()])
 
 
@@ -279,7 +318,7 @@ len(joined[joined.trend_DE.isnull()])
 # In[57]:
 
 
-joined = join_df(joined, weather, ["State","Date"])
+joined = join_df(joined, weather, ["State", "Date"])
 len(joined[joined.Mean_TemperatureC.isnull()])
 
 
@@ -295,20 +334,25 @@ len(joined_test[joined_test.StoreType.isnull()])
 # In[59]:
 
 
-joined.CompetitionOpenSinceYear = joined.CompetitionOpenSinceYear.fillna(1900).astype(np.int32)
-joined.CompetitionOpenSinceMonth = joined.CompetitionOpenSinceMonth.fillna(1).astype(np.int32)
+joined.CompetitionOpenSinceYear = joined.CompetitionOpenSinceYear.fillna(
+    1900).astype(np.int32)
+joined.CompetitionOpenSinceMonth = joined.CompetitionOpenSinceMonth.fillna(
+    1).astype(np.int32)
 joined.Promo2SinceYear = joined.Promo2SinceYear.fillna(1900).astype(np.int32)
 joined.Promo2SinceWeek = joined.Promo2SinceWeek.fillna(1).astype(np.int32)
 
 
-# Next we'll extract features "CompetitionOpenSince" and "CompetitionDaysOpen". Note the use of `apply()` in mapping a function across dataframe values.
+# Next we'll extract features "CompetitionOpenSince" and
+# "CompetitionDaysOpen". Note the use of `apply()` in mapping a function
+# across dataframe values.
 
 # In[60]:
 
 
 joined["CompetitionOpenSince"] = pd.to_datetime(joined.apply(lambda x: datetime.datetime(
     x.CompetitionOpenSinceYear, x.CompetitionOpenSinceMonth, 15), axis=1).astype(pd.datetime))
-joined["CompetitionDaysOpen"] = joined.Date.subtract(joined["CompetitionOpenSince"]).dt.days
+joined["CompetitionDaysOpen"] = joined.Date.subtract(
+    joined["CompetitionOpenSince"]).dt.days
 
 
 # We'll replace some erroneous / outlying data.
@@ -316,17 +360,18 @@ joined["CompetitionDaysOpen"] = joined.Date.subtract(joined["CompetitionOpenSinc
 # In[63]:
 
 
-joined.loc[joined.CompetitionDaysOpen<0, "CompetitionDaysOpen"] = 0
-joined.loc[joined.CompetitionOpenSinceYear<1990, "CompetitionDaysOpen"] = 0
+joined.loc[joined.CompetitionDaysOpen < 0, "CompetitionDaysOpen"] = 0
+joined.loc[joined.CompetitionOpenSinceYear < 1990, "CompetitionDaysOpen"] = 0
 
 
-# Added "CompetitionMonthsOpen" field, limit the maximum to 2 years to limit number of unique embeddings.
+# Added "CompetitionMonthsOpen" field, limit the maximum to 2 years to
+# limit number of unique embeddings.
 
 # In[64]:
 
 
-joined["CompetitionMonthsOpen"] = joined["CompetitionDaysOpen"]//30
-joined.loc[joined.CompetitionMonthsOpen>24, "CompetitionMonthsOpen"] = 24
+joined["CompetitionMonthsOpen"] = joined["CompetitionDaysOpen"] // 30
+joined.loc[joined.CompetitionMonthsOpen > 24, "CompetitionMonthsOpen"] = 24
 joined.CompetitionMonthsOpen.unique()
 
 
@@ -343,16 +388,16 @@ joined["Promo2Days"] = joined.Date.subtract(joined["Promo2Since"]).dt.days
 # In[66]:
 
 
-joined.loc[joined.Promo2Days<0, "Promo2Days"] = 0
-joined.loc[joined.Promo2SinceYear<1990, "Promo2Days"] = 0
+joined.loc[joined.Promo2Days < 0, "Promo2Days"] = 0
+joined.loc[joined.Promo2SinceYear < 1990, "Promo2Days"] = 0
 
 
 # In[67]:
 
 
-joined["Promo2Weeks"] = joined["Promo2Days"]//7
-joined.loc[joined.Promo2Weeks<0, "Promo2Weeks"] = 0
-joined.loc[joined.Promo2Weeks>25, "Promo2Weeks"] = 25
+joined["Promo2Weeks"] = joined["Promo2Days"] // 7
+joined.loc[joined.Promo2Weeks < 0, "Promo2Weeks"] = 0
+joined.loc[joined.Promo2Weeks > 25, "Promo2Weeks"] = 25
 joined.Promo2Weeks.unique()
 
 
@@ -362,8 +407,10 @@ joined.Promo2Weeks.unique()
 # * Running averages
 # * Time until next event
 # * Time since last event
-# 
-# This is often difficult to do with most table manipulation frameworks, since they are designed to work with relationships across columns. As such, we've created a class to handle this type of data.
+#
+# This is often difficult to do with most table manipulation frameworks,
+# since they are designed to work with relationships across columns. As
+# such, we've created a class to handle this type of data.
 
 # In[72]:
 
@@ -372,11 +419,11 @@ columns = ["Date", "Store", "Promo", "StateHoliday", "SchoolHoliday"]
 
 
 # We've defined a class `elapsed` for cumulative counting across a sorted dataframe.
-# 
+#
 # Given a particular field `fld` to monitor, this object will start tracking time since the last occurrence of that field. When the field is seen again, the counter is set to zero.
-# 
+#
 # Upon initialization, this will result in datetime na's until the field is encountered. This is reset every time a new store is seen.
-# 
+#
 # We'll see how to use this shortly.
 
 # In[73]:
@@ -387,13 +434,14 @@ class elapsed(object):
         self.fld = fld
         self.last = pd.to_datetime(np.nan)
         self.last_store = 0
-        
+
     def get(self, row):
         if row.Store != self.last_store:
             self.last = pd.to_datetime(np.nan)
             self.last_store = row.Store
-        if (row[self.fld]): self.last = row.Date
-        return row.Date-self.last
+        if (row[self.fld]):
+            self.last = row.Date
+        return row.Date - self.last
 
 
 # In[74]:
@@ -402,18 +450,19 @@ class elapsed(object):
 df = train[columns]
 
 
-# And a function for applying said class across dataframe rows and adding values to a new column.
+# And a function for applying said class across dataframe rows and adding
+# values to a new column.
 
 # In[75]:
 
 
 def add_elapsed(fld, prefix):
     sh_el = elapsed(fld)
-    df[prefix+fld] = df.apply(sh_el.get, axis=1)
+    df[prefix + fld] = df.apply(sh_el.get, axis=1)
 
 
 # Let's walk through an example.
-# 
+#
 # Say we're looking at School Holiday. We'll first sort by Store, then Date, and then call `add_elapsed('SchoolHoliday', 'After')`:
 # This will generate an instance of the `elapsed` class for School Holiday:
 # * Instance applied to every row of the dataframe in order of store and date
@@ -473,42 +522,47 @@ columns = ['SchoolHoliday', 'StateHoliday', 'Promo']
 
 for o in ['Before', 'After']:
     for p in columns:
-        a = o+p
+        a = o + p
         df[a] = df[a].fillna(pd.Timedelta(0)).dt.days
 
 
 # Next we'll demonstrate window functions in pandas to calculate rolling quantities.
-# 
-# Here we're sorting by date (`sort_index()`) and counting the number of events of interest (`sum()`) defined in `columns` in the following week (`rolling()`), grouped by Store (`groupby()`). We do the same in the opposite direction.
+#
+# Here we're sorting by date (`sort_index()`) and counting the number of
+# events of interest (`sum()`) defined in `columns` in the following week
+# (`rolling()`), grouped by Store (`groupby()`). We do the same in the
+# opposite direction.
 
 # In[83]:
 
 
-bwd = df[['Store']+columns].sort_index().groupby("Store").rolling(7, min_periods=1).sum()
+bwd = df[['Store'] + columns].sort_index().groupby("Store").rolling(7,
+                                                                    min_periods=1).sum()
 
 
 # In[84]:
 
 
-fwd = df[['Store']+columns].sort_index(ascending=False
-                                      ).groupby("Store").rolling(7, min_periods=1).sum()
+fwd = df[['Store'] + columns].sort_index(ascending=False
+                                         ).groupby("Store").rolling(7, min_periods=1).sum()
 
 
 # Next we want to drop the Store indices grouped together in the window function.
-# 
-# Often in pandas, there is an option to do this in place. This is time and memory efficient when working with large datasets.
+#
+# Often in pandas, there is an option to do this in place. This is time
+# and memory efficient when working with large datasets.
 
 # In[85]:
 
 
-bwd.drop('Store',1,inplace=True)
+bwd.drop('Store', 1, inplace=True)
 bwd.reset_index(inplace=True)
 
 
 # In[90]:
 
 
-fwd.drop('Store',1,inplace=True)
+fwd.drop('Store', 1, inplace=True)
 fwd.reset_index(inplace=True)
 
 
@@ -530,7 +584,7 @@ df = df.merge(fwd, 'left', ['Date', 'Store'], suffixes=['', '_fw'])
 # In[94]:
 
 
-df.drop(columns,1,inplace=True)
+df.drop(columns, 1, inplace=True)
 
 
 # In[100]:
@@ -539,7 +593,9 @@ df.drop(columns,1,inplace=True)
 df.head()
 
 
-# It's usually a good idea to back up large tables of extracted / wrangled features before you join them onto another one, that way you can go back to it easily if you need to make changes to it.
+# It's usually a good idea to back up large tables of extracted / wrangled
+# features before you join them onto another one, that way you can go back
+# to it easily if you need to make changes to it.
 
 # In[96]:
 
@@ -589,13 +645,17 @@ joined["Date"] = pd.to_datetime(joined.Date)
 joined.columns
 
 
-# While these steps were explicitly outlined in the paper, these are all fairly typical feature engineering steps for dealing with time series data and are practical in any similar setting.
+# While these steps were explicitly outlined in the paper, these are all
+# fairly typical feature engineering steps for dealing with time series
+# data and are practical in any similar setting.
 
 # ## Create features
 
 # Now that we've engineered all our features, we need to convert to input compatible with a neural network.
-# 
-# This includes converting categorical variables into contiguous integers or one-hot encodings, normalizing continuous features to standard normal, etc...
+#
+# This includes converting categorical variables into contiguous integers
+# or one-hot encodings, normalizing continuous features to standard
+# normal, etc...
 
 # In[104]:
 
@@ -604,19 +664,21 @@ from sklearn_pandas import DataFrameMapper
 from sklearn.preprocessing import LabelEncoder, Imputer, StandardScaler
 
 
-# This dictionary maps categories to embedding dimensionality. In generally, categories we might expect to be conceptually more complex have larger dimension.
+# This dictionary maps categories to embedding dimensionality. In
+# generally, categories we might expect to be conceptually more complex
+# have larger dimension.
 
 # In[105]:
 
 
 cat_var_dict = {'Store': 50, 'DayOfWeek': 6, 'Year': 2, 'Month': 6,
-'Day': 10, 'StateHoliday': 3, 'CompetitionMonthsOpen': 2,
-'Promo2Weeks': 1, 'StoreType': 2, 'Assortment': 3, 'PromoInterval': 3,
-'CompetitionOpenSinceYear': 4, 'Promo2SinceYear': 4, 'State': 6,
-'Week': 2, 'Events': 4, 'Promo_fw': 1,
-'Promo_bw': 1, 'StateHoliday_fw': 1,
-'StateHoliday_bw': 1, 'SchoolHoliday_fw': 1,
-'SchoolHoliday_bw': 1}
+                'Day': 10, 'StateHoliday': 3, 'CompetitionMonthsOpen': 2,
+                'Promo2Weeks': 1, 'StoreType': 2, 'Assortment': 3, 'PromoInterval': 3,
+                'CompetitionOpenSinceYear': 4, 'Promo2SinceYear': 4, 'State': 6,
+                'Week': 2, 'Events': 4, 'Promo_fw': 1,
+                'Promo_bw': 1, 'StateHoliday_fw': 1,
+                'StateHoliday_bw': 1, 'SchoolHoliday_fw': 1,
+                'SchoolHoliday_bw': 1}
 
 
 # Name categorical variables
@@ -624,7 +686,7 @@ cat_var_dict = {'Store': 50, 'DayOfWeek': 6, 'Year': 2, 'Month': 6,
 # In[106]:
 
 
-cat_vars = [o[0] for o in 
+cat_vars = [o[0] for o in
             sorted(cat_var_dict.items(), key=operator.itemgetter(1), reverse=True)]
 
 
@@ -641,18 +703,18 @@ cat_vars = [o[0] for o in
 # In[108]:
 
 
-# mean/max wind; min temp; cloud; min/mean humid; 
-contin_vars = ['CompetitionDistance', 
-   'Max_TemperatureC', 'Mean_TemperatureC', 'Min_TemperatureC',
-   'Max_Humidity', 'Mean_Humidity', 'Min_Humidity', 'Max_Wind_SpeedKm_h', 
-   'Mean_Wind_SpeedKm_h', 'CloudCover', 'trend', 'trend_DE',
-   'AfterStateHoliday', 'BeforeStateHoliday', 'Promo', 'SchoolHoliday']
+# mean/max wind; min temp; cloud; min/mean humid;
+contin_vars = ['CompetitionDistance',
+               'Max_TemperatureC', 'Mean_TemperatureC', 'Min_TemperatureC',
+               'Max_Humidity', 'Mean_Humidity', 'Min_Humidity', 'Max_Wind_SpeedKm_h',
+               'Mean_Wind_SpeedKm_h', 'CloudCover', 'trend', 'trend_DE',
+               'AfterStateHoliday', 'BeforeStateHoliday', 'Promo', 'SchoolHoliday']
 
 
 # In[109]:
 
 
-"""contin_vars = ['CompetitionDistance', 'Max_TemperatureC', 'Mean_TemperatureC', 
+"""contin_vars = ['CompetitionDistance', 'Max_TemperatureC', 'Mean_TemperatureC',
    'Max_Humidity', 'trend', 'trend_DE', 'AfterStateHoliday', 'BeforeStateHoliday']"""
 
 
@@ -661,13 +723,16 @@ contin_vars = ['CompetitionDistance',
 # In[112]:
 
 
-for v in contin_vars: joined.loc[joined[v].isnull(), v] = 0
-for v in cat_vars: joined.loc[joined[v].isnull(), v] = ""
+for v in contin_vars:
+    joined.loc[joined[v].isnull(), v] = 0
+for v in cat_vars:
+    joined.loc[joined[v].isnull(), v] = ""
 
 
 # Here we create a list of tuples, each containing a variable and an instance of a transformer for that variable.
-# 
-# For categoricals, we use a label encoder that maps categories to continuous integers. For continuous variables, we standardize them.
+#
+# For categoricals, we use a label encoder that maps categories to
+# continuous integers. For continuous variables, we standardize them.
 
 # In[113]:
 
@@ -677,7 +742,7 @@ contin_maps = [([o], StandardScaler()) for o in contin_vars]
 
 
 # The same instances need to be used for the test set as well, so values are mapped/standardized appropriately.
-# 
+#
 # DataFrame mapper will keep track of these variable-instance mappings.
 
 # In[114]:
@@ -703,7 +768,7 @@ contin_cols
 # In[116]:
 
 
-cat_map_fit.transform(joined)[0,:5], contin_map_fit.transform(joined)[0,:5]
+cat_map_fit.transform(joined)[0, :5], contin_map_fit.transform(joined)[0, :5]
 
 
 # We can also pickle these mappings, which is great for portability!
@@ -723,16 +788,23 @@ pickle.dump(cat_map_fit, open('cat_maps.pickle', 'wb'))
 
 # ## Sample data
 
-# Next, the authors removed all instances where the store had zero sale / was closed.
+# Next, the authors removed all instances where the store had zero sale /
+# was closed.
 
 # In[121]:
 
 
-joined_sales = joined[joined.Sales!=0]
+joined_sales = joined[joined.Sales != 0]
 n = len(joined_sales)
 
 
-# We speculate that this may have cost them a higher standing in the competition. One reason this may be the case is that a little EDA reveals that there are often periods where stores are closed, typically for refurbishment. Before and after these periods, there are naturally spikes in sales that one might expect. Be ommitting this data from their training, the authors gave up the ability to leverage information about these periods to predict this otherwise volatile behavior.
+# We speculate that this may have cost them a higher standing in the
+# competition. One reason this may be the case is that a little EDA
+# reveals that there are often periods where stores are closed, typically
+# for refurbishment. Before and after these periods, there are naturally
+# spikes in sales that one might expect. Be ommitting this data from their
+# training, the authors gave up the ability to leverage information about
+# these periods to predict this otherwise volatile behavior.
 
 # In[122]:
 
@@ -763,7 +835,9 @@ samp_size = n
 joined_samp = joined_sales.set_index("Date")
 
 
-# In time series data, cross-validation is not random. Instead, our holdout data is always the most recent data, as it would be in real application.
+# In time series data, cross-validation is not random. Instead, our
+# holdout data is always the most recent data, as it would be in real
+# application.
 
 # We've taken the last 10% as our validation set.
 
@@ -830,17 +904,19 @@ y_valid_orig = joined_valid.Sales
 
 
 # Finally, the authors modified the target values by applying a logarithmic transformation and normalizing to unit scale by dividing by the maximum log value.
-# 
-# Log transformations are used on this type of data frequently to attain a nicer shape. 
-# 
-# Further by scaling to the unit interval we can now use a sigmoid output in our neural network. Then we can multiply by the maximum log value to get the original log value and transform back.
+#
+# Log transformations are used on this type of data frequently to attain a nicer shape.
+#
+# Further by scaling to the unit interval we can now use a sigmoid output
+# in our neural network. Then we can multiply by the maximum log value to
+# get the original log value and transform back.
 
 # In[134]:
 
 
 max_log_y = np.max(np.log(joined_samp.Sales))
-y_train = np.log(y_train_orig)/max_log_y
-y_valid = np.log(y_valid_orig)/max_log_y
+y_train = np.log(y_train_orig) / max_log_y
+y_valid = np.log(y_valid_orig) / max_log_y
 
 
 # Note: Some testing shows this doesn't make a big difference.
@@ -856,13 +932,14 @@ y_train = (y_train_orig-ymean)/ystd
 y_valid = (y_valid_orig-ymean)/ystd"""
 
 
-# Root-mean-squared percent error is the metric Kaggle used for this competition.
+# Root-mean-squared percent error is the metric Kaggle used for this
+# competition.
 
 # In[136]:
 
 
-def rmspe(y_pred, targ = y_valid_orig):
-    pct_var = (targ - y_pred)/targ
+def rmspe(y_pred, targ=y_valid_orig):
+    pct_var = (targ - y_pred) / targ
     return math.sqrt(np.square(pct_var).mean())
 
 
@@ -871,7 +948,7 @@ def rmspe(y_pred, targ = y_valid_orig):
 # In[135]:
 
 
-def log_max_inv(preds, mx = max_log_y):
+def log_max_inv(preds, mx=max_log_y):
     return np.exp(preds * mx)
 
 
@@ -886,7 +963,8 @@ def normalize_inv(preds):
 
 # Now we're ready to put together our models.
 
-# Much of the following code has commented out portions / alternate implementations.
+# Much of the following code has commented out portions / alternate
+# implementations.
 
 # In[739]:
 
@@ -908,7 +986,7 @@ def normalize_inv(preds):
 # In[150]:
 
 
-def split_cols(arr): return np.hsplit(arr,arr.shape[1])
+def split_cols(arr): return np.hsplit(arr, arr.shape[1])
 
 
 # In[193]:
@@ -949,19 +1027,23 @@ cat_map_info(cat_map_fit.features[1])
 
 
 def my_init(scale):
-    return lambda shape, name=None: initializations.uniform(shape, scale=scale, name=name)
+    return lambda shape, name=None: initializations.uniform(
+        shape, scale=scale, name=name)
 
 
 # In[176]:
 
 
-def emb_init(shape, name=None): 
-    return initializations.uniform(shape, scale=2/(shape[1]+1), name=name)
+def emb_init(shape, name=None):
+    return initializations.uniform(shape, scale=2 / (shape[1] + 1), name=name)
 
 
 # Helper function for constructing embeddings. Notice commented out codes, several different ways to compute embeddings at play.
-# 
-# Also, note we're flattening the embedding. Embeddings in Keras come out as an element of a sequence like we might use in a sequence of words; here we just want to concatenate them so we flatten the 1-vector sequence into a vector.
+#
+# Also, note we're flattening the embedding. Embeddings in Keras come out
+# as an element of a sequence like we might use in a sequence of words;
+# here we just want to concatenate them so we flatten the 1-vector
+# sequence into a vector.
 
 # In[177]:
 
@@ -969,13 +1051,21 @@ def emb_init(shape, name=None):
 def get_emb(feat):
     name, c = cat_map_info(feat)
     #c2 = cat_var_dict[name]
-    c2 = (c+1)//2
-    if c2>50: c2=50
-    inp = Input((1,), dtype='int64', name=name+'_in')
+    c2 = (c + 1) // 2
+    if c2 > 50:
+        c2 = 50
+    inp = Input((1,), dtype='int64', name=name + '_in')
     # , W_regularizer=l2(1e-6)
-    u = Flatten(name=name+'_flt')(Embedding(c, c2, input_length=1, init=emb_init)(inp))
+    u = Flatten(
+        name=name +
+        '_flt')(
+        Embedding(
+            c,
+            c2,
+            input_length=1,
+            init=emb_init)(inp))
 #     u = Flatten(name=name+'_flt')(Embedding(c, c2, input_length=1)(inp))
-    return inp,u
+    return inp, u
 
 
 # Helper function for continuous inputs.
@@ -985,8 +1075,8 @@ def get_emb(feat):
 
 def get_contin(feat):
     name = feat[0][0]
-    inp = Input((1,), name=name+'_in')
-    return inp, Dense(1, name=name+'_d', init=my_init(1.))(inp)
+    inp = Input((1,), name=name + '_in')
+    return inp, Dense(1, name=name + '_d', init=my_init(1.))(inp)
 
 
 # Let's build them.
@@ -995,13 +1085,18 @@ def get_contin(feat):
 
 
 contin_inp = Input((contin_cols,), name='contin')
-contin_out = Dense(contin_cols*10, activation='relu', name='contin_d')(contin_inp)
+contin_out = Dense(
+    contin_cols * 10,
+    activation='relu',
+    name='contin_d')(contin_inp)
 #contin_out = BatchNormalization()(contin_out)
 
 
 # Now we can put them together. Given the inputs, continuous and categorical embeddings, we're going to concatenate all of them.
-# 
-# Next, we're going to pass through some dropout, then two dense layers w/ ReLU activations, then dropout again, then the sigmoid activation we mentioned earlier.
+#
+# Next, we're going to pass through some dropout, then two dense layers w/
+# ReLU activations, then dropout again, then the sigmoid activation we
+# mentioned earlier.
 
 # In[180]:
 
@@ -1009,7 +1104,7 @@ contin_out = Dense(contin_cols*10, activation='relu', name='contin_d')(contin_in
 embs = [get_emb(feat) for feat in cat_map_fit.features]
 #conts = [get_contin(feat) for feat in contin_map_fit.features]
 #contin_d = [d for inp,d in conts]
-x = merge([emb for inp,emb in embs] + [contin_out], mode='concat')
+x = merge([emb for inp, emb in embs] + [contin_out], mode='concat')
 #x = merge([emb for inp,emb in embs] + contin_d, mode='concat')
 
 x = Dropout(0.02)(x)
@@ -1018,7 +1113,7 @@ x = Dense(500, activation='relu', init='uniform')(x)
 x = Dropout(0.2)(x)
 x = Dense(1, activation='sigmoid')(x)
 
-model = Model([inp for inp,emb in embs] + [contin_inp], x)
+model = Model([inp for inp, emb in embs] + [contin_inp], x)
 #model = Model([inp for inp,emb in embs] + [inp for inp,d in conts], x)
 model.compile('adam', 'mean_absolute_error')
 #model.compile(Adam(), 'mse')
@@ -1029,7 +1124,10 @@ model.compile('adam', 'mean_absolute_error')
 # In[ ]:
 
 
-get_ipython().run_cell_magic(u'time', u'', u'hist = model.fit(map_train, y_train, batch_size=128, nb_epoch=25,\n                 verbose=0, validation_data=(map_valid, y_valid))')
+get_ipython().run_cell_magic(
+    u'time',
+    u'',
+    u'hist = model.fit(map_train, y_train, batch_size=128, nb_epoch=25,\n                 verbose=0, validation_data=(map_valid, y_valid))')
 
 
 # In[133]:
@@ -1075,8 +1173,8 @@ pkl_path = '/data/jhoward/github/entity-embedding-rossmann/'
 # In[401]:
 
 
-def load_pickle(fname): 
-    return pickle.load(open(pkl_path+fname + '.pickle', 'rb'))
+def load_pickle(fname):
+    return pickle.load(open(pkl_path + fname + '.pickle', 'rb'))
 
 
 # In[402]:
@@ -1089,21 +1187,21 @@ def load_pickle(fname):
 
 
 max_log_y_pkl = np.max(np.log(y_pkl_orig))
-y_pkl = np.log(y_pkl_orig)/max_log_y_pkl
+y_pkl = np.log(y_pkl_orig) / max_log_y_pkl
 
 
 # In[404]:
 
 
-pkl_vars = ['Open', 'Store', 'DayOfWeek', 'Promo', 'Year', 'Month', 'Day', 
-     'StateHoliday', 'SchoolHoliday', 'CompetitionMonthsOpen', 'Promo2Weeks', 
-    'Promo2Weeks_L', 'CompetitionDistance',
-    'StoreType', 'Assortment', 'PromoInterval', 'CompetitionOpenSinceYear',
-    'Promo2SinceYear', 'State', 'Week', 'Max_TemperatureC', 'Mean_TemperatureC', 
-    'Min_TemperatureC', 'Max_Humidity', 'Mean_Humidity', 'Min_Humidity', 'Max_Wind_SpeedKm_h', 
-    'Mean_Wind_SpeedKm_h', 'CloudCover','Events', 'Promo_fw', 'Promo_bw', 
-    'StateHoliday_fw', 'StateHoliday_bw', 'AfterStateHoliday', 'BeforeStateHoliday', 
-    'SchoolHoliday_fw', 'SchoolHoliday_bw', 'trend_DE', 'trend']
+pkl_vars = ['Open', 'Store', 'DayOfWeek', 'Promo', 'Year', 'Month', 'Day',
+            'StateHoliday', 'SchoolHoliday', 'CompetitionMonthsOpen', 'Promo2Weeks',
+            'Promo2Weeks_L', 'CompetitionDistance',
+            'StoreType', 'Assortment', 'PromoInterval', 'CompetitionOpenSinceYear',
+            'Promo2SinceYear', 'State', 'Week', 'Max_TemperatureC', 'Mean_TemperatureC',
+            'Min_TemperatureC', 'Max_Humidity', 'Mean_Humidity', 'Min_Humidity', 'Max_Wind_SpeedKm_h',
+            'Mean_Wind_SpeedKm_h', 'CloudCover', 'Events', 'Promo_fw', 'Promo_bw',
+            'StateHoliday_fw', 'StateHoliday_bw', 'AfterStateHoliday', 'BeforeStateHoliday',
+            'SchoolHoliday_fw', 'SchoolHoliday_bw', 'trend_DE', 'trend']
 
 
 # In[405]:
@@ -1116,13 +1214,13 @@ x_pkl = np.array(x_pkl_orig)
 
 
 gt_enc = StandardScaler()
-gt_enc.fit(x_pkl[:,-2:])
+gt_enc.fit(x_pkl[:, -2:])
 
 
 # In[407]:
 
 
-x_pkl[:,-2:] = gt_enc.transform(x_pkl[:,-2:])
+x_pkl[:, -2:] = gt_enc.transform(x_pkl[:, -2:])
 
 
 # In[408]:
@@ -1154,7 +1252,7 @@ x_pkl_trn.shape
 # In[179]:
 
 
-xgb_parms = {'learning_rate': 0.1, 'subsample': 0.6, 
+xgb_parms = {'learning_rate': 0.1, 'subsample': 0.6,
              'colsample_bylevel': 0.6, 'silent': True, 'objective': 'reg:linear'}
 
 
@@ -1173,7 +1271,7 @@ xdata_val_pkl = xgboost.DMatrix(x_pkl_val, y_pkl_val, feature_names=pkl_vars)
 # In[182]:
 
 
-xgb_parms['seed'] = random.randint(0,1e9)
+xgb_parms['seed'] = random.randint(0, 1e9)
 model_pkl = xgboost.train(xgb_parms, xdata_pkl)
 
 
@@ -1186,7 +1284,7 @@ model_pkl.eval(xdata_val_pkl)
 # In[ ]:
 
 
-#0.117473
+# 0.117473
 
 
 # In[184]:
@@ -1200,7 +1298,7 @@ df['fscore'] = df['fscore'] / df['fscore'].sum()
 
 df.plot(kind='barh', x='feature', y='fscore', legend=False, figsize=(6, 10))
 plt.title('XGBoost Feature Importance')
-plt.xlabel('relative importance');
+plt.xlabel('relative importance')
 
 
 # ### Neural net
@@ -1215,8 +1313,8 @@ plt.xlabel('relative importance');
 # In[411]:
 
 
-pkl_cats = np.stack([x_pkl[:,pkl_vars.index(f)] for f in cat_vars], 1)
-pkl_contins = np.stack([x_pkl[:,pkl_vars.index(f)] for f in contin_vars], 1)
+pkl_cats = np.stack([x_pkl[:, pkl_vars.index(f)] for f in cat_vars], 1)
+pkl_contins = np.stack([x_pkl[:, pkl_vars.index(f)] for f in contin_vars], 1)
 
 
 # In[412]:
@@ -1229,7 +1327,8 @@ pkl_contins = co_enc.transform(pkl_contins)
 # In[413]:
 
 
-pkl_contins_trn, pkl_contins_val = pkl_contins[:train_size], pkl_contins[train_size:]
+pkl_contins_trn, pkl_contins_val = pkl_contins[:
+                                               train_size], pkl_contins[train_size:]
 pkl_cats_trn, pkl_cats_val = pkl_cats[:train_size], pkl_cats[train_size:]
 y_pkl_trn, y_pkl_val = y_pkl[:train_size], y_pkl[train_size:]
 
@@ -1239,11 +1338,19 @@ y_pkl_trn, y_pkl_val = y_pkl[:train_size], y_pkl[train_size:]
 
 def get_emb_pkl(feat):
     name, c = cat_map_info(feat)
-    c2 = (c+2)//3
-    if c2>50: c2=50
-    inp = Input((1,), dtype='int64', name=name+'_in')
-    u = Flatten(name=name+'_flt')(Embedding(c, c2, input_length=1, init=emb_init)(inp))
-    return inp,u
+    c2 = (c + 2) // 3
+    if c2 > 50:
+        c2 = 50
+    inp = Input((1,), dtype='int64', name=name + '_in')
+    u = Flatten(
+        name=name +
+        '_flt')(
+        Embedding(
+            c,
+            c2,
+            input_length=1,
+            init=emb_init)(inp))
+    return inp, u
 
 
 # In[415]:
@@ -1266,23 +1373,23 @@ map_valid_pkl = split_cols(pkl_cats_val) + [pkl_contins_val]
 
 def train_pkl(bs=128, ne=10):
     return model_pkl.fit(map_train_pkl, y_pkl_trn, batch_size=bs, nb_epoch=ne,
-                 verbose=0, validation_data=(map_valid_pkl, y_pkl_val))
+                         verbose=0, validation_data=(map_valid_pkl, y_pkl_val))
 
 
 # In[418]:
 
 
-def get_model_pkl(): 
+def get_model_pkl():
     conts = [get_contin_pkl(feat) for feat in contin_map_fit.features]
     embs = [get_emb_pkl(feat) for feat in cat_map_fit.features]
-    x = merge([emb for inp,emb in embs] + [contin_out], mode='concat')
+    x = merge([emb for inp, emb in embs] + [contin_out], mode='concat')
 
     x = Dropout(0.02)(x)
     x = Dense(1000, activation='relu', init='uniform')(x)
     x = Dense(500, activation='relu', init='uniform')(x)
     x = Dense(1, activation='sigmoid')(x)
 
-    model_pkl = Model([inp for inp,emb in embs] + [contin_inp], x)
+    model_pkl = Model([inp for inp, emb in embs] + [contin_inp], x)
     model_pkl.compile('adam', 'mean_absolute_error')
     #model.compile(Adam(), 'mse')
     return model_pkl
@@ -1350,7 +1457,8 @@ rmspe(log_max_inv(preds, max_log_y_pkl), y_orig_pkl_val)
 
 # ## XGBoost
 
-# Xgboost is extremely quick and easy to use. Aside from being a powerful predictive model, it gives us information about feature importance.
+# Xgboost is extremely quick and easy to use. Aside from being a powerful
+# predictive model, it gives us information about feature importance.
 
 # In[52]:
 
@@ -1373,7 +1481,7 @@ all_vars = cat_vars + contin_vars
 # In[55]:
 
 
-xgb_parms = {'learning_rate': 0.1, 'subsample': 0.6, 
+xgb_parms = {'learning_rate': 0.1, 'subsample': 0.6,
              'colsample_bylevel': 0.6, 'silent': True, 'objective': 'reg:linear'}
 
 
@@ -1392,7 +1500,7 @@ xdata_val = xgboost.DMatrix(X_valid, y_valid, feature_names=all_vars)
 # In[58]:
 
 
-xgb_parms['seed'] = random.randint(0,1e9)
+xgb_parms['seed'] = random.randint(0, 1e9)
 model = xgboost.train(xgb_parms, xdata)
 
 
@@ -1409,8 +1517,10 @@ model.eval(xdata_val)
 
 
 # Easily, competition distance is the most important, while events are not important at all.
-# 
-# In real applications, putting together a feature importance plot is often a first step. Oftentimes, we can remove hundreds of thousands of features from consideration with importance plots. 
+#
+# In real applications, putting together a feature importance plot is
+# often a first step. Oftentimes, we can remove hundreds of thousands of
+# features from consideration with importance plots.
 
 # In[61]:
 
@@ -1423,7 +1533,7 @@ df['fscore'] = df['fscore'] / df['fscore'].sum()
 
 df.plot(kind='barh', x='feature', y='fscore', legend=False, figsize=(6, 10))
 plt.title('XGBoost Feature Importance')
-plt.xlabel('relative importance');
+plt.xlabel('relative importance')
 
 
 # ## End

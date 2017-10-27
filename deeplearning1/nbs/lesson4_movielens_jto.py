@@ -2,7 +2,7 @@
 # coding: utf-8
 
 # ## Fastai deep learning course lesson4 学习笔记（下）
-# 分享者：胡智豪 
+# 分享者：胡智豪
 # email: justinhochn@gmail.com
 
 # ## 简述
@@ -10,13 +10,13 @@
 
 # ## 原理介绍
 # 建议同学们先下载jeremy的excel表，来看看这个电影的协同过滤算法是如何进行推荐的。
-# 
+#
 # 我对图一和图二的表格进行了填色，这样便于解释各个方块的含义：
 # 1. 图一：此表格为用户对他们所看过的电影的**真实评分**。
 # 2. 图二蓝色区域：此区域是每个用户对于每部电影的**评分预测**
 # 3. 图二绿色区域：左右两块绿色区域分别代表的是用户的特征以及电影的特征，对于每一个用户和每一部电影，这里各用5个数字进行表示。
 # 4. 图二黄色区域：左右两块黄色区域分别代表**用户特征的偏置项**以及**电影特征的偏置项**。用户偏置项的意思是，预防有些用户是电影的狂热粉丝，有些用户不怎么看电影，这两个极端导致的评分相差太大。电影偏置项的意思是，预防有些电影是只是明星效应高实际不怎么好看，有些电影很好看但是演员不出名比较冷门，这两种极端情况导致的评分相差太大。
-# 
+#
 # **协同过滤算法的计算流程**
 # 1. **用户特征**与**电影特征**进行**矩阵相乘**，并加上用户和电影特征各自的**偏置项（bias）**，获得用户对这部电影的**预测评分**。用图上的解释为：用户和电影的绿色区域相乘，再加上黄色区域的数字。
 # 2. **预测评分**与**真实评分**相减，得出评分数值的误差。
@@ -35,7 +35,8 @@ from theano.sandbox import cuda
 
 
 get_ipython().magic(u'matplotlib inline')
-import utils; reload(utils)
+import utils
+reload(utils)
 from utils import *
 from __future__ import division, print_funtion
 
@@ -81,13 +82,14 @@ len(ratings)
 # In[7]:
 
 
-movie_names = pd.read_csv(path+ 'movies.csv').set_index('movieId')['title'].to_dict()
+movie_names = pd.read_csv(
+    path + 'movies.csv').set_index('movieId')['title'].to_dict()
 
 
 # In[8]:
 
 
-pd.read_csv(path+ 'movies.csv').set_index('movieId')['title']
+pd.read_csv(path + 'movies.csv').set_index('movieId')['title']
 
 
 # In[9]:
@@ -106,8 +108,8 @@ movies = ratings.movieId.unique()
 # In[11]:
 
 
-userid2idx = {o:i for i,o in enumerate(users)}
-movieid2idx = {o:i for i,o in enumerate(movies)}
+userid2idx = {o: i for i, o in enumerate(users)}
+movieid2idx = {o: i for i, o in enumerate(movies)}
 
 
 # 对ratings的userid和movieid以升序排序，以变成连续的整数，用于后面的embedding层。
@@ -115,8 +117,8 @@ movieid2idx = {o:i for i,o in enumerate(movies)}
 # In[12]:
 
 
-ratings.movieId = ratings.movieId.apply(lambda x : movieid2idx[x])
-ratings.userId = ratings.userId.apply(lambda x : userid2idx[x])
+ratings.movieId = ratings.movieId.apply(lambda x: movieid2idx[x])
+ratings.userId = ratings.userId.apply(lambda x: userid2idx[x])
 
 
 # In[13]:
@@ -128,8 +130,8 @@ ratings.head()
 # In[14]:
 
 
-user_min, user_max, movie_min, movie_max = (ratings.userId.min(), 
-    ratings.userId.max(), ratings.movieId.min(), ratings.movieId.max())
+user_min, user_max, movie_min, movie_max = (ratings.userId.min(),
+                                            ratings.userId.max(), ratings.movieId.min(), ratings.movieId.max())
 user_min, user_max, movie_min, movie_max
 
 
@@ -138,7 +140,7 @@ user_min, user_max, movie_min, movie_max
 
 n_users = ratings.userId.nunique()
 n_movies = ratings.movieId.nunique()
-n_users,n_movies
+n_users, n_movies
 
 
 # 设置潜在因子数量
@@ -152,7 +154,7 @@ n_factors = 50
 # In[17]:
 
 
-np.random.seed= 42
+np.random.seed = 42
 
 
 # 随机分类出训练集和验证集
@@ -168,7 +170,7 @@ val = ratings[~msk]
 # In[19]:
 
 
-len(trn),len(val)
+len(trn), len(val)
 
 
 # ## 点乘 Dot Product
@@ -176,7 +178,7 @@ len(trn),len(val)
 # In[78]:
 
 
-from keras.layers import Input, Dense, merge, Flatten, Activation,  Dropout
+from keras.layers import Input, Dense, merge, Flatten, Activation, Dropout
 from keras.models import Model
 from keras.layers import Embedding
 from keras import regularizers
@@ -187,15 +189,17 @@ from keras import optimizers
 
 
 user_in = Input(shape=(1,), dtype='int64', name='user_in')
-u = Embedding(n_users, n_factors, input_length=1, W_regularizer=regularizers.l2(1e-4))(user_in)
+u = Embedding(n_users, n_factors, input_length=1,
+              W_regularizer=regularizers.l2(1e-4))(user_in)
 movie_in = Input(shape=(1,), dtype='int64', name='movie_in')
-m = Embedding(n_movies, n_factors, input_length=1, W_regularizer=regularizers.l2(1e-4))(user_in)
+m = Embedding(n_movies, n_factors, input_length=1,
+              W_regularizer=regularizers.l2(1e-4))(user_in)
 
 
 # In[22]:
 
 
-x = merge([u,m], mode='dot')
+x = merge([u, m], mode='dot')
 x = Flatten()(x)
 model = Model([user_in, movie_in], x)
 model.compile(optimizers.Adam(0.001), loss='mse')
@@ -204,20 +208,20 @@ model.compile(optimizers.Adam(0.001), loss='mse')
 # In[70]:
 
 
-model.fit([trn.userId, trn.movieId], trn.rating, batch_size=64, nb_epoch=1, 
-         validation_data=([val.userId, val.movieId], val.rating))
+model.fit([trn.userId, trn.movieId], trn.rating, batch_size=64, nb_epoch=1,
+          validation_data=([val.userId, val.movieId], val.rating))
 
 
 # In[71]:
 
 
-model.optimizer.lr=0.01
+model.optimizer.lr = 0.01
 
 
 # In[72]:
 
 
-model.fit([trn.userId, trn.movieId], trn.rating, batch_size=64, nb_epoch=3, 
+model.fit([trn.userId, trn.movieId], trn.rating, batch_size=64, nb_epoch=3,
           validation_data=([val.userId, val.movieId], val.rating))
 
 
@@ -228,7 +232,8 @@ model.fit([trn.userId, trn.movieId], trn.rating, batch_size=64, nb_epoch=3,
 
 def embedding_input(name, n_in, n_out, reg):
     inp = Input(shape=(1,), dtype='int64', name=name)
-    return inp, Embedding(n_in, n_out, input_length=1, W_regularizer=regularizers.l2(reg))(inp)
+    return inp, Embedding(n_in, n_out, input_length=1,
+                          W_regularizer=regularizers.l2(reg))(inp)
 
 
 # In[27]:
@@ -267,8 +272,8 @@ model.compile(optimizers.Adam(0.001), loss='mse')
 # In[31]:
 
 
-model.fit([trn.userId, trn.movieId], trn.rating, batch_size=64, nb_epoch=1, 
-         validation_data=([val.userId, val.movieId], val.rating))
+model.fit([trn.userId, trn.movieId], trn.rating, batch_size=64, nb_epoch=1,
+          validation_data=([val.userId, val.movieId], val.rating))
 
 
 # In[33]:
@@ -280,8 +285,8 @@ model.optimizer.lr = 0.01
 # In[34]:
 
 
-model.fit([trn.userId, trn.movieId], trn.rating, batch_size=64, nb_epoch=6, 
-         validation_data=([val.userId, val.movieId], val.rating))
+model.fit([trn.userId, trn.movieId], trn.rating, batch_size=64, nb_epoch=6,
+          validation_data=([val.userId, val.movieId], val.rating))
 
 
 # In[35]:
@@ -293,22 +298,22 @@ model.optimizer.lr = 0.001
 # In[36]:
 
 
-model.fit([trn.userId, trn.movieId], trn.rating, batch_size=64, nb_epoch=6, 
-         validation_data=([val.userId, val.movieId], val.rating))
+model.fit([trn.userId, trn.movieId], trn.rating, batch_size=64, nb_epoch=6,
+          validation_data=([val.userId, val.movieId], val.rating))
 
 
 # In[37]:
 
 
-model.fit([trn.userId, trn.movieId], trn.rating, batch_size=64, nb_epoch=10, 
-         validation_data=([val.userId, val.movieId], val.rating))
+model.fit([trn.userId, trn.movieId], trn.rating, batch_size=64, nb_epoch=10,
+          validation_data=([val.userId, val.movieId], val.rating))
 
 
 # In[38]:
 
 
-model.fit([trn.userId, trn.movieId], trn.rating, batch_size=64, nb_epoch=10, 
-         validation_data=([val.userId, val.movieId], val.rating))
+model.fit([trn.userId, trn.movieId], trn.rating, batch_size=64, nb_epoch=10,
+          validation_data=([val.userId, val.movieId], val.rating))
 
 
 # In[42]:
@@ -320,8 +325,8 @@ model.optimizer.lr = 0.001
 # In[43]:
 
 
-model.fit([trn.userId, trn.movieId], trn.rating, batch_size=64, nb_epoch=5, 
-         validation_data=([val.userId, val.movieId], val.rating))
+model.fit([trn.userId, trn.movieId], trn.rating, batch_size=64, nb_epoch=5,
+          validation_data=([val.userId, val.movieId], val.rating))
 
 
 # ## 分析结果
@@ -339,7 +344,8 @@ topMovies = np.array(topMovies.index)
 
 get_movie_bias = Model(movie_in, mb)
 movie_bias = get_movie_bias.predict(topMovies)
-movie_ratings = [(b[0], movie_names[movies[i]]) for i,b in zip(topMovies,movie_bias)]
+movie_ratings = [(b[0], movie_names[movies[i]])
+                 for i, b in zip(topMovies, movie_bias)]
 
 
 # In[51]:
@@ -400,8 +406,8 @@ nn.compile(optimizers.Adam(0.001), loss='mse')
 # In[80]:
 
 
-nn.fit([trn.userId, trn.movieId], trn.rating, batch_size=64, nb_epoch=8, 
-          validation_data=([val.userId, val.movieId], val.rating))
+nn.fit([trn.userId, trn.movieId], trn.rating, batch_size=64, nb_epoch=8,
+       validation_data=([val.userId, val.movieId], val.rating))
 
 
 # In[85]:
@@ -414,5 +420,4 @@ pred
 # In[87]:
 
 
-nn.save_weights(model_path+'nn.h5')
-
+nn.save_weights(model_path + 'nn.h5')

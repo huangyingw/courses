@@ -20,10 +20,23 @@ from collections import OrderedDict
 class _FirstConv(nn.Sequential):
     def __init__(self, num_input_features):
         super(_FirstConv, self).__init__()
-        self.add_module('conv0', nn.Conv2d(3, num_input_features, kernel_size=7, stride=2, padding=3, bias=False))
+        self.add_module(
+            'conv0',
+            nn.Conv2d(
+                3,
+                num_input_features,
+                kernel_size=7,
+                stride=2,
+                padding=3,
+                bias=False))
         self.add_module('norm0', nn.BatchNorm2d(num_input_features))
         self.add_module('relu0', nn.ReLU(inplace=True))
-        self.add_module('pool0', nn.MaxPool2d(kernel_size=3, stride=2, padding=1))
+        self.add_module(
+            'pool0',
+            nn.MaxPool2d(
+                kernel_size=3,
+                stride=2,
+                padding=1))
 
 
 # In[30]:
@@ -44,7 +57,7 @@ class _DenseLayer(nn.Sequential):
         self.add_module('norm.1', nn.BatchNorm2d(num_input_features)),
         self.add_module('relu.1', nn.ReLU(inplace=True)),
         self.add_module('conv.1', nn.Conv2d(num_input_features, bn_size *
-                        growth_rate, kernel_size=1, stride=1, bias=False)),
+                                            growth_rate, kernel_size=1, stride=1, bias=False)),
         self.add_module('norm.2', nn.BatchNorm2d(bn_size * growth_rate)),
         self.add_module('relu.2', nn.ReLU(inplace=True)),
         self.add_module('conv.2', nn.Conv2d(bn_size * growth_rate, growth_rate,
@@ -54,7 +67,10 @@ class _DenseLayer(nn.Sequential):
     def forward(self, x):
         new_features = super(_DenseLayer, self).forward(x)
         if self.drop_rate > 0:
-            new_features = F.dropout(new_features, p=self.drop_rate, training=self.training)
+            new_features = F.dropout(
+                new_features,
+                p=self.drop_rate,
+                training=self.training)
         return torch.cat([x, new_features], 1)
 
 
@@ -62,7 +78,7 @@ class _DenseLayer(nn.Sequential):
 
 
 # Test
-dense1 = _DenseLayer(5,3,1,.5)
+dense1 = _DenseLayer(5, 3, 1, .5)
 
 
 # ### Dense Block
@@ -71,10 +87,17 @@ dense1 = _DenseLayer(5,3,1,.5)
 
 
 class _DenseBlock(nn.Sequential):
-    def __init__(self, num_layers, num_input_features, bn_size, growth_rate, drop_rate):
+    def __init__(self, num_layers, num_input_features,
+                 bn_size, growth_rate, drop_rate):
         super(_DenseBlock, self).__init__()
         for i in range(num_layers):
-            layer = _DenseLayer(num_input_features + i * growth_rate, growth_rate, bn_size, drop_rate)
+            layer = _DenseLayer(
+                num_input_features +
+                i *
+                growth_rate,
+                growth_rate,
+                bn_size,
+                drop_rate)
             self.add_module('denselayer%d' % (i + 1), layer)
 
 
@@ -82,7 +105,7 @@ class _DenseBlock(nn.Sequential):
 
 
 # Test
-denseBlock1 = _DenseBlock(4,4,1,4,.5)
+denseBlock1 = _DenseBlock(4, 4, 1, 4, .5)
 
 
 # ### Transition Up
@@ -104,7 +127,7 @@ class _TransitionUp(nn.Sequential):
 
 
 # Test
-transUp = _TransitionUp(5,10)
+transUp = _TransitionUp(5, 10)
 
 
 # ### Transition Down
@@ -126,7 +149,7 @@ class _TransitionDown(nn.Sequential):
 
 
 # Test
-transDown = _TransitionDown(5,10)
+transDown = _TransitionDown(5, 10)
 
 
 # ### Final Model
@@ -147,11 +170,12 @@ class FCDenseNet(nn.Module):
         drop_rate (float) - dropout rate after each dense layer
         num_classes (int) - number of classification classes
     """
+
     def __init__(self, growth_rate=32, block_config=(6, 12, 24, 16),
                  num_init_features=64, bn_size=4, drop_rate=0, num_classes=1000):
 
         super(FCDenseNet, self).__init__()
-        
+
         self.features = nn.Sequential()
         self.features.add_module('firstConv', _FirstConv(num_init_features))
 
@@ -163,7 +187,9 @@ class FCDenseNet(nn.Module):
             self.features.add_module('denseblock%d' % (i + 1), block)
             num_features = num_features + num_layers * growth_rate
             if i != len(block_config) - 1:
-                trans = _Transition(num_input_features=num_features, num_output_features=num_features // 2)
+                trans = _Transition(
+                    num_input_features=num_features,
+                    num_output_features=num_features // 2)
                 self.features.add_module('transition%d' % (i + 1), trans)
                 num_features = num_features // 2
 
@@ -186,4 +212,3 @@ class FCDenseNet(nn.Module):
 
 # Test
 model = FCDenseNet()
-

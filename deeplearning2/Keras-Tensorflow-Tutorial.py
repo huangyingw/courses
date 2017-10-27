@@ -24,9 +24,11 @@ img = tf.placeholder(tf.float32, shape=(None, 784))
 from keras.layers import Dense
 
 # Keras layers can be called on TensorFlow tensors:
-x = Dense(128, activation='relu')(img)  # fully-connected layer with 128 units and ReLU activation
+# fully-connected layer with 128 units and ReLU activation
+x = Dense(128, activation='relu')(img)
 x = Dense(128, activation='relu')(x)
-preds = Dense(10, activation='softmax')(x)  # output layer with 10 units and a softmax activation
+# output layer with 10 units and a softmax activation
+preds = Dense(10, activation='softmax')(x)
 
 
 # In[4]:
@@ -56,4 +58,3 @@ with sess.as_default():
 
 
 mnist_data = input_data.read_data_sets('MNIST_data', one_hot=True)
-

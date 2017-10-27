@@ -4,7 +4,7 @@
 # In[1]:
 
 
-from bcolz_array_iterator2 import BcolzArrayIterator2 
+from bcolz_array_iterator2 import BcolzArrayIterator2
 
 
 # In[2]:
@@ -22,13 +22,15 @@ import numpy as np
 # In[4]:
 
 
-x = np.arange(14); x
+x = np.arange(14)
+x
 
 
 # In[5]:
 
 
-y = np.arange(14); y
+y = np.arange(14)
+y
 
 
 # In[16]:
@@ -53,22 +55,22 @@ b.N
 # In[19]:
 
 
-nit = len(x)//b.batch_size+1; nit
+nit = len(x) // b.batch_size + 1
+nit
 
 
 # In[20]:
 
 
 for j in range(10000):
-    bx,by = list(zip(*[next(b) for i in range(nit)]))
+    bx, by = list(zip(*[next(b) for i in range(nit)]))
     nx = np.concatenate(bx)
     ny = np.concatenate(by)
-    assert(np.allclose(nx,ny))
-    assert(len(np.unique(nx))==len(nx))
+    assert(np.allclose(nx, ny))
+    assert(len(np.unique(nx)) == len(nx))
 
 
 # In[21]:
 
 
 [next(b) for i in range(20)]
-

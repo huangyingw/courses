@@ -43,12 +43,18 @@ data_path = "/data/datasets/taxi/"
 
 # ## Replication of 'csv_to_hdf5.py'
 
-# Original repo used some bizarre tuple method of reading in data to save in a hdf5 file using fuel. The following does the same approach in that module, only using pandas and saving in a bcolz format (w/ training data as example)
+# Original repo used some bizarre tuple method of reading in data to save
+# in a hdf5 file using fuel. The following does the same approach in that
+# module, only using pandas and saving in a bcolz format (w/ training data
+# as example)
 
 # In[3]:
 
 
-meta = pd.read_csv(data_path+'metaData_taxistandsID_name_GPSlocation.csv', header=0)
+meta = pd.read_csv(
+    data_path +
+    'metaData_taxistandsID_name_GPSlocation.csv',
+    header=0)
 
 
 # In[66]:
@@ -60,7 +66,7 @@ meta.head()
 # In[85]:
 
 
-train = pd.read_csv(data_path+'train/train.csv', header=0)
+train = pd.read_csv(data_path + 'train/train.csv', header=0)
 
 
 # In[5]:
@@ -78,7 +84,8 @@ train['ORIGIN_CALL'] = pd.Series(pd.factorize(train['ORIGIN_CALL'])[0]) + 1
 # In[7]:
 
 
-train['ORIGIN_STAND']=pd.Series([0 if pd.isnull(x) or x=='' else int(x) for x in train["ORIGIN_STAND"]])
+train['ORIGIN_STAND'] = pd.Series(
+    [0 if pd.isnull(x) or x == '' else int(x) for x in train["ORIGIN_STAND"]])
 
 
 # In[8]:
@@ -90,10 +97,13 @@ train['TAXI_ID'] = pd.Series(pd.factorize(train['TAXI_ID'])[0]) + 1
 # In[9]:
 
 
-train['DAY_TYPE'] = pd.Series([ord(x[0]) - ord('A') for x in train['DAY_TYPE']])
+train['DAY_TYPE'] = pd.Series([ord(x[0]) - ord('A')
+                               for x in train['DAY_TYPE']])
 
 
-# The array of long/lat coordinates per trip (row) is read in as a string. The function `ast.literal_eval(x)` evaluates the string into the expression it represents (safely). This happens below
+# The array of long/lat coordinates per trip (row) is read in as a string.
+# The function `ast.literal_eval(x)` evaluates the string into the
+# expression it represents (safely). This happens below
 
 # In[138]:
 
@@ -106,36 +116,41 @@ polyline = pd.Series([ast.literal_eval(x) for x in train['POLYLINE']])
 # In[148]:
 
 
-train['LATITUDE'] = pd.Series([np.array([point[1] for point in poly],dtype=np.float32) for poly in polyline])
+train['LATITUDE'] = pd.Series(
+    [np.array([point[1] for point in poly], dtype=np.float32) for poly in polyline])
 
 
 # In[150]:
 
 
-train['LONGITUDE'] = pd.Series([np.array([point[0] for point in poly],dtype=np.float32) for poly in polyline])
+train['LONGITUDE'] = pd.Series(
+    [np.array([point[0] for point in poly], dtype=np.float32) for poly in polyline])
 
 
 # In[157]:
 
 
-utils.save_array(data_path+'train/train.bc', train.as_matrix())
+utils.save_array(data_path + 'train/train.bc', train.as_matrix())
 
 
 # In[158]:
 
 
-utils.save_array(data_path+'train/meta_train.bc', meta.as_matrix())
+utils.save_array(data_path + 'train/meta_train.bc', meta.as_matrix())
 
 
 # ## Further Feature Engineering
 
-# After converting 'csv_to_hdf5.py' functionality to pandas, I saved that array and then simply constructed the rest of the features as specified in the paper using pandas. I didn't bother seeing how the author did it as it was extremely obtuse and involved the fuel module.
+# After converting 'csv_to_hdf5.py' functionality to pandas, I saved that
+# array and then simply constructed the rest of the features as specified
+# in the paper using pandas. I didn't bother seeing how the author did it
+# as it was extremely obtuse and involved the fuel module.
 
 # In[424]:
 
 
-train = pd.DataFrame(utils.load_array(data_path+'train/train.bc'), columns=['TRIP_ID', 'CALL_TYPE', 'ORIGIN_CALL', 'ORIGIN_STAND', 'TAXI_ID',
-       'TIMESTAMP', 'DAY_TYPE', 'MISSING_DATA', 'POLYLINE', 'LATITUDE', 'LONGITUDE'])
+train = pd.DataFrame(utils.load_array(data_path + 'train/train.bc'), columns=['TRIP_ID', 'CALL_TYPE', 'ORIGIN_CALL', 'ORIGIN_STAND', 'TAXI_ID',
+                                                                              'TIMESTAMP', 'DAY_TYPE', 'MISSING_DATA', 'POLYLINE', 'LATITUDE', 'LONGITUDE'])
 
 
 # In[425]:
@@ -144,7 +159,8 @@ train = pd.DataFrame(utils.load_array(data_path+'train/train.bc'), columns=['TRI
 train.head()
 
 
-# The paper discusses how many categorical variables there are per category. The following all check out
+# The paper discusses how many categorical variables there are per
+# category. The following all check out
 
 # In[426]:
 
@@ -169,7 +185,8 @@ train['TAXI_ID'].max()
 # In[429]:
 
 
-train['DAY_OF_WEEK'] = pd.Series([datetime.datetime.fromtimestamp(t).weekday() for t in train['TIMESTAMP']])
+train['DAY_OF_WEEK'] = pd.Series(
+    [datetime.datetime.fromtimestamp(t).weekday() for t in train['TIMESTAMP']])
 
 
 # Quarter hour of the day, i.e. 1 of the `4*24 = 96` quarter hours of the day
@@ -177,7 +194,7 @@ train['DAY_OF_WEEK'] = pd.Series([datetime.datetime.fromtimestamp(t).weekday() f
 # In[430]:
 
 
-train['QUARTER_HOUR'] = pd.Series([int((datetime.datetime.fromtimestamp(t).hour*60 + datetime.datetime.fromtimestamp(t).minute)/15)
+train['QUARTER_HOUR'] = pd.Series([int((datetime.datetime.fromtimestamp(t).hour * 60 + datetime.datetime.fromtimestamp(t).minute) / 15)
                                    for t in train['TIMESTAMP']])
 
 
@@ -186,21 +203,25 @@ train['QUARTER_HOUR'] = pd.Series([int((datetime.datetime.fromtimestamp(t).hour*
 # In[431]:
 
 
-train['WEEK_OF_YEAR'] = pd.Series([datetime.datetime.fromtimestamp(t).isocalendar()[1] for t in train['TIMESTAMP']])
+train['WEEK_OF_YEAR'] = pd.Series([datetime.datetime.fromtimestamp(
+    t).isocalendar()[1] for t in train['TIMESTAMP']])
 
 
-# Target coords are the last in the sequence (final position). If there are no positions, or only 1, then mark as invalid w/ nan in order to drop later
+# Target coords are the last in the sequence (final position). If there
+# are no positions, or only 1, then mark as invalid w/ nan in order to
+# drop later
 
 # In[433]:
 
 
-train['TARGET'] = pd.Series([[l[1][0][-1], l[1][1][-1]] if len(l[1][0]) > 1 else numpy.nan for l in train[['LONGITUDE','LATITUDE']].iterrows()])
+train['TARGET'] = pd.Series([[l[1][0][-1], l[1][1][-1]] if len(l[1][0]) >
+                             1 else numpy.nan for l in train[['LONGITUDE', 'LATITUDE']].iterrows()])
 
 
-# This function creates the continuous inputs, which are the concatened k first and k last coords in a sequence, as discussed in the paper. 
-# 
+# This function creates the continuous inputs, which are the concatened k first and k last coords in a sequence, as discussed in the paper.
+#
 # If there aren't at least 2* k coords excluding the target, then the k first and k last overlap. In this case the sequence (excluding target) is padded at the end with the last coord in the sequence. The paper mentioned they padded front and back but didn't specify in what manner.
-# 
+#
 # Also marks any invalid w/ na's
 
 # In[437]:
@@ -208,16 +229,20 @@ train['TARGET'] = pd.Series([[l[1][0][-1], l[1][1][-1]] if len(l[1][0]) > 1 else
 
 def start_stop_inputs(k):
     result = []
-    for l in train[['LONGITUDE','LATITUDE']].iterrows():
+    for l in train[['LONGITUDE', 'LATITUDE']].iterrows():
         if len(l[1][0]) < 2 or len(l[1][1]) < 2:
             result.append(numpy.nan)
-        elif len(l[1][0][:-1]) >= 2*k:
-            result.append(numpy.concatenate([l[1][0][0:k],l[1][0][-(k+1):-1],l[1][1][0:k],l[1][1][-(k+1):-1]]).flatten())
+        elif len(l[1][0][:-1]) >= 2 * k:
+            result.append(numpy.concatenate(
+                [l[1][0][0:k], l[1][0][-(k + 1):-1], l[1][1][0:k], l[1][1][-(k + 1):-1]]).flatten())
         else:
-            l1 = numpy.lib.pad(l[1][0][:-1], (0,20-len(l[1][0][:-1])), mode='edge')
-            l2 = numpy.lib.pad(l[1][1][:-1], (0,20-len(l[1][1][:-1])), mode='edge')
-            result.append(numpy.concatenate([l1[0:k],l1[-k:],l2[0:k],l2[-k:]]).flatten())
-    return pd.Series(result)        
+            l1 = numpy.lib.pad(
+                l[1][0][:-1], (0, 20 - len(l[1][0][:-1])), mode='edge')
+            l2 = numpy.lib.pad(
+                l[1][1][:-1], (0, 20 - len(l[1][1][:-1])), mode='edge')
+            result.append(numpy.concatenate(
+                [l1[0:k], l1[-k:], l2[0:k], l2[-k:]]).flatten())
+    return pd.Series(result)
 
 
 # In[438]:
@@ -249,7 +274,7 @@ train = train.dropna()
 # In[446]:
 
 
-utils.save_array(data_path+'train/train_features.bc', train.as_matrix())
+utils.save_array(data_path + 'train/train_features.bc', train.as_matrix())
 
 
 # ## End to end feature transformation
@@ -257,13 +282,13 @@ utils.save_array(data_path+'train/train_features.bc', train.as_matrix())
 # In[155]:
 
 
-train = pd.read_csv(data_path+'train/train.csv', header=0)
+train = pd.read_csv(data_path + 'train/train.csv', header=0)
 
 
 # In[ ]:
 
 
-test = pd.read_csv(data_path+'test/test.csv', header=0)
+test = pd.read_csv(data_path + 'test/test.csv', header=0)
 
 
 # In[139]:
@@ -271,26 +296,34 @@ test = pd.read_csv(data_path+'test/test.csv', header=0)
 
 def start_stop_inputs(k, data, test):
     result = []
-    for l in data[['LONGITUDE','LATITUDE']].iterrows():
+    for l in data[['LONGITUDE', 'LATITUDE']].iterrows():
         if not test:
             if len(l[1][0]) < 2 or len(l[1][1]) < 2:
                 result.append(np.nan)
-            elif len(l[1][0][:-1]) >= 2*k:
-                result.append(np.concatenate([l[1][0][0:k],l[1][0][-(k+1):-1],l[1][1][0:k],l[1][1][-(k+1):-1]]).flatten())
+            elif len(l[1][0][:-1]) >= 2 * k:
+                result.append(np.concatenate(
+                    [l[1][0][0:k], l[1][0][-(k + 1):-1], l[1][1][0:k], l[1][1][-(k + 1):-1]]).flatten())
             else:
-                l1 = np.lib.pad(l[1][0][:-1], (0,4*k-len(l[1][0][:-1])), mode='edge')
-                l2 = np.lib.pad(l[1][1][:-1], (0,4*k-len(l[1][1][:-1])), mode='edge')
-                result.append(np.concatenate([l1[0:k],l1[-k:],l2[0:k],l2[-k:]]).flatten())
+                l1 = np.lib.pad(
+                    l[1][0][:-1], (0, 4 * k - len(l[1][0][:-1])), mode='edge')
+                l2 = np.lib.pad(
+                    l[1][1][:-1], (0, 4 * k - len(l[1][1][:-1])), mode='edge')
+                result.append(np.concatenate(
+                    [l1[0:k], l1[-k:], l2[0:k], l2[-k:]]).flatten())
         else:
             if len(l[1][0]) < 1 or len(l[1][1]) < 1:
                 result.append(np.nan)
-            elif len(l[1][0]) >= 2*k:
-                result.append(np.concatenate([l[1][0][0:k],l[1][0][-k:],l[1][1][0:k],l[1][1][-k:]]).flatten())
+            elif len(l[1][0]) >= 2 * k:
+                result.append(np.concatenate(
+                    [l[1][0][0:k], l[1][0][-k:], l[1][1][0:k], l[1][1][-k:]]).flatten())
             else:
-                l1 = np.lib.pad(l[1][0], (0,4*k-len(l[1][0])), mode='edge')
-                l2 = np.lib.pad(l[1][1], (0,4*k-len(l[1][1])), mode='edge')
-                result.append(np.concatenate([l1[0:k],l1[-k:],l2[0:k],l2[-k:]]).flatten())
-    return pd.Series(result)     
+                l1 = np.lib.pad(
+                    l[1][0], (0, 4 * k - len(l[1][0])), mode='edge')
+                l2 = np.lib.pad(
+                    l[1][1], (0, 4 * k - len(l[1][1])), mode='edge')
+                result.append(np.concatenate(
+                    [l1[0:k], l1[-k:], l2[0:k], l2[-k:]]).flatten())
+    return pd.Series(result)
 
 
 # Pre-calculated below on train set
@@ -307,41 +340,48 @@ long_std = 0.057200309
 # In[ ]:
 
 
-def feature_ext(data, test=False):   
-    
+def feature_ext(data, test=False):
+
     data['ORIGIN_CALL'] = pd.Series(pd.factorize(data['ORIGIN_CALL'])[0]) + 1
 
-    data['ORIGIN_STAND']=pd.Series([0 if pd.isnull(x) or x=='' else int(x) for x in data["ORIGIN_STAND"]])
+    data['ORIGIN_STAND'] = pd.Series(
+        [0 if pd.isnull(x) or x == '' else int(x) for x in data["ORIGIN_STAND"]])
 
     data['TAXI_ID'] = pd.Series(pd.factorize(data['TAXI_ID'])[0]) + 1
 
-    data['DAY_TYPE'] = pd.Series([ord(x[0]) - ord('A') for x in data['DAY_TYPE']])
+    data['DAY_TYPE'] = pd.Series([ord(x[0]) - ord('A')
+                                  for x in data['DAY_TYPE']])
 
     polyline = pd.Series([ast.literal_eval(x) for x in data['POLYLINE']])
 
-    data['LATITUDE'] = pd.Series([np.array([point[1] for point in poly],dtype=np.float32) for poly in polyline])
+    data['LATITUDE'] = pd.Series(
+        [np.array([point[1] for point in poly], dtype=np.float32) for poly in polyline])
 
-    data['LONGITUDE'] = pd.Series([np.array([point[0] for point in poly],dtype=np.float32) for poly in polyline])
-    
+    data['LONGITUDE'] = pd.Series(
+        [np.array([point[0] for point in poly], dtype=np.float32) for poly in polyline])
+
     if not test:
-    
-        data['TARGET'] = pd.Series([[l[1][0][-1], l[1][1][-1]] if len(l[1][0]) > 1 else np.nan for l in data[['LONGITUDE','LATITUDE']].iterrows()])
 
-    
-    data['LATITUDE'] = pd.Series([(t-lat_mean)/lat_std for t in data['LATITUDE']])
-    
-    data['LONGITUDE'] = pd.Series([(t-long_mean)/long_std for t in data['LONGITUDE']])
-    
+        data['TARGET'] = pd.Series([[l[1][0][-1], l[1][1][-1]] if len(
+            l[1][0]) > 1 else np.nan for l in data[['LONGITUDE', 'LATITUDE']].iterrows()])
+
+    data['LATITUDE'] = pd.Series(
+        [(t - lat_mean) / lat_std for t in data['LATITUDE']])
+
+    data['LONGITUDE'] = pd.Series(
+        [(t - long_mean) / long_std for t in data['LONGITUDE']])
+
     data['COORD_FEATURES'] = start_stop_inputs(5, data, test)
 
-    data['DAY_OF_WEEK'] = pd.Series([datetime.datetime.fromtimestamp(t).weekday() for t in data['TIMESTAMP']])
+    data['DAY_OF_WEEK'] = pd.Series(
+        [datetime.datetime.fromtimestamp(t).weekday() for t in data['TIMESTAMP']])
 
-    data['QUARTER_HOUR'] = pd.Series([int((datetime.datetime.fromtimestamp(t).hour*60 + datetime.datetime.fromtimestamp(t).minute)/15)
-                                       for t in data['TIMESTAMP']])
+    data['QUARTER_HOUR'] = pd.Series([int((datetime.datetime.fromtimestamp(t).hour * 60 + datetime.datetime.fromtimestamp(t).minute) / 15)
+                                      for t in data['TIMESTAMP']])
 
-    data['WEEK_OF_YEAR'] = pd.Series([datetime.datetime.fromtimestamp(t).isocalendar()[1] for t in data['TIMESTAMP']])
-    
-        
+    data['WEEK_OF_YEAR'] = pd.Series([datetime.datetime.fromtimestamp(
+        t).isocalendar()[1] for t in data['TIMESTAMP']])
+
     data = data.dropna()
 
     return data
@@ -368,13 +408,13 @@ test.head()
 # In[162]:
 
 
-utils.save_array(data_path+'train/train_features.bc', train.as_matrix())
+utils.save_array(data_path + 'train/train_features.bc', train.as_matrix())
 
 
 # In[163]:
 
 
-utils.save_array(data_path+'test/test_features.bc', test.as_matrix())
+utils.save_array(data_path + 'test/test_features.bc', test.as_matrix())
 
 
 # In[164]:
@@ -390,9 +430,9 @@ train.head()
 # In[ ]:
 
 
-train = pd.DataFrame(utils.load_array(data_path+'train/train_features.bc'),columns=['TRIP_ID', 'CALL_TYPE', 'ORIGIN_CALL', 'ORIGIN_STAND', 'TAXI_ID',
-       'TIMESTAMP', 'DAY_TYPE', 'MISSING_DATA', 'POLYLINE', 'LATITUDE', 'LONGITUDE', 'DAY_OF_WEEK',
-                            'QUARTER_HOUR', "WEEK_OF_YEAR", "TARGET", "COORD_FEATURES"])
+train = pd.DataFrame(utils.load_array(data_path + 'train/train_features.bc'), columns=['TRIP_ID', 'CALL_TYPE', 'ORIGIN_CALL', 'ORIGIN_STAND', 'TAXI_ID',
+                                                                                       'TIMESTAMP', 'DAY_TYPE', 'MISSING_DATA', 'POLYLINE', 'LATITUDE', 'LONGITUDE', 'DAY_OF_WEEK',
+                                                                                       'QUARTER_HOUR', "WEEK_OF_YEAR", "TARGET", "COORD_FEATURES"])
 
 
 # Clustering performed on the targets
@@ -410,7 +450,7 @@ from sklearn.cluster import MeanShift, estimate_bandwidth
 
 
 # Can use the commented out code for a estimate of bandwidth, which causes clustering to converge much quicker.
-# 
+#
 # This is not mentioned in the paper but is included in the code. In order to get results similar to the paper's,
 # they manually chose the uncommented bandwidth
 
@@ -447,7 +487,7 @@ cluster_centers.shape
 # In[548]:
 
 
-utils.save_array(data_path+"cluster_centers_bw_001.bc", cluster_centers)
+utils.save_array(data_path + "cluster_centers_bw_001.bc", cluster_centers)
 
 
 # ## Formatting Features for Bcolz iterator / garbage
@@ -455,15 +495,15 @@ utils.save_array(data_path+"cluster_centers_bw_001.bc", cluster_centers)
 # In[ ]:
 
 
-train = pd.DataFrame(utils.load_array(data_path+'train/train_features.bc'),columns=['TRIP_ID', 'CALL_TYPE', 'ORIGIN_CALL', 'ORIGIN_STAND', 'TAXI_ID',
-       'TIMESTAMP', 'DAY_TYPE', 'MISSING_DATA', 'POLYLINE', 'LATITUDE', 'LONGITUDE', 'TARGET',
-                            'COORD_FEATURES', "DAY_OF_WEEK", "QUARTER_HOUR", "WEEK_OF_YEAR"])
+train = pd.DataFrame(utils.load_array(data_path + 'train/train_features.bc'), columns=['TRIP_ID', 'CALL_TYPE', 'ORIGIN_CALL', 'ORIGIN_STAND', 'TAXI_ID',
+                                                                                       'TIMESTAMP', 'DAY_TYPE', 'MISSING_DATA', 'POLYLINE', 'LATITUDE', 'LONGITUDE', 'TARGET',
+                                                                                       'COORD_FEATURES', "DAY_OF_WEEK", "QUARTER_HOUR", "WEEK_OF_YEAR"])
 
 
 # In[ ]:
 
 
-cluster_centers = utils.load_array(data_path+"cluster_centers_bw_001.bc")
+cluster_centers = utils.load_array(data_path + "cluster_centers_bw_001.bc")
 
 
 # In[50]:
@@ -483,11 +523,16 @@ X_train, X_val = train_test_split(train, test_size=0.2, random_state=42)
 
 
 def get_features(data):
-    return [np.vstack(data['COORD_FEATURES'].as_matrix()), np.vstack(data['ORIGIN_CALL'].as_matrix()), 
-           np.vstack(data['TAXI_ID'].as_matrix()), np.vstack(data['ORIGIN_STAND'].as_matrix()),
-           np.vstack(data['QUARTER_HOUR'].as_matrix()), np.vstack(data['DAY_OF_WEEK'].as_matrix()), 
-           np.vstack(data['WEEK_OF_YEAR'].as_matrix()), np.array([long for i in range(0,data.shape[0])]),
-               np.array([lat for i in range(0,data.shape[0])])]
+    return [np.vstack(data['COORD_FEATURES'].as_matrix()), np.vstack(data['ORIGIN_CALL'].as_matrix()),
+            np.vstack(
+        data['TAXI_ID'].as_matrix()), np.vstack(
+        data['ORIGIN_STAND'].as_matrix()),
+        np.vstack(
+        data['QUARTER_HOUR'].as_matrix()), np.vstack(
+        data['DAY_OF_WEEK'].as_matrix()),
+        np.vstack(data['WEEK_OF_YEAR'].as_matrix()), np.array(
+                [long for i in range(0, data.shape[0])]),
+        np.array([lat for i in range(0, data.shape[0])])]
 
 
 # In[7]:
@@ -512,7 +557,10 @@ X_train_target = get_target(X_train)
 # In[13]:
 
 
-utils.save_array(data_path+'train/X_train_features.bc', get_features(X_train))
+utils.save_array(
+    data_path +
+    'train/X_train_features.bc',
+    get_features(X_train))
 
 
 # ## MODEL
@@ -522,21 +570,21 @@ utils.save_array(data_path+'train/X_train_features.bc', get_features(X_train))
 # In[16]:
 
 
-train = pd.DataFrame(utils.load_array(data_path+'train/train_features.bc'),columns=['TRIP_ID', 'CALL_TYPE', 'ORIGIN_CALL', 'ORIGIN_STAND', 'TAXI_ID',
-       'TIMESTAMP', 'DAY_TYPE', 'MISSING_DATA', 'POLYLINE', 'LATITUDE', 'LONGITUDE', 'TARGET',
-                            'COORD_FEATURES', "DAY_OF_WEEK", "QUARTER_HOUR", "WEEK_OF_YEAR"])
+train = pd.DataFrame(utils.load_array(data_path + 'train/train_features.bc'), columns=['TRIP_ID', 'CALL_TYPE', 'ORIGIN_CALL', 'ORIGIN_STAND', 'TAXI_ID',
+                                                                                       'TIMESTAMP', 'DAY_TYPE', 'MISSING_DATA', 'POLYLINE', 'LATITUDE', 'LONGITUDE', 'TARGET',
+                                                                                       'COORD_FEATURES', "DAY_OF_WEEK", "QUARTER_HOUR", "WEEK_OF_YEAR"])
 
 
-# Validation cuts 
+# Validation cuts
 
 # In[17]:
 
 
 cuts = [
-    1376503200, # 2013-08-14 18:00
-    1380616200, # 2013-10-01 08:30
-    1381167900, # 2013-10-07 17:45
-    1383364800, # 2013-11-02 04:00
+    1376503200,  # 2013-08-14 18:00
+    1380616200,  # 2013-10-01 08:30
+    1381167900,  # 2013-10-07 17:45
+    1383364800,  # 2013-11-02 04:00
     1387722600  # 2013-12-22 14:30
 ]
 
@@ -596,7 +644,8 @@ X_train = train.drop(train.index[[val_indices]])
 # In[5]:
 
 
-cluster_centers = utils.load_array(data_path+"/data/cluster_centers_bw_001.bc")
+cluster_centers = utils.load_array(
+    data_path + "/data/cluster_centers_bw_001.bc")
 
 
 # In[6]:
@@ -609,48 +658,49 @@ lat = np.array([c[1] for c in cluster_centers])
 # In[62]:
 
 
-utils.save_array(data_path+'train/X_train.bc', X_train.as_matrix())
+utils.save_array(data_path + 'train/X_train.bc', X_train.as_matrix())
 
 
 # In[64]:
 
 
-utils.save_array(data_path+'valid/X_val.bc', X_valid.as_matrix())
+utils.save_array(data_path + 'valid/X_val.bc', X_valid.as_matrix())
 
 
 # In[24]:
 
 
-X_train = pd.DataFrame(utils.load_array(data_path+'train/X_train.bc'),columns=['TRIP_ID', 'CALL_TYPE', 'ORIGIN_CALL', 'ORIGIN_STAND', 'TAXI_ID',
-       'TIMESTAMP', 'DAY_TYPE', 'MISSING_DATA', 'POLYLINE', 'LATITUDE', 'LONGITUDE', 'TARGET',
-                            'COORD_FEATURES', "DAY_OF_WEEK", "QUARTER_HOUR", "WEEK_OF_YEAR"])
+X_train = pd.DataFrame(utils.load_array(data_path + 'train/X_train.bc'), columns=['TRIP_ID', 'CALL_TYPE', 'ORIGIN_CALL', 'ORIGIN_STAND', 'TAXI_ID',
+                                                                                  'TIMESTAMP', 'DAY_TYPE', 'MISSING_DATA', 'POLYLINE', 'LATITUDE', 'LONGITUDE', 'TARGET',
+                                                                                  'COORD_FEATURES', "DAY_OF_WEEK", "QUARTER_HOUR", "WEEK_OF_YEAR"])
 
 
 # In[25]:
 
 
-X_val = pd.DataFrame(utils.load_array(data_path+'valid/X_val.bc'),columns=['TRIP_ID', 'CALL_TYPE', 'ORIGIN_CALL', 'ORIGIN_STAND', 'TAXI_ID',
-       'TIMESTAMP', 'DAY_TYPE', 'MISSING_DATA', 'POLYLINE', 'LATITUDE', 'LONGITUDE', 'TARGET',
-                            'COORD_FEATURES', "DAY_OF_WEEK", "QUARTER_HOUR", "WEEK_OF_YEAR"])
+X_val = pd.DataFrame(utils.load_array(data_path + 'valid/X_val.bc'), columns=['TRIP_ID', 'CALL_TYPE', 'ORIGIN_CALL', 'ORIGIN_STAND', 'TAXI_ID',
+                                                                              'TIMESTAMP', 'DAY_TYPE', 'MISSING_DATA', 'POLYLINE', 'LATITUDE', 'LONGITUDE', 'TARGET',
+                                                                              'COORD_FEATURES', "DAY_OF_WEEK", "QUARTER_HOUR", "WEEK_OF_YEAR"])
 
 
 # The equirectangular loss function mentioned in the paper.
-# 
+#
 # Note: Very important that y[0] is longitude and y[1] is latitude.
-# 
-# Omitted the radius of the earth constant "R" as it does not affect minimization and units were not given in the paper.
+#
+# Omitted the radius of the earth constant "R" as it does not affect
+# minimization and units were not given in the paper.
 
 # In[7]:
 
 
 def equirectangular_loss(y_true, y_pred):
     deg2rad = 3.141592653589793 / 180
-    long_1 = y_true[:,0]*deg2rad
-    long_2 = y_pred[:,0]*deg2rad
-    lat_1 = y_true[:,1]*deg2rad
-    lat_2 = y_pred[:,1]*deg2rad
-    return 6371*K.sqrt(K.square((long_1 - long_2)*K.cos((lat_1 + lat_2)/2.))
-                       +K.square(lat_1 - lat_2))
+    long_1 = y_true[:, 0] * deg2rad
+    long_2 = y_pred[:, 0] * deg2rad
+    lat_1 = y_true[:, 1] * deg2rad
+    lat_2 = y_pred[:, 1] * deg2rad
+    return 6371 * K.sqrt(K.square((long_1 - long_2) * K.cos((lat_1 + lat_2) / 2.))
+                         + K.square(lat_1 - lat_2))
 
 
 # In[9]:
@@ -658,44 +708,63 @@ def equirectangular_loss(y_true, y_pred):
 
 def embedding_input(name, n_in, n_out, reg):
     inp = Input(shape=(1,), dtype='int64', name=name)
-    return inp, Embedding(n_in, n_out, input_length=1, W_regularizer=l2(reg))(inp)
+    return inp, Embedding(n_in, n_out, input_length=1,
+                          W_regularizer=l2(reg))(inp)
 
 
 # The following returns a fully-connected model as mentioned in the paper. Takes as input k as defined before, and the cluster centers.
-# 
+#
 # Inputs: Embeddings for each category, concatenated w/ the 4*k continous variable representing the first/last k coords as mentioned above.
-# 
+#
 # Embeddings have no regularization, as it was not mentioned in paper, though are easily equipped to include.
-# 
+#
 # Paper mentions global normalization. Didn't specify exactly how they did that, whether thay did it sequentially or whatnot. I just included a batchnorm layer for the continuous inputs.
-# 
+#
 # After concatenation, 1 hidden layer of 500 neurons as called for in paper.
-# 
+#
 # Finally, output layer has as many outputs as there are cluster centers, w/ a softmax activation. Call this output P.
-# 
+#
 # The prediction is the weighted sum of each cluster center c_i w/ corresponding predicted prob P_i.
-# 
-# To facilitate this, dotted output w/ cluster latitudes and longitudes separately. (this happens at variable y), then concatenated 
+#
+# To facilitate this, dotted output w/ cluster latitudes and longitudes separately. (this happens at variable y), then concatenated
 #     into single tensor.
-#     
-# NOTE!!: You will see that I have the cluster center coords as inputs. Ideally, This function should store the cluster longs/lats as a constant to be used in the model, but I could not figure out. As a consequence, I pass them in as a repeated input.
+#
+# NOTE!!: You will see that I have the cluster center coords as inputs.
+# Ideally, This function should store the cluster longs/lats as a constant
+# to be used in the model, but I could not figure out. As a consequence, I
+# pass them in as a repeated input.
 
 # In[67]:
 
 
 def taxi_mlp(k, cluster_centers):
     shp = cluster_centers.shape[0]
-    nums = Input(shape=(4*k,))
+    nums = Input(shape=(4 * k,))
 
     center_longs = Input(shape=(shp,))
     center_lats = Input(shape=(shp,))
 
-    emb_names = ['client_ID', 'taxi_ID', "stand_ID", "quarter_hour", "day_of_week", "week_of_year"]
+    emb_names = [
+        'client_ID',
+        'taxi_ID',
+        "stand_ID",
+        "quarter_hour",
+        "day_of_week",
+        "week_of_year"]
     emb_ins = [57106, 448, 64, 96, 7, 52]
-    emb_outs = [10 for i in range(0,6)]
-    regs = [0 for i in range(0,6)]
+    emb_outs = [10 for i in range(0, 6)]
+    regs = [0 for i in range(0, 6)]
 
-    embs = [embedding_input(e[0], e[1]+1, e[2], e[3]) for e in zip(emb_names, emb_ins, emb_outs, regs)]
+    embs = [
+        embedding_input(
+            e[0],
+            e[1] + 1,
+            e[2],
+            e[3]) for e in zip(
+            emb_names,
+            emb_ins,
+            emb_outs,
+            regs)]
 
     x = merge([nums] + [Flatten()(e[1]) for e in embs], mode='concat')
 
@@ -703,14 +772,17 @@ def taxi_mlp(k, cluster_centers):
 
     x = Dense(shp, activation='softmax')(x)
 
-    y = merge([merge([x, center_longs], mode='dot'), merge([x, center_lats], mode='dot')], mode='concat')
+    y = merge([merge([x, center_longs], mode='dot'), merge(
+        [x, center_lats], mode='dot')], mode='concat')
 
-    return Model(input = [nums]+[e[0] for e in embs] + [center_longs, center_lats], output = y)
+    return Model(input=[nums] + [e[0] for e in embs] +
+                 [center_longs, center_lats], output=y)
 
 
 # As mentioned, construction of repeated cluster longs/lats for input
 
-# Iterator for in memory `train` pandas dataframe. I did this as opposed to bcolz iterator due to the pre-processing
+# Iterator for in memory `train` pandas dataframe. I did this as opposed
+# to bcolz iterator due to the pre-processing
 
 # In[43]:
 
@@ -721,21 +793,25 @@ def data_iter(data, batch_size, cluster_centers):
     i = 0
     N = data.shape[0]
     while True:
-        yield ([np.vstack(data['COORD_FEATURES'][i:i+batch_size].as_matrix()), np.vstack(data['ORIGIN_CALL'][i:i+batch_size].as_matrix()), 
-           np.vstack(data['TAXI_ID'][i:i+batch_size].as_matrix()), np.vstack(data['ORIGIN_STAND'][i:i+batch_size].as_matrix()),
-           np.vstack(data['QUARTER_HOUR'][i:i+batch_size].as_matrix()), np.vstack(data['DAY_OF_WEEK'][i:i+batch_size].as_matrix()), 
-           np.vstack(data['WEEK_OF_YEAR'][i:i+batch_size].as_matrix()), np.array([long for i in range(0,batch_size)]),
-               np.array([lat for i in range(0,batch_size)])], np.vstack(data["TARGET"][i:i+batch_size].as_matrix()))
+        yield ([np.vstack(data['COORD_FEATURES'][i:i + batch_size].as_matrix()), np.vstack(data['ORIGIN_CALL'][i:i + batch_size].as_matrix()),
+                np.vstack(data['TAXI_ID'][i:i + batch_size].as_matrix()
+                          ), np.vstack(data['ORIGIN_STAND'][i:i + batch_size].as_matrix()),
+                np.vstack(data['QUARTER_HOUR'][i:i + batch_size].as_matrix()
+                          ), np.vstack(data['DAY_OF_WEEK'][i:i + batch_size].as_matrix()),
+                np.vstack(data['WEEK_OF_YEAR'][i:i + batch_size].as_matrix()
+                          ), np.array([long for i in range(0, batch_size)]),
+                np.array([lat for i in range(0, batch_size)])], np.vstack(data["TARGET"][i:i + batch_size].as_matrix()))
         i += batch_size
 
 
 # In[ ]:
 
 
-x=Lambda(thing)([x,long,lat])
+x = Lambda(thing)([x, long, lat])
 
 
-# Of course, k in the model needs to match k from feature construction. We again use 5 as they did in the paper
+# Of course, k in the model needs to match k from feature construction. We
+# again use 5 as they did in the paper
 
 # In[68]:
 
@@ -748,7 +824,12 @@ model = taxi_mlp(5, cluster_centers)
 # In[69]:
 
 
-model.compile(optimizer=SGD(0.01, momentum=0.9), loss=equirectangular_loss, metrics=['mse'])
+model.compile(
+    optimizer=SGD(
+        0.01,
+        momentum=0.9),
+    loss=equirectangular_loss,
+    metrics=['mse'])
 
 
 # In[73]:
@@ -784,13 +865,16 @@ tqdm = TQDMNotebookCallback()
 # In[79]:
 
 
-checkpoint = ModelCheckpoint(filepath=data_path+'models/tmp/weights.{epoch:03d}.{val_loss:.8f}.hdf5', save_best_only=True)
+checkpoint = ModelCheckpoint(
+    filepath=data_path +
+    'models/tmp/weights.{epoch:03d}.{val_loss:.8f}.hdf5',
+    save_best_only=True)
 
 
 # In[80]:
 
 
-batch_size=256
+batch_size = 256
 
 
 # ### original
@@ -798,31 +882,68 @@ batch_size=256
 # In[84]:
 
 
-model.fit(X_train_feat, X_train_target, nb_epoch=1, batch_size=batch_size, validation_data=(X_val_feat, X_val_target), callbacks=[tqdm, checkpoint], verbose=0)
+model.fit(
+    X_train_feat,
+    X_train_target,
+    nb_epoch=1,
+    batch_size=batch_size,
+    validation_data=(
+        X_val_feat,
+        X_val_target),
+    callbacks=[
+        tqdm,
+        checkpoint],
+    verbose=0)
 
 
 # In[ ]:
 
 
-model.fit(X_train_feat, X_train_target, nb_epoch=30, batch_size=batch_size, validation_data=(X_val_feat, X_val_target), callbacks=[tqdm, checkpoint], verbose=0)
+model.fit(
+    X_train_feat,
+    X_train_target,
+    nb_epoch=30,
+    batch_size=batch_size,
+    validation_data=(
+        X_val_feat,
+        X_val_target),
+    callbacks=[
+        tqdm,
+        checkpoint],
+    verbose=0)
 
 
 # In[20]:
 
 
-model = load_model(data_path+'models/weights.0.0799.hdf5', custom_objects={'equirectangular_loss':equirectangular_loss})
+model = load_model(
+    data_path +
+    'models/weights.0.0799.hdf5',
+    custom_objects={
+        'equirectangular_loss': equirectangular_loss})
 
 
 # In[42]:
 
 
-model.fit(X_train_feat, X_train_target, nb_epoch=100, batch_size=batch_size, validation_data=(X_val_feat, X_val_target), callbacks=[tqdm, checkpoint], verbose=0)
+model.fit(
+    X_train_feat,
+    X_train_target,
+    nb_epoch=100,
+    batch_size=batch_size,
+    validation_data=(
+        X_val_feat,
+        X_val_target),
+    callbacks=[
+        tqdm,
+        checkpoint],
+    verbose=0)
 
 
 # In[43]:
 
 
-model.save(data_path+'models/current_model.hdf5')
+model.save(data_path + 'models/current_model.hdf5')
 
 
 # ### new valid
@@ -830,19 +951,41 @@ model.save(data_path+'models/current_model.hdf5')
 # In[81]:
 
 
-model.fit(X_train_feat, X_train_target, nb_epoch=1, batch_size=batch_size, validation_data=(X_val_feat, X_val_target), callbacks=[tqdm, checkpoint], verbose=0)
+model.fit(
+    X_train_feat,
+    X_train_target,
+    nb_epoch=1,
+    batch_size=batch_size,
+    validation_data=(
+        X_val_feat,
+        X_val_target),
+    callbacks=[
+        tqdm,
+        checkpoint],
+    verbose=0)
 
 
 # In[ ]:
 
 
-model.fit(X_train_feat, X_train_target, nb_epoch=400, batch_size=batch_size, validation_data=(X_val_feat, X_val_target), callbacks=[tqdm, checkpoint], verbose=0)
+model.fit(
+    X_train_feat,
+    X_train_target,
+    nb_epoch=400,
+    batch_size=batch_size,
+    validation_data=(
+        X_val_feat,
+        X_val_target),
+    callbacks=[
+        tqdm,
+        checkpoint],
+    verbose=0)
 
 
 # In[102]:
 
 
-model.save(data_path+'/models/current_model.hdf5')
+model.save(data_path + '/models/current_model.hdf5')
 
 
 # In[84]:
@@ -851,14 +994,22 @@ model.save(data_path+'/models/current_model.hdf5')
 len(X_val_feat[0])
 
 
-# It works, but it seems to converge unrealistically quick and the loss values are not the same. The paper does not mention what it's using as "error" in it's results. I assume the same equirectangular? Not very clear. The difference in values could be due to the missing Earth-radius factor
+# It works, but it seems to converge unrealistically quick and the loss
+# values are not the same. The paper does not mention what it's using as
+# "error" in it's results. I assume the same equirectangular? Not very
+# clear. The difference in values could be due to the missing Earth-radius
+# factor
 
 # ## Kaggle Entry
 
 # In[23]:
 
 
-best_model = load_model(data_path+'models/weights.308.0.03373993.hdf5', custom_objects={'equirectangular_loss':equirectangular_loss})
+best_model = load_model(
+    data_path +
+    'models/weights.308.0.03373993.hdf5',
+    custom_objects={
+        'equirectangular_loss': equirectangular_loss})
 
 
 # In[104]:
@@ -870,21 +1021,24 @@ best_model.evaluate(X_val_feat, X_val_target)
 # In[61]:
 
 
-test = pd.DataFrame(utils.load_array(data_path+'test/test_features.bc'),columns=['TRIP_ID', 'CALL_TYPE', 'ORIGIN_CALL', 'ORIGIN_STAND', 'TAXI_ID',
-       'TIMESTAMP', 'DAY_TYPE', 'MISSING_DATA', 'POLYLINE', 'LATITUDE', 'LONGITUDE',
-                            'COORD_FEATURES', "DAY_OF_WEEK", "QUARTER_HOUR", "WEEK_OF_YEAR"])
+test = pd.DataFrame(utils.load_array(data_path + 'test/test_features.bc'), columns=['TRIP_ID', 'CALL_TYPE', 'ORIGIN_CALL', 'ORIGIN_STAND', 'TAXI_ID',
+                                                                                    'TIMESTAMP', 'DAY_TYPE', 'MISSING_DATA', 'POLYLINE', 'LATITUDE', 'LONGITUDE',
+                                                                                    'COORD_FEATURES', "DAY_OF_WEEK", "QUARTER_HOUR", "WEEK_OF_YEAR"])
 
 
 # In[62]:
 
 
-test['ORIGIN_CALL'] = pd.read_csv(data_path+'real_origin_call.csv', header=None)
+test['ORIGIN_CALL'] = pd.read_csv(
+    data_path +
+    'real_origin_call.csv',
+    header=None)
 
 
 # In[63]:
 
 
-test['TAXI_ID'] = pd.read_csv(data_path+'real_taxi_id.csv',header=None)
+test['TAXI_ID'] = pd.read_csv(data_path + 'real_taxi_id.csv', header=None)
 
 
 # In[64]:
@@ -896,7 +1050,7 @@ X_test = get_features(test)
 # In[65]:
 
 
-b = np.sort(X_test[1],axis=None)
+b = np.sort(X_test[1], axis=None)
 
 
 # In[67]:
@@ -908,14 +1062,21 @@ test_preds = np.round(best_model.predict(X_test), decimals=6)
 # In[68]:
 
 
-d = {0:test['TRIP_ID'], 1:test_preds[:,1], 2:test_preds[:,0]}
+d = {0: test['TRIP_ID'], 1: test_preds[:, 1], 2: test_preds[:, 0]}
 kaggle_out = pd.DataFrame(data=d)
 
 
 # In[121]:
 
 
-kaggle_out.to_csv(data_path+'submission.csv', header=['TRIP_ID','LATITUDE', 'LONGITUDE'], index=False)
+kaggle_out.to_csv(
+    data_path +
+    'submission.csv',
+    header=[
+        'TRIP_ID',
+        'LATITUDE',
+        'LONGITUDE'],
+    index=False)
 
 
 # In[117]:
@@ -929,11 +1090,12 @@ def hdist(a, b):
     lat2 = b[:, 1] * deg2rad
     lon2 = b[:, 0] * deg2rad
 
-    dlat = abs(lat1-lat2)
-    dlon = abs(lon1-lon2)
+    dlat = abs(lat1 - lat2)
+    dlon = abs(lon1 - lon2)
 
-    al = np.sin(dlat/2)**2  + np.cos(lat1) * np.cos(lat2) * (np.sin(dlon/2)**2)
-    d = np.arctan2(np.sqrt(al), np.sqrt(1-al))
+    al = np.sin(dlat / 2)**2 + np.cos(lat1) * \
+        np.cos(lat2) * (np.sin(dlon / 2)**2)
+    d = np.arctan2(np.sqrt(al), np.sqrt(1 - al))
 
     hd = 2 * 6371 * d
 
@@ -978,10 +1140,10 @@ K.equal()
 
 
 cuts = [
-    1376503200, # 2013-08-14 18:00
-    1380616200, # 2013-10-01 08:30
-    1381167900, # 2013-10-07 17:45
-    1383364800, # 2013-11-02 04:00
+    1376503200,  # 2013-08-14 18:00
+    1380616200,  # 2013-10-01 08:30
+    1381167900,  # 2013-10-07 17:45
+    1383364800,  # 2013-11-02 04:00
     1387722600  # 2013-12-22 14:30
 ]
 
@@ -1001,7 +1163,7 @@ train['TIMESTAMP']
 # In[90]:
 
 
-np.any(train['TIMESTAMP']==1381167900)
+np.any(train['TIMESTAMP'] == 1381167900)
 
 
 # In[91]:
@@ -1023,7 +1185,6 @@ times
 
 
 # In[102]:
-
 
 
 count = 0
@@ -1056,19 +1217,19 @@ import h5py
 # In[7]:
 
 
-h = h5py.File(data_path+'original/data.hdf5', 'r')
+h = h5py.File(data_path + 'original/data.hdf5', 'r')
 
 
 # In[15]:
 
 
-evrData=h['/Configure:0000/Run:0000/CalibCycle:0000/EvrData::DataV3/NoDetector.0:Evr.0/data']
+evrData = h['/Configure:0000/Run:0000/CalibCycle:0000/EvrData::DataV3/NoDetector.0:Evr.0/data']
 
 
 # In[13]:
 
 
-c = np.load(data_path+'original/arrival-clusters.pkl')
+c = np.load(data_path + 'original/arrival-clusters.pkl')
 
 
 # ### hd5f files
@@ -1089,13 +1250,25 @@ original_path = '/data/bckenstler/data/taxi/original/'
 # In[33]:
 
 
-train_set = H5PYDataset(original_path+'data.hdf5', which_sets=('train',),load_in_memory=True)
+train_set = H5PYDataset(
+    original_path +
+    'data.hdf5',
+    which_sets=(
+        'train',
+    ),
+    load_in_memory=True)
 
 
 # In[48]:
 
 
-valid_set = H5PYDataset(original_path+'valid.hdf5', which_sets=('cuts/test_times_0',),load_in_memory=True)
+valid_set = H5PYDataset(
+    original_path +
+    'valid.hdf5',
+    which_sets=(
+        'cuts/test_times_0',
+    ),
+    load_in_memory=True)
 
 
 # In[34]:
@@ -1149,8 +1322,8 @@ stamps[0]
 # In[115]:
 
 
-for i in range(0,304):    
-    print(np.any([t==int(stamps[i]) for t in X_val['TIMESTAMP']]))
+for i in range(0, 304):
+    print(np.any([t == int(stamps[i]) for t in X_val['TIMESTAMP']]))
 
 
 # In[101]:
@@ -1207,4 +1380,3 @@ ids
 
 
 X_val
-

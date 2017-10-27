@@ -12,7 +12,8 @@ cuda.use('gpu2')
 
 
 get_ipython().magic(u'matplotlib inline')
-import utils; reload(utils)
+import utils
+reload(utils)
 from utils import *
 from __future__ import division, print_function
 
@@ -22,7 +23,7 @@ from __future__ import division, print_function
 # In[3]:
 
 
-batch_size=64
+batch_size = 64
 
 
 # In[4]:
@@ -36,8 +37,8 @@ from keras.datasets import mnist
 # In[5]:
 
 
-X_test = np.expand_dims(X_test,1)
-X_train = np.expand_dims(X_train,1)
+X_test = np.expand_dims(X_test, 1)
+X_train = np.expand_dims(X_train, 1)
 
 
 # In[6]:
@@ -75,7 +76,7 @@ std_px = X_train.std().astype(np.float32)
 # In[11]:
 
 
-def norm_input(x): return (x-mean_px)/std_px
+def norm_input(x): return (x - mean_px) / std_px
 
 
 # ## Linear model
@@ -85,11 +86,14 @@ def norm_input(x): return (x-mean_px)/std_px
 
 def get_lin_model():
     model = Sequential([
-        Lambda(norm_input, input_shape=(1,28,28)),
+        Lambda(norm_input, input_shape=(1, 28, 28)),
         Flatten(),
         Dense(10, activation='softmax')
-        ])
-    model.compile(Adam(), loss='categorical_crossentropy', metrics=['accuracy'])
+    ])
+    model.compile(
+        Adam(),
+        loss='categorical_crossentropy',
+        metrics=['accuracy'])
     return model
 
 
@@ -110,34 +114,34 @@ test_batches = gen.flow(X_test, y_test, batch_size=64)
 # In[164]:
 
 
-lm.fit_generator(batches, batches.N, nb_epoch=1, 
-                    validation_data=test_batches, nb_val_samples=test_batches.N)
+lm.fit_generator(batches, batches.N, nb_epoch=1,
+                 validation_data=test_batches, nb_val_samples=test_batches.N)
 
 
 # In[167]:
 
 
-lm.optimizer.lr=0.1
+lm.optimizer.lr = 0.1
 
 
 # In[169]:
 
 
-lm.fit_generator(batches, batches.N, nb_epoch=1, 
-                    validation_data=test_batches, nb_val_samples=test_batches.N)
+lm.fit_generator(batches, batches.N, nb_epoch=1,
+                 validation_data=test_batches, nb_val_samples=test_batches.N)
 
 
 # In[172]:
 
 
-lm.optimizer.lr=0.01
+lm.optimizer.lr = 0.01
 
 
 # In[173]:
 
 
-lm.fit_generator(batches, batches.N, nb_epoch=4, 
-                    validation_data=test_batches, nb_val_samples=test_batches.N)
+lm.fit_generator(batches, batches.N, nb_epoch=4,
+                 validation_data=test_batches, nb_val_samples=test_batches.N)
 
 
 # ## Single dense layer
@@ -147,12 +151,15 @@ lm.fit_generator(batches, batches.N, nb_epoch=4,
 
 def get_fc_model():
     model = Sequential([
-        Lambda(norm_input, input_shape=(1,28,28)),
+        Lambda(norm_input, input_shape=(1, 28, 28)),
         Flatten(),
         Dense(512, activation='softmax'),
         Dense(10, activation='softmax')
-        ])
-    model.compile(Adam(), loss='categorical_crossentropy', metrics=['accuracy'])
+    ])
+    model.compile(
+        Adam(),
+        loss='categorical_crossentropy',
+        metrics=['accuracy'])
     return model
 
 
@@ -165,34 +172,34 @@ fc = get_fc_model()
 # In[183]:
 
 
-fc.fit_generator(batches, batches.N, nb_epoch=1, 
-                    validation_data=test_batches, nb_val_samples=test_batches.N)
+fc.fit_generator(batches, batches.N, nb_epoch=1,
+                 validation_data=test_batches, nb_val_samples=test_batches.N)
 
 
 # In[184]:
 
 
-fc.optimizer.lr=0.1
+fc.optimizer.lr = 0.1
 
 
 # In[185]:
 
 
-fc.fit_generator(batches, batches.N, nb_epoch=4, 
-                    validation_data=test_batches, nb_val_samples=test_batches.N)
+fc.fit_generator(batches, batches.N, nb_epoch=4,
+                 validation_data=test_batches, nb_val_samples=test_batches.N)
 
 
 # In[187]:
 
 
-fc.optimizer.lr=0.01
+fc.optimizer.lr = 0.01
 
 
 # In[189]:
 
 
-fc.fit_generator(batches, batches.N, nb_epoch=4, 
-                    validation_data=test_batches, nb_val_samples=test_batches.N)
+fc.fit_generator(batches, batches.N, nb_epoch=4,
+                 validation_data=test_batches, nb_val_samples=test_batches.N)
 
 
 # ## Basic 'VGG-style' CNN
@@ -202,18 +209,21 @@ fc.fit_generator(batches, batches.N, nb_epoch=4,
 
 def get_model():
     model = Sequential([
-        Lambda(norm_input, input_shape=(1,28,28)),
-        Convolution2D(32,3,3, activation='relu'),
-        Convolution2D(32,3,3, activation='relu'),
+        Lambda(norm_input, input_shape=(1, 28, 28)),
+        Convolution2D(32, 3, 3, activation='relu'),
+        Convolution2D(32, 3, 3, activation='relu'),
         MaxPooling2D(),
-        Convolution2D(64,3,3, activation='relu'),
-        Convolution2D(64,3,3, activation='relu'),
+        Convolution2D(64, 3, 3, activation='relu'),
+        Convolution2D(64, 3, 3, activation='relu'),
         MaxPooling2D(),
         Flatten(),
         Dense(512, activation='relu'),
         Dense(10, activation='softmax')
-        ])
-    model.compile(Adam(), loss='categorical_crossentropy', metrics=['accuracy'])
+    ])
+    model.compile(
+        Adam(),
+        loss='categorical_crossentropy',
+        metrics=['accuracy'])
     return model
 
 
@@ -226,33 +236,33 @@ model = get_model()
 # In[36]:
 
 
-model.fit_generator(batches, batches.N, nb_epoch=1, 
+model.fit_generator(batches, batches.N, nb_epoch=1,
                     validation_data=test_batches, nb_val_samples=test_batches.N)
 
 
 # In[37]:
 
 
-model.optimizer.lr=0.1
+model.optimizer.lr = 0.1
 
 
 # In[38]:
 
 
-model.fit_generator(batches, batches.N, nb_epoch=1, 
+model.fit_generator(batches, batches.N, nb_epoch=1,
                     validation_data=test_batches, nb_val_samples=test_batches.N)
 
 
 # In[39]:
 
 
-model.optimizer.lr=0.01
+model.optimizer.lr = 0.01
 
 
 # In[40]:
 
 
-model.fit_generator(batches, batches.N, nb_epoch=8, 
+model.fit_generator(batches, batches.N, nb_epoch=8,
                     validation_data=test_batches, nb_val_samples=test_batches.N)
 
 
@@ -276,59 +286,59 @@ test_batches = gen.flow(X_test, y_test, batch_size=64)
 # In[24]:
 
 
-model.fit_generator(batches, batches.N, nb_epoch=1, 
+model.fit_generator(batches, batches.N, nb_epoch=1,
                     validation_data=test_batches, nb_val_samples=test_batches.N)
 
 
 # In[25]:
 
 
-model.optimizer.lr=0.1
+model.optimizer.lr = 0.1
 
 
 # In[26]:
 
 
-model.fit_generator(batches, batches.N, nb_epoch=4, 
+model.fit_generator(batches, batches.N, nb_epoch=4,
                     validation_data=test_batches, nb_val_samples=test_batches.N)
 
 
 # In[27]:
 
 
-model.optimizer.lr=0.01
+model.optimizer.lr = 0.01
 
 
 # In[28]:
 
 
-model.fit_generator(batches, batches.N, nb_epoch=8, 
+model.fit_generator(batches, batches.N, nb_epoch=8,
                     validation_data=test_batches, nb_val_samples=test_batches.N)
 
 
 # In[29]:
 
 
-model.optimizer.lr=0.001
+model.optimizer.lr = 0.001
 
 
 # In[30]:
 
 
-model.fit_generator(batches, batches.N, nb_epoch=14, 
+model.fit_generator(batches, batches.N, nb_epoch=14,
                     validation_data=test_batches, nb_val_samples=test_batches.N)
 
 
 # In[31]:
 
 
-model.optimizer.lr=0.0001
+model.optimizer.lr = 0.0001
 
 
 # In[32]:
 
 
-model.fit_generator(batches, batches.N, nb_epoch=10, 
+model.fit_generator(batches, batches.N, nb_epoch=10,
                     validation_data=test_batches, nb_val_samples=test_batches.N)
 
 
@@ -339,23 +349,26 @@ model.fit_generator(batches, batches.N, nb_epoch=10,
 
 def get_model_bn():
     model = Sequential([
-        Lambda(norm_input, input_shape=(1,28,28)),
-        Convolution2D(32,3,3, activation='relu'),
+        Lambda(norm_input, input_shape=(1, 28, 28)),
+        Convolution2D(32, 3, 3, activation='relu'),
         BatchNormalization(axis=1),
-        Convolution2D(32,3,3, activation='relu'),
+        Convolution2D(32, 3, 3, activation='relu'),
         MaxPooling2D(),
         BatchNormalization(axis=1),
-        Convolution2D(64,3,3, activation='relu'),
+        Convolution2D(64, 3, 3, activation='relu'),
         BatchNormalization(axis=1),
-        Convolution2D(64,3,3, activation='relu'),
+        Convolution2D(64, 3, 3, activation='relu'),
         MaxPooling2D(),
         Flatten(),
         BatchNormalization(),
         Dense(512, activation='relu'),
         BatchNormalization(),
         Dense(10, activation='softmax')
-        ])
-    model.compile(Adam(), loss='categorical_crossentropy', metrics=['accuracy'])
+    ])
+    model.compile(
+        Adam(),
+        loss='categorical_crossentropy',
+        metrics=['accuracy'])
     return model
 
 
@@ -368,46 +381,46 @@ model = get_model_bn()
 # In[127]:
 
 
-model.fit_generator(batches, batches.N, nb_epoch=1, 
+model.fit_generator(batches, batches.N, nb_epoch=1,
                     validation_data=test_batches, nb_val_samples=test_batches.N)
 
 
 # In[128]:
 
 
-model.optimizer.lr=0.1
+model.optimizer.lr = 0.1
 
 
 # In[129]:
 
 
-model.fit_generator(batches, batches.N, nb_epoch=4, 
+model.fit_generator(batches, batches.N, nb_epoch=4,
                     validation_data=test_batches, nb_val_samples=test_batches.N)
 
 
 # In[130]:
 
 
-model.optimizer.lr=0.01
+model.optimizer.lr = 0.01
 
 
 # In[131]:
 
 
-model.fit_generator(batches, batches.N, nb_epoch=12, 
+model.fit_generator(batches, batches.N, nb_epoch=12,
                     validation_data=test_batches, nb_val_samples=test_batches.N)
 
 
 # In[132]:
 
 
-model.optimizer.lr=0.001
+model.optimizer.lr = 0.001
 
 
 # In[133]:
 
 
-model.fit_generator(batches, batches.N, nb_epoch=12, 
+model.fit_generator(batches, batches.N, nb_epoch=12,
                     validation_data=test_batches, nb_val_samples=test_batches.N)
 
 
@@ -418,15 +431,15 @@ model.fit_generator(batches, batches.N, nb_epoch=12,
 
 def get_model_bn_do():
     model = Sequential([
-        Lambda(norm_input, input_shape=(1,28,28)),
-        Convolution2D(32,3,3, activation='relu'),
+        Lambda(norm_input, input_shape=(1, 28, 28)),
+        Convolution2D(32, 3, 3, activation='relu'),
         BatchNormalization(axis=1),
-        Convolution2D(32,3,3, activation='relu'),
+        Convolution2D(32, 3, 3, activation='relu'),
         MaxPooling2D(),
         BatchNormalization(axis=1),
-        Convolution2D(64,3,3, activation='relu'),
+        Convolution2D(64, 3, 3, activation='relu'),
         BatchNormalization(axis=1),
-        Convolution2D(64,3,3, activation='relu'),
+        Convolution2D(64, 3, 3, activation='relu'),
         MaxPooling2D(),
         Flatten(),
         BatchNormalization(),
@@ -434,8 +447,11 @@ def get_model_bn_do():
         BatchNormalization(),
         Dropout(0.5),
         Dense(10, activation='softmax')
-        ])
-    model.compile(Adam(), loss='categorical_crossentropy', metrics=['accuracy'])
+    ])
+    model.compile(
+        Adam(),
+        loss='categorical_crossentropy',
+        metrics=['accuracy'])
     return model
 
 
@@ -448,46 +464,46 @@ model = get_model_bn_do()
 # In[81]:
 
 
-model.fit_generator(batches, batches.N, nb_epoch=1, 
+model.fit_generator(batches, batches.N, nb_epoch=1,
                     validation_data=test_batches, nb_val_samples=test_batches.N)
 
 
 # In[82]:
 
 
-model.optimizer.lr=0.1
+model.optimizer.lr = 0.1
 
 
 # In[83]:
 
 
-model.fit_generator(batches, batches.N, nb_epoch=4, 
+model.fit_generator(batches, batches.N, nb_epoch=4,
                     validation_data=test_batches, nb_val_samples=test_batches.N)
 
 
 # In[84]:
 
 
-model.optimizer.lr=0.01
+model.optimizer.lr = 0.01
 
 
 # In[85]:
 
 
-model.fit_generator(batches, batches.N, nb_epoch=12, 
+model.fit_generator(batches, batches.N, nb_epoch=12,
                     validation_data=test_batches, nb_val_samples=test_batches.N)
 
 
 # In[86]:
 
 
-model.optimizer.lr=0.001
+model.optimizer.lr = 0.001
 
 
 # In[89]:
 
 
-model.fit_generator(batches, batches.N, nb_epoch=1, 
+model.fit_generator(batches, batches.N, nb_epoch=1,
                     validation_data=test_batches, nb_val_samples=test_batches.N)
 
 
@@ -500,13 +516,13 @@ def fit_model():
     model = get_model_bn_do()
     model.fit_generator(batches, batches.N, nb_epoch=1, verbose=0,
                         validation_data=test_batches, nb_val_samples=test_batches.N)
-    model.optimizer.lr=0.1
+    model.optimizer.lr = 0.1
     model.fit_generator(batches, batches.N, nb_epoch=4, verbose=0,
                         validation_data=test_batches, nb_val_samples=test_batches.N)
-    model.optimizer.lr=0.01
+    model.optimizer.lr = 0.01
     model.fit_generator(batches, batches.N, nb_epoch=12, verbose=0,
                         validation_data=test_batches, nb_val_samples=test_batches.N)
-    model.optimizer.lr=0.001
+    model.optimizer.lr = 0.001
     model.fit_generator(batches, batches.N, nb_epoch=18, verbose=0,
                         validation_data=test_batches, nb_val_samples=test_batches.N)
     return model
@@ -528,8 +544,8 @@ model_path = path + 'models/'
 # In[93]:
 
 
-for i,m in enumerate(models):
-    m.save_weights(model_path+'cnn-mnist23-'+str(i)+'.pkl')
+for i, m in enumerate(models):
+    m.save_weights(model_path + 'cnn-mnist23-' + str(i) + '.pkl')
 
 
 # In[94]:
@@ -566,4 +582,3 @@ avg_preds = all_preds.mean(axis=0)
 
 
 keras.metrics.categorical_accuracy(y_test, avg_preds).eval()
-

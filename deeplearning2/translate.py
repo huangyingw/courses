@@ -8,7 +8,8 @@
 
 get_ipython().magic(u'matplotlib inline')
 import importlib
-import utils2; importlib.reload(utils2)
+import utils2
+importlib.reload(utils2)
 from utils2 import *
 
 
@@ -27,7 +28,7 @@ limit_mem()
 # In[4]:
 
 
-path='/data/jhoward/datasets/fr-en-109-corpus/'
+path = '/data/jhoward/datasets/fr-en-109-corpus/'
 dpath = 'data/translate/'
 
 
@@ -36,9 +37,9 @@ dpath = 'data/translate/'
 # In[5]:
 
 
-fname=path+'giga-fren.release2.fixed'
-en_fname = fname+'.en'
-fr_fname = fname+'.fr'
+fname = path + 'giga-fren.release2.fixed'
+en_fname = fname + '.en'
+fr_fname = fname + '.fr'
 
 
 # In[6]:
@@ -51,14 +52,14 @@ re_fq = re.compile('^([^?.!]+\?)')
 # In[7]:
 
 
-lines = ((re_eq.search(eq), re_fq.search(fq)) 
+lines = ((re_eq.search(eq), re_fq.search(fq))
          for eq, fq in zip(open(en_fname), open(fr_fname)))
 
 
 # In[8]:
 
 
-qs = [(e.group(), f.group()) for e,f in lines if e and f]
+qs = [(e.group(), f.group()) for e, f in lines if e and f]
 len(qs)
 
 
@@ -71,13 +72,13 @@ qs[:6]
 # In[69]:
 
 
-dump(qs, dpath+'qs.pkl')
+dump(qs, dpath + 'qs.pkl')
 
 
 # In[9]:
 
 
-qs = load(dpath+'qs.pkl')
+qs = load(dpath + 'qs.pkl')
 
 
 # In[11]:
@@ -131,7 +132,7 @@ def toks2ids(sents):
     voc_cnt = collections.Counter(t for sent in sents for t in sent)
     vocab = sorted(voc_cnt, key=voc_cnt.get, reverse=True)
     vocab.insert(0, "<PAD>")
-    w2id = {w:i for i,w in enumerate(vocab)}
+    w2id = {w: i for i, w in enumerate(vocab)}
     ids = [[w2id[t] for t in sent] for sent in sents]
     return ids, vocab, w2id, voc_cnt
 
@@ -169,7 +170,7 @@ dim_fr_vec = 200
 # In[19]:
 
 
-fr_wik = pickle.load(open('/data/jhoward/datasets/nlp/polyglot-fr.pkl', 'rb'), 
+fr_wik = pickle.load(open('/data/jhoward/datasets/nlp/polyglot-fr.pkl', 'rb'),
                      encoding='latin1')
 
 
@@ -179,7 +180,7 @@ fr_wik = pickle.load(open('/data/jhoward/datasets/nlp/polyglot-fr.pkl', 'rb'),
 # In[20]:
 
 
-w2v_path='/data/jhoward/datasets/nlp/frWac_non_lem_no_postag_no_phrase_200_skip_cut100.bin'
+w2v_path = '/data/jhoward/datasets/nlp/frWac_non_lem_no_postag_no_phrase_200_skip_cut100.bin'
 fr_model = word2vec.KeyedVectors.load_word2vec_format(w2v_path, binary=True)
 fr_voc = fr_model.vocab
 
@@ -204,13 +205,15 @@ def create_emb(w2v, targ_vocab, dim_vec):
 # In[22]:
 
 
-en_embs = create_emb(en_w2v, en_vocab, dim_en_vec); en_embs.shape
+en_embs = create_emb(en_w2v, en_vocab, dim_en_vec)
+en_embs.shape
 
 
 # In[23]:
 
 
-fr_embs = create_emb(fr_model, fr_vocab, dim_fr_vec); fr_embs.shape
+fr_embs = create_emb(fr_model, fr_vocab, dim_fr_vec)
+fr_embs.shape
 
 
 # ## Prep data
@@ -262,7 +265,7 @@ en_padded.shape, fr_padded.shape, en_embs.shape
 # In[31]:
 
 
-n = int(len(en_ids)*0.9)
+n = int(len(en_ids) * 0.9)
 idxs = np.random.permutation(len(en_ids))
 fr_train, fr_test = fr_padded[idxs][:n], fr_padded[idxs][n:]
 en_train, en_test = en_padded[idxs][:n], en_padded[idxs][n:]
@@ -318,8 +321,8 @@ K.set_value(model.optimizer.lr, 1e-3)
 # In[255]:
 
 
-hist=model.fit(en_train, np.expand_dims(fr_train,-1), batch_size=64, nb_epoch=20, **parms, 
-               validation_data=[en_test, np.expand_dims(fr_test,-1)])
+hist = model.fit(en_train, np.expand_dims(fr_train, -1), batch_size=64, nb_epoch=20, **parms,
+                 validation_data=[en_test, np.expand_dims(fr_test, -1)])
 
 
 # In[264]:
@@ -331,13 +334,13 @@ plot_train(hist)
 # In[154]:
 
 
-model.save_weights(dpath+'trans.h5')
+model.save_weights(dpath + 'trans.h5')
 
 
 # In[157]:
 
 
-model.load_weights(dpath+'trans.h5')
+model.load_weights(dpath + 'trans.h5')
 
 
 # ## Testing
@@ -354,14 +357,13 @@ def sent2ids(sent):
 # In[208]:
 
 
-def en2fr(sent): 
+def en2fr(sent):
     ids = sent2ids(sent)
     tr_ids = np.argmax(model.predict(ids), axis=-1)
-    return ' '.join(fr_vocab[i] for i in tr_ids[0] if i>0)
+    return ' '.join(fr_vocab[i] for i in tr_ids[0] if i > 0)
 
 
 # In[212]:
 
 
 en2fr("what is the size of canada?")
-

@@ -1,6 +1,7 @@
 from __future__ import division, print_function
 
-import os, json
+import os
+import json
 from glob import glob
 import numpy as np
 from scipy import misc, ndimage
@@ -23,17 +24,15 @@ from keras.applications.resnet50 import identity_block, conv_block
 class Resnet50():
     """The Resnet 50 Imagenet model"""
 
-
-    def __init__(self, size=(224,224), include_top=True):
+    def __init__(self, size=(224, 224), include_top=True):
         self.FILE_PATH = 'http://files.fast.ai/models/'
-        self.vgg_mean = np.array([123.68, 116.779, 103.939]).reshape((3,1,1))
+        self.vgg_mean = np.array([123.68, 116.779, 103.939]).reshape((3, 1, 1))
         self.create(size, include_top)
         self.get_classes()
 
-
     def get_classes(self):
         fname = 'imagenet_class_index.json'
-        fpath = get_file(fname, self.FILE_PATH+fname, cache_subdir='models')
+        fpath = get_file(fname, self.FILE_PATH + fname, cache_subdir='models')
         with open(fpath) as f:
             class_dict = json.load(f)
         self.classes = [class_dict[str(i)][1] for i in range(len(class_dict))]
@@ -45,14 +44,12 @@ class Resnet50():
         classes = [self.classes[idx] for idx in idxs]
         return np.array(preds), idxs, classes
 
-
     def vgg_preprocess(self, x):
         x = x - self.vgg_mean
-        return x[:, ::-1] # reverse axis bgr->rgb
-
+        return x[:, ::-1]  # reverse axis bgr->rgb
 
     def create(self, size, include_top):
-        input_shape = (3,)+size
+        input_shape = (3,) + size
         img_input = Input(shape=input_shape)
         bn_axis = 1
 
@@ -68,9 +65,11 @@ class Resnet50():
         x = identity_block(x, 3, [64, 64, 256], stage=2, block='c')
 
         x = conv_block(x, 3, [128, 128, 512], stage=3, block='a')
-        for n in ['b','c','d']: x = identity_block(x, 3, [128, 128, 512], stage=3, block=n)
+        for n in ['b', 'c', 'd']:
+            x = identity_block(x, 3, [128, 128, 512], stage=3, block=n)
         x = conv_block(x, 3, [256, 256, 1024], stage=4, block='a')
-        for n in ['b','c','d', 'e', 'f']: x = identity_block(x, 3, [256, 256, 1024], stage=4, block=n)
+        for n in ['b', 'c', 'd', 'e', 'f']:
+            x = identity_block(x, 3, [256, 256, 1024], stage=4, block=n)
 
         x = conv_block(x, 3, [512, 512, 2048], stage=5, block='a')
         x = identity_block(x, 3, [512, 512, 2048], stage=5, block='b')
@@ -87,27 +86,41 @@ class Resnet50():
         self.img_input = img_input
         self.model = Model(self.img_input, x)
         convert_all_kernels_in_model(self.model)
-        self.model.load_weights(get_file(fname, self.FILE_PATH+fname, cache_subdir='models'))
+        self.model.load_weights(
+            get_file(
+                fname,
+                self.FILE_PATH +
+                fname,
+                cache_subdir='models'))
 
-
-    def get_batches(self, path, gen=image.ImageDataGenerator(),class_mode='categorical', shuffle=True, batch_size=8):
-        return gen.flow_from_directory(path, target_size=(224,224),
-                class_mode=class_mode, shuffle=shuffle, batch_size=batch_size)
-
+    def get_batches(self, path, gen=image.ImageDataGenerator(),
+                    class_mode='categorical', shuffle=True, batch_size=8):
+        return gen.flow_from_directory(path, target_size=(224, 224),
+                                       class_mode=class_mode, shuffle=shuffle, batch_size=batch_size)
 
     def finetune(self, batches):
         model = self.model
         model.layers.pop()
-        for layer in model.layers: layer.trainable=False
-        m = Dense(batches.nb_class, activation='softmax')(model.layers[-1].output)
+        for layer in model.layers:
+            layer.trainable = False
+        m = Dense(batches.nb_class, activation='softmax')(
+            model.layers[-1].output)
         self.model = Model(model.input, m)
-        self.model.compile(optimizer=RMSprop(lr=0.1), loss='categorical_crossentropy', metrics=['accuracy'])
-
+        self.model.compile(
+            optimizer=RMSprop(
+                lr=0.1),
+            loss='categorical_crossentropy',
+            metrics=['accuracy'])
 
     def fit(self, batches, val_batches, nb_epoch=1):
         self.model.fit_generator(batches, samples_per_epoch=batches.nb_sample, nb_epoch=nb_epoch,
-                validation_data=val_batches, nb_val_samples=val_batches.nb_sample)
+                                 validation_data=val_batches, nb_val_samples=val_batches.nb_sample)
 
     def test(self, path, batch_size=8):
-        test_batches = self.get_batches(path, shuffle=False, batch_size=batch_size, class_mode=None)
-        return test_batches, self.model.predict_generator(test_batches, test_batches.nb_sample)
+        test_batches = self.get_batches(
+            path,
+            shuffle=False,
+            batch_size=batch_size,
+            class_mode=None)
+        return test_batches, self.model.predict_generator(
+            test_batches, test_batches.nb_sample)
