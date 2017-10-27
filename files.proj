@@ -4,7 +4,7 @@
 "./.travis.yml"
 "./LICENSE.txt"
 "./README.md"
-"./deeplearning1/nbs/.ipynb_checkpoints/lesson1-checkpoint.py"
+"./convert.sh"
 "./deeplearning1/nbs/SF_Dir_Organization.py"
 "./deeplearning1/nbs/char-rnn.py"
 "./deeplearning1/nbs/convolution-intro.py"
