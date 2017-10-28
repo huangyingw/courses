@@ -2,3 +2,6 @@
 	path = deeplearning1/nbs/data/dogscats
 	url = git@github.com:huangyingw/dogscats.git
 	branch = dev.fix
+[submodule "keras"]
+	path = keras
+	url = https://github.com/fchollet/keras.git
