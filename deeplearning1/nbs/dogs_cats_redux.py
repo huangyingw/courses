@@ -490,7 +490,7 @@ import numpy as np
 from sklearn.metrics import log_loss
 
 x = [i * .0001 for i in range(1, 10000)]
-y = [log_loss([1], [[i * .0001, 1 - (i * .0001)]], eps=1e-15)
+y = [log_loss([1, 0], [i * .0001, 1 - (i * .0001)], eps=1e-15)
      for i in range(1, 10000, 1)]
 
 plt.plot(x, y)
