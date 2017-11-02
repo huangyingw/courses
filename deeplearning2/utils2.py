@@ -1,6 +1,28 @@
-import math, keras, datetime, pandas as pd, numpy as np, keras.backend as K, threading, json, re, collections
-import tarfile, tensorflow as tf, matplotlib.pyplot as plt, xgboost, operator, random, pickle, glob, os, bcolz
-import shutil, sklearn, functools, itertools, scipy
+import math
+import keras
+import datetime
+import pandas as pd
+import numpy as np
+import keras.backend as K
+import threading
+import json
+import re
+import collections
+import tarfile
+import tensorflow as tf
+import matplotlib.pyplot as plt
+import xgboost
+import operator
+import random
+import pickle
+import glob
+import os
+import bcolz
+import shutil
+import sklearn
+import functools
+import itertools
+import scipy
 from PIL import Image
 from concurrent.futures import ProcessPoolExecutor, as_completed, ThreadPoolExecutor
 import matplotlib.patheffects as PathEffects
@@ -33,8 +55,14 @@ from keras.applications.imagenet_utils import decode_predictions, preprocess_inp
 
 
 np.set_printoptions(threshold=50, edgeitems=20)
+
+
 def beep(): return Audio(filename='/home/jhoward/beep.mp3', autoplay=True)
+
+
 def dump(obj, fname): pickle.dump(obj, open(fname, 'wb'))
+
+
 def load(fname): return pickle.load(open(fname, 'rb'))
 
 
@@ -56,20 +84,22 @@ def autolabel(plt, fmt='%.2f'):
             label_position = height - (y_height * 0.06)
         else:
             label_position = height + (y_height * 0.01)
-        txt = ax.text(rect.get_x() + rect.get_width()/2., label_position,
-                fmt % height, ha='center', va='bottom')
-        txt.set_path_effects([PathEffects.withStroke(linewidth=3, foreground='w')])
+        txt = ax.text(rect.get_x() + rect.get_width() / 2., label_position,
+                      fmt % height, ha='center', va='bottom')
+        txt.set_path_effects(
+            [PathEffects.withStroke(linewidth=3, foreground='w')])
 
 
 def column_chart(lbls, vals, val_lbls='%.2f'):
     n = len(lbls)
     p = plt.bar(np.arange(n), vals)
     plt.xticks(np.arange(n), lbls)
-    if val_lbls: autolabel(p, val_lbls)
+    if val_lbls:
+        autolabel(p, val_lbls)
 
 
 def save_array(fname, arr):
-    c=bcolz.carray(arr, rootdir=fname, mode='w')
+    c = bcolz.carray(arr, rootdir=fname, mode='w')
     c.flush()
 
 
@@ -77,14 +107,15 @@ def load_array(fname): return bcolz.open(fname)[:]
 
 
 def load_glove(loc):
-    return (load_array(loc+'.dat'),
-        pickle.load(open(loc+'_words.pkl','rb'), encoding='latin1'),
-        pickle.load(open(loc+'_idx.pkl','rb'), encoding='latin1'))
+    return (load_array(loc + '.dat'),
+            pickle.load(open(loc + '_words.pkl', 'rb'), encoding='latin1'),
+            pickle.load(open(loc + '_idx.pkl', 'rb'), encoding='latin1'))
 
-def plot_multi(im, dim=(4,4), figsize=(6,6), **kwargs ):
+
+def plot_multi(im, dim=(4, 4), figsize=(6, 6), **kwargs):
     plt.figure(figsize=figsize)
-    for i,img in enumerate(im):
-        plt.subplot(*((dim)+(i+1,)))
+    for i, img in enumerate(im):
+        plt.subplot(*((dim) + (i + 1,)))
         plt.imshow(img, **kwargs)
         plt.axis('off')
     plt.tight_layout()
@@ -93,14 +124,14 @@ def plot_multi(im, dim=(4,4), figsize=(6,6), **kwargs ):
 def plot_train(hist):
     h = hist.history
     if 'acc' in h:
-        meas='acc'
-        loc='lower right'
+        meas = 'acc'
+        loc = 'lower right'
     else:
-        meas='loss'
-        loc='upper right'
+        meas = 'loss'
+        loc = 'upper right'
     plt.plot(hist.history[meas])
-    plt.plot(hist.history['val_'+meas])
-    plt.title('model '+meas)
+    plt.plot(hist.history['val_' + meas])
+    plt.title('model ' + meas)
     plt.ylabel(meas)
     plt.xlabel('epoch')
     plt.legend(['train', 'validation'], loc=loc)
@@ -109,11 +140,13 @@ def plot_train(hist):
 def fit_gen(gen, fn, eval_fn, nb_iter):
     for i in range(nb_iter):
         fn(*next(gen))
-        if i % (nb_iter//10) == 0: eval_fn()
+        if i % (nb_iter // 10) == 0:
+            eval_fn()
 
 
 def wrap_config(layer):
-    return {'class_name': layer.__class__.__name__, 'config': layer.get_config()}
+    return {'class_name': layer.__class__.__name__,
+            'config': layer.get_config()}
 
 
 def copy_layer(layer): return layer_from_config(wrap_config(layer))
@@ -123,7 +156,7 @@ def copy_layers(layers): return [copy_layer(layer) for layer in layers]
 
 
 def copy_weights(from_layers, to_layers):
-    for from_layer,to_layer in zip(from_layers, to_layers):
+    for from_layer, to_layer in zip(from_layers, to_layers):
         to_layer.set_weights(from_layer.get_weights())
 
 
@@ -135,10 +168,10 @@ def copy_model(m):
 
 def insert_layer(model, new_layer, index):
     res = Sequential()
-    for i,layer in enumerate(model.layers):
-        if i==index: res.add(new_layer)
+    for i, layer in enumerate(model.layers):
+        if i == index:
+            res.add(new_layer)
         copied = layer_from_config(wrap_config(layer))
         res.add(copied)
         copied.set_weights(layer.get_weights())
     return res
-

@@ -6,8 +6,12 @@
 .sass-cache/
 _site/
 ai_aliases.sh
+<<<<<<< HEAD
 deeplearning1/nbs/MNIST_data
 deeplearning1/nbs/data/
+=======
+deeplearning1/excel/.~lock.*
+>>>>>>> 22d383b65903b3944e0cb38d6fc796b3a05a10eb
 deeplearning1/nbs/data/redux/
 deeplearning1/nbs/dogs-vs-cats-redux-kernels-edition/
 deeplearning1/nbs/state-farm-distracted-driver-detection/
