@@ -7,8 +7,11 @@
 _site/
 ai_aliases.sh
 deeplearning1/excel/.~lock.*
+deeplearning1/nbs/MNIST_data
+deeplearning1/nbs/data/
 deeplearning1/nbs/data/redux/
 deeplearning1/nbs/dogs-vs-cats-redux-kernels-edition/
+deeplearning1/nbs/state-farm-distracted-driver-detection/
 fast-ai-commands.txt
 fast-ai-remove.sh
 setup/cuda-repo-ubuntu1604_8.0.44-1_amd64.deb
