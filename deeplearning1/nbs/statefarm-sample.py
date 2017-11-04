@@ -188,7 +188,7 @@ model.summary()
 # In[10]:
 
 
-np.round(model.predict_generator(batches, batches.N)[:10], 2)
+np.round(model.predict_generator(batches, batches.n)[:10], 2)
 
 
 # Our hypothesis was correct. It's nearly always predicting class 1 or 6,
