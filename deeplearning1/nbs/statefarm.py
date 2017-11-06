@@ -16,6 +16,9 @@ cuda.use('gpu0')
 get_ipython().magic(u'matplotlib inline')
 from __future__ import print_function, division
 path = "data/state/"
+model_path = path + 'models/'
+if not os.path.exists(model_path):
+    os.mkdir(model_path)
 #path = "data/state/sample/"
 import utils
 reload(utils)
@@ -117,6 +120,8 @@ def conv1(batches):
 
 
 model = conv1(batches)
+model.save_weights(model_path + 'statefarm1.h5')
+model.load_weights(model_path + 'statefarm1.h5')
 
 
 # Interestingly, with no regularization or augmentation we're getting some
