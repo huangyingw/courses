@@ -1,9 +1,6 @@
 
 # coding: utf-8
 
-# In[1]:
-
-
 get_ipython().magic(u'matplotlib inline')
 import importlib
 import utils2
@@ -11,13 +8,7 @@ importlib.reload(utils2)
 from utils2 import *
 
 
-# In[2]:
-
-
 limit_mem()
-
-
-# In[3]:
 
 
 from keras.datasets.cifar10 import load_batch
@@ -73,9 +64,6 @@ from keras.datasets.cifar10 import load_batch
 
 # Let's load data.
 
-# In[4]:
-
-
 def load_data():
     path = 'data/cifar-10-batches-py'
     num_train_samples = 50000
@@ -93,24 +81,15 @@ def load_data():
     return (x_train, y_train), (x_test, y_test)
 
 
-# In[5]:
-
-
 (x_train, y_train), (x_test, y_test) = load_data()
 
 
 # Here's an example of CIFAR-10
 
-# In[6]:
-
-
 plt.imshow(x_train[1])
 
 
 # We want to normalize pixel values (0-255) to unit interval.
-
-# In[7]:
-
 
 x_train = x_train / 255.
 x_test = x_test / 255.
@@ -127,9 +106,6 @@ x_test = x_test / 255.
 # * Relu activation
 # * Dropout regularization
 # * Batch-normalization
-
-# In[8]:
-
 
 def relu(x): return Activation('relu')(x)
 
@@ -148,9 +124,6 @@ def relu_bn(x): return relu(bn(x))
 # * 'same' border mode returns same width/height
 # * Pass output through Dropout
 #
-
-# In[9]:
-
 
 def conv(x, nf, sz, wd, p):
     x = Convolution2D(nf, sz, sz, init='he_uniform', border_mode='same',
@@ -174,9 +147,6 @@ def conv(x, nf, sz, wd, p):
 # * Compress # of filters into growth factor `nf` * 4
 # * Batchnorm -> ReLU
 
-# In[10]:
-
-
 def conv_block(x, nf, bottleneck=False, p=None, wd=0):
     x = relu_bn(x)
     if bottleneck:
@@ -190,9 +160,6 @@ def conv_block(x, nf, bottleneck=False, p=None, wd=0):
 # * Concatenate input `x` and conv block output `b`
 # * Set concatenation as new input `x` for next block
 # * Repeat
-
-# In[11]:
-
 
 def dense_block(x, nb_layers, growth_rate, bottleneck=False, p=None, wd=0):
     if bottleneck:
@@ -212,9 +179,6 @@ def dense_block(x, nb_layers, growth_rate, bottleneck=False, p=None, wd=0):
 # Together with bottleneck, compression has been shown to improve
 # performance and computational efficiency of DenseNet architectures. (the
 # authors call this DenseNet-BC)
-
-# In[12]:
-
 
 def transition_block(x, compression=1.0, p=None, wd=0):
     nf = int(x.get_shape().as_list()[-1] * compression)
@@ -253,9 +217,6 @@ def transition_block(x, compression=1.0, p=None, wd=0):
 # * Global Avg Pooling
 # * Dense layer w/ desired output activation
 
-# In[13]:
-
-
 def create_dense_net(nb_classes, img_input, depth=40, nb_block=3,
                      growth_rate=12, nb_filter=16, bottleneck=False, compression=1.0, p=None, wd=0, activation='softmax'):
 
@@ -285,45 +246,24 @@ def create_dense_net(nb_classes, img_input, depth=40, nb_block=3,
 
 # Now we can test it out on CIFAR-10.
 
-# In[14]:
-
-
 input_shape = (32, 32, 3)
 
 
-# In[15]:
-
-
 img_input = Input(shape=input_shape)
-
-
-# In[16]:
 
 
 x = create_dense_net(10, img_input, depth=100, nb_filter=16, compression=0.5,
                      bottleneck=True, p=0.2, wd=1e-4)
 
 
-# In[17]:
-
-
 model = Model(img_input, x)
-
-
-# In[18]:
 
 
 model.compile(loss='sparse_categorical_crossentropy',
               optimizer=keras.optimizers.SGD(0.1, 0.9, nesterov=True), metrics=["accuracy"])
 
 
-# In[19]:
-
-
 parms = {'verbose': 2, 'callbacks': [TQDMNotebookCallback()]}
-
-
-# In[20]:
 
 
 K.set_value(model.optimizer.lr, 0.1)
@@ -331,88 +271,46 @@ K.set_value(model.optimizer.lr, 0.1)
 
 # This will likely need to run overnight + lr annealing...
 
-# In[21]:
-
-
 model.fit(x_train, y_train, 64, 20, validation_data=(x_test, y_test), **parms)
 
 
-# In[22]:
-
-
 K.set_value(model.optimizer.lr, 0.01)
-
-
-# In[23]:
 
 
 model.fit(x_train, y_train, 64, 4, validation_data=(x_test, y_test), **parms)
 
 
-# In[24]:
-
-
 K.set_value(model.optimizer.lr, 0.1)
-
-
-# In[26]:
 
 
 model.fit(x_train, y_train, 64, 20, validation_data=(x_test, y_test), **parms)
 
 
-# In[27]:
-
-
 K.set_value(model.optimizer.lr, 0.01)
-
-
-# In[28]:
 
 
 model.fit(x_train, y_train, 64, 40, validation_data=(x_test, y_test), **parms)
 
 
-# In[29]:
-
-
 K.set_value(model.optimizer.lr, 0.001)
-
-
-# In[30]:
 
 
 model.fit(x_train, y_train, 64, 20, validation_data=(x_test, y_test), **parms)
 
 
-# In[31]:
-
-
 K.set_value(model.optimizer.lr, 0.01)
-
-
-# In[32]:
 
 
 model.fit(x_train, y_train, 64, 10, validation_data=(x_test, y_test), **parms)
 
 
-# In[33]:
-
-
 K.set_value(model.optimizer.lr, 0.001)
-
-
-# In[34]:
 
 
 model.fit(x_train, y_train, 64, 20, validation_data=(x_test, y_test), **parms)
 
 
 # And we're able to replicate their state-of-the-art results!
-
-# In[35]:
-
 
 get_ipython().magic(u"time model.save_weights('models/93.h5')")
 

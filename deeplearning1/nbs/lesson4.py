@@ -1,13 +1,7 @@
 
 # coding: utf-8
 
-# In[1]:
-
-
 from theano.sandbox import cuda
-
-
-# In[2]:
 
 
 get_ipython().magic(u'matplotlib inline')
@@ -15,9 +9,6 @@ import utils
 reload(utils)
 from utils import *
 from __future__ import division, print_function
-
-
-# In[33]:
 
 
 #path = "data/ml-20m/"
@@ -33,14 +24,8 @@ batch_size = 64
 # We're working with the movielens data, which contains one rating per
 # row, like this:
 
-# In[34]:
-
-
 ratings = pd.read_csv(path + 'ratings.csv')
 ratings.head()
-
-
-# In[35]:
 
 
 len(ratings)
@@ -48,21 +33,12 @@ len(ratings)
 
 # Just for display purposes, let's read in the movie names too.
 
-# In[36]:
-
-
 movie_names = pd.read_csv(
     path + 'movies.csv').set_index('movieId')['title'].to_dict()
 
 
-# In[37]:
-
-
 users = ratings.userId.unique()
 movies = ratings.movieId.unique()
-
-
-# In[38]:
 
 
 userid2idx = {o: i for i, o in enumerate(users)}
@@ -72,22 +48,13 @@ movieid2idx = {o: i for i, o in enumerate(movies)}
 # We update the movie and user ids so that they are contiguous integers,
 # which we want when using embeddings.
 
-# In[39]:
-
-
 ratings.movieId = ratings.movieId.apply(lambda x: movieid2idx[x])
 ratings.userId = ratings.userId.apply(lambda x: userid2idx[x])
-
-
-# In[40]:
 
 
 user_min, user_max, movie_min, movie_max = (ratings.userId.min(),
                                             ratings.userId.max(), ratings.movieId.min(), ratings.movieId.max())
 user_min, user_max, movie_min, movie_max
-
-
-# In[41]:
 
 
 n_users = ratings.userId.nunique()
@@ -97,22 +64,13 @@ n_users, n_movies
 
 # This is the number of latent factors in each embedding.
 
-# In[42]:
-
-
 n_factors = 50
-
-
-# In[43]:
 
 
 np.random.seed = 42
 
 
 # Randomly split into training and validation.
-
-# In[44]:
-
 
 msk = np.random.rand(len(ratings)) < 0.8
 trn = ratings[msk]
@@ -125,33 +83,18 @@ val = ratings[~msk]
 # users which we'll copy into Excel for creating a simple example. This
 # isn't necessary for any of the modeling below however.
 
-# In[76]:
-
-
 g = ratings.groupby('userId')['rating'].count()
 topUsers = g.sort_values(ascending=False)[:15]
-
-
-# In[78]:
 
 
 g = ratings.groupby('movieId')['rating'].count()
 topMovies = g.sort_values(ascending=False)[:15]
 
 
-# In[80]:
-
-
 top_r = ratings.join(topUsers, rsuffix='_r', how='inner', on='userId')
 
 
-# In[81]:
-
-
 top_r = top_r.join(topMovies, rsuffix='_r', how='inner', on='movieId')
-
-
-# In[82]:
 
 
 pd.crosstab(top_r.userId, top_r.movieId, top_r.rating, aggfunc=np.sum)
@@ -161,9 +104,6 @@ pd.crosstab(top_r.userId, top_r.movieId, top_r.rating, aggfunc=np.sum)
 
 # The most basic model is a dot product of a movie embedding and a user
 # embedding. Let's see how well that works:
-
-# In[23]:
-
 
 user_in = Input(shape=(1,), dtype='int64', name='user_in')
 u = Embedding(
@@ -179,42 +119,24 @@ m = Embedding(
     W_regularizer=l2(1e-4))(movie_in)
 
 
-# In[24]:
-
-
 x = merge([u, m], mode='dot')
 x = Flatten()(x)
 model = Model([user_in, movie_in], x)
 model.compile(Adam(0.001), loss='mse')
 
 
-# In[25]:
-
-
 model.fit([trn.userId, trn.movieId], trn.rating, batch_size=64, nb_epoch=1,
           validation_data=([val.userId, val.movieId], val.rating))
 
 
-# In[26]:
-
-
 model.optimizer.lr = 0.01
-
-
-# In[27]:
 
 
 model.fit([trn.userId, trn.movieId], trn.rating, batch_size=64, nb_epoch=3,
           validation_data=([val.userId, val.movieId], val.rating))
 
 
-# In[28]:
-
-
 model.optimizer.lr = 0.001
-
-
-# In[29]:
 
 
 model.fit([trn.userId, trn.movieId], trn.rating, batch_size=64, nb_epoch=6,
@@ -232,23 +154,14 @@ model.fit([trn.userId, trn.movieId], trn.rating, batch_size=64, nb_epoch=6,
 # easily by simply creating an embedding with one output for each movie
 # and each user, and adding it to our output.
 
-# In[45]:
-
-
 def embedding_input(name, n_in, n_out, reg):
     inp = Input(shape=(1,), dtype='int64', name=name)
     return inp, Embedding(n_in, n_out, input_length=1,
                           W_regularizer=l2(reg))(inp)
 
 
-# In[46]:
-
-
 user_in, u = embedding_input('user_in', n_users, n_factors, 1e-4)
 movie_in, m = embedding_input('movie_in', n_movies, n_factors, 1e-4)
-
-
-# In[47]:
 
 
 def create_bias(inp, n_in):
@@ -256,14 +169,8 @@ def create_bias(inp, n_in):
     return Flatten()(x)
 
 
-# In[48]:
-
-
 ub = create_bias(user_in, n_users)
 mb = create_bias(movie_in, n_movies)
-
-
-# In[49]:
 
 
 x = merge([u, m], mode='dot')
@@ -274,40 +181,22 @@ model = Model([user_in, movie_in], x)
 model.compile(Adam(0.001), loss='mse')
 
 
-# In[418]:
-
-
 model.fit([trn.userId, trn.movieId], trn.rating, batch_size=64, nb_epoch=1,
           validation_data=([val.userId, val.movieId], val.rating))
 
 
-# In[419]:
-
-
 model.optimizer.lr = 0.01
-
-
-# In[420]:
 
 
 model.fit([trn.userId, trn.movieId], trn.rating, batch_size=64, nb_epoch=6,
           validation_data=([val.userId, val.movieId], val.rating))
 
 
-# In[421]:
-
-
 model.optimizer.lr = 0.001
-
-
-# In[422]:
 
 
 model.fit([trn.userId, trn.movieId], trn.rating, batch_size=64, nb_epoch=10,
           validation_data=([val.userId, val.movieId], val.rating))
-
-
-# In[248]:
 
 
 model.fit([trn.userId, trn.movieId], trn.rating, batch_size=64, nb_epoch=5,
@@ -317,13 +206,7 @@ model.fit([trn.userId, trn.movieId], trn.rating, batch_size=64, nb_epoch=5,
 # This result is quite a bit better than the best benchmarks that we could
 # find with a quick google search - so looks like a great approach!
 
-# In[100]:
-
-
 model.save_weights(model_path + 'bias.h5')
-
-
-# In[50]:
 
 
 model.load_weights(model_path + 'bias.h5')
@@ -333,9 +216,6 @@ model.load_weights(model_path + 'bias.h5')
 # a user id and a movie id. For instance, this predicts that user #3 would
 # really enjoy movie #6.
 
-# In[54]:
-
-
 model.predict([np.array([3]), np.array([6])])
 
 
@@ -343,9 +223,6 @@ model.predict([np.array([3]), np.array([6])])
 
 # To make the analysis of the factors more interesting, we'll restrict it
 # to the top 2000 most popular movies.
-
-# In[56]:
-
 
 g = ratings.groupby('movieId')['rating'].count()
 topMovies = g.sort_values(ascending=False)[:2000]
@@ -357,9 +234,6 @@ topMovies = np.array(topMovies.index)
 # more outputs, using the functional API. Here, our input is the movie id
 # (a single id), and the output is the movie bias (a single float).
 
-# In[57]:
-
-
 get_movie_bias = Model(movie_in, mb)
 movie_bias = get_movie_bias.predict(topMovies)
 movie_ratings = [(b[0], movie_names[movies[i]])
@@ -370,22 +244,13 @@ movie_ratings = [(b[0], movie_names[movies[i]])
 # corrected for different levels of reviewer sentiment, as well as
 # different types of movies that different reviewers watch.
 
-# In[23]:
-
-
 sorted(movie_ratings, key=itemgetter(0))[:15]
-
-
-# In[24]:
 
 
 sorted(movie_ratings, key=itemgetter(0), reverse=True)[:15]
 
 
 # We can now do the same thing for the embeddings.
-
-# In[59]:
-
 
 get_movie_emb = Model(movie_in, m)
 movie_emb = np.squeeze(get_movie_emb.predict([topMovies]))
@@ -396,21 +261,12 @@ movie_emb.shape
 # [PCA](https://plot.ly/ipython-notebooks/principal-component-analysis/)
 # to simplify them down to just 3 vectors.
 
-# In[27]:
-
-
 from sklearn.decomposition import PCA
 pca = PCA(n_components=3)
 movie_pca = pca.fit(movie_emb.T).components_
 
 
-# In[31]:
-
-
 fac0 = movie_pca[0]
-
-
-# In[32]:
 
 
 movie_comp = [(f, movie_names[movies[i]]) for f, i in zip(fac0, topMovies)]
@@ -418,25 +274,13 @@ movie_comp = [(f, movie_names[movies[i]]) for f, i in zip(fac0, topMovies)]
 
 # Here's the 1st component. It seems to be 'critically acclaimed' or 'classic'.
 
-# In[33]:
-
-
 sorted(movie_comp, key=itemgetter(0), reverse=True)[:10]
-
-
-# In[34]:
 
 
 sorted(movie_comp, key=itemgetter(0))[:10]
 
 
-# In[35]:
-
-
 fac1 = movie_pca[1]
-
-
-# In[36]:
 
 
 movie_comp = [(f, movie_names[movies[i]]) for f, i in zip(fac1, topMovies)]
@@ -444,25 +288,13 @@ movie_comp = [(f, movie_names[movies[i]]) for f, i in zip(fac1, topMovies)]
 
 # The 2nd is 'hollywood blockbuster'.
 
-# In[37]:
-
-
 sorted(movie_comp, key=itemgetter(0), reverse=True)[:10]
-
-
-# In[38]:
 
 
 sorted(movie_comp, key=itemgetter(0))[:10]
 
 
-# In[39]:
-
-
 fac2 = movie_pca[2]
-
-
-# In[40]:
 
 
 movie_comp = [(f, movie_names[movies[i]]) for f, i in zip(fac2, topMovies)]
@@ -470,13 +302,7 @@ movie_comp = [(f, movie_names[movies[i]]) for f, i in zip(fac2, topMovies)]
 
 # The 3rd is 'violent vs happy'.
 
-# In[41]:
-
-
 sorted(movie_comp, key=itemgetter(0), reverse=True)[:10]
-
-
-# In[42]:
 
 
 sorted(movie_comp, key=itemgetter(0))[:10]
@@ -485,17 +311,11 @@ sorted(movie_comp, key=itemgetter(0))[:10]
 # We can draw a picture to see how various movies appear on the map of
 # these components. This picture shows the 1st and 3rd components.
 
-# In[401]:
-
-
 import sys
 stdout, stderr = sys.stdout, sys.stderr  # save notebook stdout and stderr
 reload(sys)
 sys.setdefaultencoding('utf-8')
 sys.stdout, sys.stderr = stdout, stderr  # restore notebook stdout and stderr
-
-
-# In[410]:
 
 
 start = 50
@@ -518,14 +338,8 @@ plt.show()
 # concatenate the user and movie embeddings into a single vector, which we
 # feed into the neural net.
 
-# In[63]:
-
-
 user_in, u = embedding_input('user_in', n_users, n_factors, 1e-4)
 movie_in, m = embedding_input('movie_in', n_movies, n_factors, 1e-4)
-
-
-# In[64]:
 
 
 x = merge([u, m], mode='concat')
@@ -536,9 +350,6 @@ x = Dropout(0.75)(x)
 x = Dense(1)(x)
 nn = Model([user_in, movie_in], x)
 nn.compile(Adam(0.001), loss='mse')
-
-
-# In[65]:
 
 
 nn.fit([trn.userId, trn.movieId], trn.rating, batch_size=64, nb_epoch=8,

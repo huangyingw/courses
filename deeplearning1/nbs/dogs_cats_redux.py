@@ -38,14 +38,8 @@
 # jupyter notebook
 # ```
 
-# In[ ]:
-
-
 # Verify we are in the lesson1 directory
 get_ipython().magic(u'pwd')
-
-
-# In[2]:
 
 
 # Create references to important directories we will use over and over
@@ -54,9 +48,6 @@ import sys
 current_dir = os.getcwd()
 LESSON_HOME_DIR = current_dir
 DATA_HOME_DIR = current_dir + '/data/redux'
-
-
-# In[5]:
 
 
 # Allow relative imports to directories above lesson1/
@@ -82,9 +73,6 @@ get_ipython().magic(u'matplotlib inline')
 
 # ## Create validation set and sample
 
-# In[66]:
-
-
 # Create directories
 get_ipython().magic(u'cd $DATA_HOME_DIR')
 get_ipython().magic(u'mkdir valid')
@@ -96,13 +84,7 @@ get_ipython().magic(u'mkdir -p sample/results')
 get_ipython().magic(u'mkdir -p test/unknown')
 
 
-# In[67]:
-
-
 get_ipython().magic(u'cd $DATA_HOME_DIR/train')
-
-
-# In[68]:
 
 
 g = glob('*.jpg')
@@ -111,13 +93,7 @@ for i in range(2000):
     os.rename(shuf[i], DATA_HOME_DIR + '/valid/' + shuf[i])
 
 
-# In[69]:
-
-
 from shutil import copyfile
-
-
-# In[70]:
 
 
 g = glob('*.jpg')
@@ -126,13 +102,7 @@ for i in range(200):
     copyfile(shuf[i], DATA_HOME_DIR + '/sample/train/' + shuf[i])
 
 
-# In[71]:
-
-
 get_ipython().magic(u'cd $DATA_HOME_DIR/valid')
-
-
-# In[72]:
 
 
 g = glob('*.jpg')
@@ -142,9 +112,6 @@ for i in range(50):
 
 
 # ## Rearrange image files into their respective directories
-
-# In[73]:
-
 
 # Divide cat/dog images into separate directories
 
@@ -173,18 +140,12 @@ get_ipython().magic(u'mv cat.*.jpg cats/')
 get_ipython().magic(u'mv dog.*.jpg dogs/')
 
 
-# In[74]:
-
-
 # Create single 'unknown' class for test set
 get_ipython().magic(u'cd $DATA_HOME_DIR/test')
 get_ipython().magic(u'mv *.jpg unknown/')
 
 
 # ## Finetuning and Training
-
-# In[75]:
-
 
 get_ipython().magic(u'cd $DATA_HOME_DIR')
 
@@ -196,22 +157,13 @@ train_path = path + '/train/'
 valid_path = path + '/valid/'
 
 
-# In[76]:
-
-
 # import Vgg16 helper class
 vgg = Vgg16()
-
-
-# In[77]:
 
 
 # Set constants. You can experiment with no_of_epochs to improve the model
 batch_size = 64
 no_of_epochs = 3
-
-
-# In[78]:
 
 
 # Finetune the model
@@ -221,9 +173,6 @@ vgg.finetune(batches)
 
 # Not sure if we set this for all fits
 vgg.model.optimizer.lr = 0.01
-
-
-# In[79]:
 
 
 # Notice we are passing in the validation dataset to the fit() method
@@ -241,13 +190,7 @@ print "Completed %s fit operations" % no_of_epochs
 
 # Let's use our new model to make predictions on the test dataset
 
-# In[80]:
-
-
 batches, preds = vgg.test(test_path, batch_size=batch_size * 2)
-
-
-# In[81]:
 
 
 # For every image, vgg.test() generates two probabilities
@@ -259,15 +202,9 @@ filenames = batches.filenames
 print filenames[:5]
 
 
-# In[82]:
-
-
 # You can verify the column ordering by viewing some images
 from PIL import Image
 Image.open(test_path + filenames[2])
-
-
-# In[83]:
 
 
 # Save our test results arrays so we can use them again later
@@ -293,19 +230,10 @@ save_array(results_path + 'filenames.dat', filenames)
 # Calculate predictions on validation set, so we can find correct and
 # incorrect examples:
 
-# In[84]:
-
-
 vgg.model.load_weights(results_path + latest_weights_filename)
 
 
-# In[85]:
-
-
 val_batches, probs = vgg.test(valid_path, batch_size=batch_size)
-
-
-# In[86]:
 
 
 filenames = val_batches.filenames
@@ -314,9 +242,6 @@ expected_labels = val_batches.classes  # 0 or 1
 # Round our predictions to 0/1 to generate labels
 our_predictions = probs[:, 0]
 our_labels = np.round(1 - our_predictions)
-
-
-# In[1]:
 
 
 from keras.preprocessing import image
@@ -334,9 +259,6 @@ def plots_idx(idx, titles=None):
 n_view = 4
 
 
-# In[88]:
-
-
 # 1. A few correct labels at random
 correct = np.where(our_labels == expected_labels)[0]
 print "Found %d correct labels" % len(correct)
@@ -344,17 +266,11 @@ idx = permutation(correct)[:n_view]
 plots_idx(idx, our_predictions[idx])
 
 
-# In[89]:
-
-
 # 2. A few incorrect labels at random
 incorrect = np.where(our_labels != expected_labels)[0]
 print "Found %d incorrect labels" % len(incorrect)
 idx = permutation(incorrect)[:n_view]
 plots_idx(idx, our_predictions[idx])
-
-
-# In[90]:
 
 
 # 3a. The images we most confident were cats, and are actually cats
@@ -365,18 +281,12 @@ plots_idx(correct_cats[most_correct_cats],
           our_predictions[correct_cats][most_correct_cats])
 
 
-# In[91]:
-
-
 # 3b. The images we most confident were dogs, and are actually dogs
 correct_dogs = np.where((our_labels == 1) & (our_labels == expected_labels))[0]
 print "Found %d confident correct dogs labels" % len(correct_dogs)
 most_correct_dogs = np.argsort(our_predictions[correct_dogs])[:n_view]
 plots_idx(correct_dogs[most_correct_dogs],
           our_predictions[correct_dogs][most_correct_dogs])
-
-
-# In[92]:
 
 
 # 4a. The images we were most confident were cats, but are actually dogs
@@ -392,9 +302,6 @@ if len(incorrect_cats):
         our_predictions[incorrect_cats][most_incorrect_cats])
 
 
-# In[93]:
-
-
 # 4b. The images we were most confident were dogs, but are actually cats
 incorrect_dogs = np.where(
     (our_labels == 1) & (
@@ -407,9 +314,6 @@ if len(incorrect_dogs):
         our_predictions[incorrect_dogs][most_incorrect_dogs])
 
 
-# In[94]:
-
-
 # 5. The most uncertain labels (ie those with probability closest to 0.5).
 most_uncertain = np.argsort(np.abs(our_predictions - 0.5))
 plots_idx(most_uncertain[:n_view], our_predictions[most_uncertain])
@@ -420,9 +324,6 @@ plots_idx(most_uncertain[:n_view], our_predictions[most_uncertain])
 # matrix](http://www.dataschool.io/simple-guide-to-confusion-matrix-terminology/).
 # Scikit-learn has a convenient function we can use for this purpose:
 
-# In[95]:
-
-
 from sklearn.metrics import confusion_matrix
 cm = confusion_matrix(expected_labels, our_labels)
 
@@ -430,9 +331,6 @@ cm = confusion_matrix(expected_labels, our_labels)
 # We can just print out the confusion matrix, or we can show a graphical
 # view (which is mainly useful for dependents with a larger number of
 # categories).
-
-# In[96]:
-
 
 plot_confusion_matrix(cm, val_batches.class_indices)
 
@@ -453,15 +351,9 @@ plot_confusion_matrix(cm, val_batches.class_indices)
 # Loss](http://wiki.fast.ai/index.php/Log_Loss) to evaluate your
 # submission.
 
-# In[97]:
-
-
 # Load our test predictions from file
 preds = load_array(results_path + 'test_preds.dat')
 filenames = load_array(results_path + 'filenames.dat')
-
-
-# In[98]:
 
 
 # Grab the dog prediction column
@@ -477,9 +369,6 @@ print "Edge Predictions: " + str(isdog[(isdog == 1) | (isdog == 0)])
 # calculated--log loss rewards predictions that are confident and correct
 # (p=.9999,label=1), but it punishes predictions that are confident and
 # wrong far more (p=.0001,label=1). See visualization below.
-
-# In[128]:
-
 
 # Visualize Log Loss when True value = 1
 # y-axis is log loss, x-axis is probabilty that label = 1
@@ -502,15 +391,9 @@ plt.ylabel("log loss")
 plt.show()
 
 
-# In[125]:
-
-
 # So to play it safe, we use a sneaky trick to round down our edge predictions
 # Swap all ones with .95 and all zeros with .05
 isdog = isdog.clip(min=0.05, max=0.95)
-
-
-# In[100]:
 
 
 # Extract imageIds from the filenames in our test/unknown directory
@@ -520,14 +403,8 @@ ids = np.array([int(f[8:f.find('.')]) for f in filenames])
 
 # Here we join the two columns into an array of [imageId, isDog]
 
-# In[101]:
-
-
 subm = np.stack([ids, isdog], axis=1)
 subm[:5]
-
-
-# In[102]:
 
 
 get_ipython().magic(u'cd $DATA_HOME_DIR')
@@ -538,9 +415,6 @@ np.savetxt(
     fmt='%d,%.5f',
     header='id,label',
     comments='')
-
-
-# In[103]:
 
 
 from IPython.display import FileLink

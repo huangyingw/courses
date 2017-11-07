@@ -3,9 +3,6 @@
 
 # # Requirements
 
-# In[6]:
-
-
 import unicodedata
 import string
 import re
@@ -19,9 +16,6 @@ from torch import optim
 import torch.nn.functional as F
 import keras
 import numpy as np
-
-
-# In[7]:
 
 
 from keras.preprocessing import sequence
@@ -44,9 +38,6 @@ from keras.preprocessing import sequence
 # called `Lang` which has word &rarr; index (`word2index`) and index
 # &rarr; word (`index2word`) dictionaries, as well as a count of each word
 # `word2count` to use to later replace rare words.
-
-# In[8]:
-
 
 SOS_token = 0
 EOS_token = 1
@@ -78,9 +69,6 @@ class Lang:
 # characters to ASCII, make everything lowercase, and trim most
 # punctuation.
 
-# In[9]:
-
-
 # Turn a Unicode string to plain ASCII, thanks to
 # http://stackoverflow.com/a/518232/2809427
 def unicodeToAscii(s):
@@ -103,9 +91,6 @@ def normalizeString(s):
 # lines into pairs. The files are all English &rarr; Other Language, so if
 # we want to translate from Other Language &rarr; English I added the
 # `reverse` flag to reverse the pairs.
-
-# In[10]:
-
 
 def readLangs(lang1, lang2, pairs_file, reverse=False):
     print("Reading lines...")
@@ -135,9 +120,6 @@ def readLangs(lang1, lang2, pairs_file, reverse=False):
 # the form "I am" or "He is" etc. (accounting for apostrophes replaced
 # earlier).
 
-# In[11]:
-
-
 MAX_LENGTH = 10
 
 eng_prefixes = (
@@ -165,9 +147,6 @@ def filterPairs(pairs):
 # * Normalize text, filter by length and content
 # * Make word lists from sentences in pairs
 
-# In[13]:
-
-
 def prepareData(lang1, lang2, pairs_file, reverse=False):
     input_lang, output_lang, pairs = readLangs(
         lang1, lang2, pairs_file, reverse)
@@ -188,9 +167,6 @@ input_lang, output_lang, pairs = prepareData('eng', 'fra', 'fra.txt', True)
 print(random.choice(pairs))
 
 
-# In[14]:
-
-
 def indexesFromSentence(lang, sentence):
     return [lang.word2index[word]
             for word in sentence.split(' ')] + [EOS_token]
@@ -207,28 +183,16 @@ def variablesFromPair(pair):
     return (input_variable, target_variable)
 
 
-# In[15]:
-
-
 def index_and_pad(lang, dat):
     return sequence.pad_sequences([indexesFromSentence(lang, s)
                                    for s in dat], padding='post').astype(np.int64)
 
 
-# In[16]:
-
-
 fra, eng = list(zip(*pairs))
-
-
-# In[17]:
 
 
 fra = index_and_pad(input_lang, fra)
 eng = index_and_pad(output_lang, eng)
-
-
-# In[18]:
 
 
 def get_batch(x, y, batch_size=16):
@@ -242,9 +206,6 @@ def get_batch(x, y, batch_size=16):
 # every word from the input sentence. For every input word the encoder
 # outputs a vector and a hidden state, and uses the hidden state for the
 # next input word.
-
-# In[19]:
-
 
 class EncoderRNN(nn.Module):
     def __init__(self, input_size, hidden_size, n_layers=1):
@@ -274,9 +235,6 @@ class EncoderRNN(nn.Module):
 # hidden state. The initial input token is the start-of-string `<SOS>`
 # token, and the first hidden state is the context vector (the encoder's
 # last hidden state).
-
-# In[20]:
-
 
 class DecoderRNN(nn.Module):
     def __init__(self, hidden_size, output_size, n_layers=1):
@@ -310,9 +268,6 @@ class DecoderRNN(nn.Module):
 # Calculating the attention weights is done with another feed-forward layer `attn`, using the decoder's input and hidden state as inputs. Because there are sentences of all sizes in the training data, to actually create and train this layer we have to choose a maximum sentence length (input length, for encoder outputs) that it can apply to. Sentences of the maximum length will use all the attention weights, while shorter sentences will only use the first few.
 #
 # ![](images/attention-decoder-network.png)
-
-# In[9]:
-
 
 class AttnDecoderRNN(nn.Module):
     def __init__(self, hidden_size, output_size, n_layers=1,
@@ -365,9 +320,6 @@ class AttnDecoderRNN(nn.Module):
 #
 # "Teacher forcing" is the concept of using the real target outputs as each next input, instead of using the decoder's guess as the next input. Using teacher forcing causes it to converge faster but [when the trained network is exploited, it may exhibit instability](http://minds.jacobs-university.de/sites/default/files/uploads/papers/ESNTutorialRev.pdf).
 
-# In[21]:
-
-
 def train(input_variable, target_variable, encoder, decoder,
           encoder_optimizer, decoder_optimizer, criterion, max_length=MAX_LENGTH):
     batch_size, input_length = input_variable.size()
@@ -395,9 +347,6 @@ def train(input_variable, target_variable, encoder, decoder,
     return loss.data[0] / target_length
 
 
-# In[22]:
-
-
 def asMinutes(s):
     m = math.floor(s / 60)
     s -= m * 60
@@ -410,9 +359,6 @@ def timeSince(since, percent):
     es = s / (percent)
     rs = es - s
     return '%s (- %s)' % (asMinutes(s), asMinutes(rs))
-
-
-# In[23]:
 
 
 def trainEpochs(encoder, decoder, n_epochs, print_every=1000, plot_every=100,
@@ -450,9 +396,6 @@ def trainEpochs(encoder, decoder, n_epochs, print_every=1000, plot_every=100,
 
 
 # ### Attention
-
-# In[141]:
-
 
 # TODO: Make this change during training
 teacher_forcing_ratio = 0.5
@@ -513,9 +456,6 @@ def attn_train(input_variable, target_variable, encoder, decoder, encoder_optimi
 # Plotting is done with matplotlib, using the array of loss values
 # `plot_losses` saved while training.
 
-# In[24]:
-
-
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 import numpy as np
@@ -538,9 +478,6 @@ def showPlot(points):
 # Every time it predicts a word we add it to the output string, and if it
 # predicts the EOS token we stop there. We also store the decoder's
 # attention outputs for display later.
-
-# In[25]:
-
 
 def evaluate(encoder, decoder, sentence, max_length=MAX_LENGTH):
     input_variable = variableFromSentence(input_lang, sentence).cuda()
@@ -571,9 +508,6 @@ def evaluate(encoder, decoder, sentence, max_length=MAX_LENGTH):
     return decoded_words, 0  # , decoder_attentions[:di+1]
 
 
-# In[27]:
-
-
 def evaluateRandomly(encoder, decoder, n=10):
     for i in range(n):
         pair = random.choice(pairs)
@@ -589,9 +523,6 @@ def evaluateRandomly(encoder, decoder, n=10):
 #
 # *Note:* If you run this notebook you can train, interrupt the kernel, evaluate, and continue training later. Comment out the lines where the encoder and decoder are initialized and run `trainEpochs` again.
 
-# In[28]:
-
-
 # TODO:
 # - Test set
 # - random teacher forcing
@@ -600,15 +531,9 @@ def evaluateRandomly(encoder, decoder, n=10):
 # - bidirectional encoding
 
 
-# In[29]:
-
-
 hidden_size = 256
 encoder1 = EncoderRNN(input_lang.n_words, hidden_size).cuda()
 attn_decoder1 = DecoderRNN(hidden_size, output_lang.n_words).cuda()
-
-
-# In[30]:
 
 
 trainEpochs(
@@ -617,9 +542,6 @@ trainEpochs(
     15000,
     print_every=500,
     learning_rate=0.005)
-
-
-# In[107]:
 
 
 evaluateRandomly(encoder1, attn_decoder1)
@@ -636,9 +558,6 @@ evaluateRandomly(encoder1, attn_decoder1)
 # NOTE: This only works when using the attentional decoder, if you've been
 # following the notebook to this point you are using the standard decoder.
 
-# In[20]:
-
-
 output_words, attentions = evaluate(
     encoder1, attn_decoder1, "je suis trop froid .")
 plt.matshow(attentions.numpy())
@@ -646,9 +565,6 @@ plt.matshow(attentions.numpy())
 
 # For a better viewing experience we will do the extra work of adding axes
 # and labels:
-
-# In[21]:
-
 
 def showAttention(input_sentence, output_words, attentions):
     # Set up figure with colorbar
@@ -680,25 +596,13 @@ def evaluateAndShowAttention(input_sentence):
     showAttention(input_sentence, output_words, attentions)
 
 
-# In[22]:
-
-
 evaluateAndShowAttention("elle a cinq ans de moins que moi .")
-
-
-# In[23]:
 
 
 evaluateAndShowAttention("elle est trop petit .")
 
 
-# In[24]:
-
-
 evaluateAndShowAttention("je ne crains pas de mourir .")
-
-
-# In[25]:
 
 
 evaluateAndShowAttention("c est un jeune directeur plein de talent .")

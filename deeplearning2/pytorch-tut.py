@@ -1,9 +1,6 @@
 
 # coding: utf-8
 
-# In[79]:
-
-
 get_ipython().magic(u'matplotlib inline')
 import torch
 from torch.autograd import Variable
@@ -21,59 +18,32 @@ import operator
 # Tensors are similar to numpy's ndarrays, with the addition being that
 # Tensors can also be used on a GPU to accelerate computing.
 
-# In[6]:
-
-
 x = torch.Tensor(5, 3)
 x
-
-
-# In[7]:
 
 
 x = torch.rand(5, 3)
 x
 
 
-# In[8]:
-
-
 x.size()
-
-
-# In[9]:
 
 
 y = torch.rand(5, 3)
 
 
-# In[10]:
-
-
 x + y
 
 
-# In[11]:
-
-
 torch.add(x, y)
-
-
-# In[12]:
 
 
 result = torch.Tensor(5, 3)
 torch.add(x, y, out=result)
 
 
-# In[13]:
-
-
 # anything ending in '_' is an in-place operation
 y.add_(x)  # adds x to y in-place
-
-
-# In[14]:
 
 
 # standard numpy-like indexing with all bells and whistles
@@ -87,21 +57,12 @@ x[:, 1]
 
 # #### Converting torch Tensor to numpy Array
 
-# In[13]:
-
-
 a = torch.ones(5)
 a
 
 
-# In[14]:
-
-
 b = a.numpy()
 b
-
-
-# In[15]:
 
 
 a.add_(1)
@@ -110,9 +71,6 @@ print(b)  # see how the numpy array changed in value
 
 
 # #### Converting numpy Array to torch Tensor
-
-# In[16]:
-
 
 a = np.ones(5)
 b = torch.from_numpy(a)
@@ -124,9 +82,6 @@ print(b)  # see how changing the np array changed the torch Tensor automatically
 # ### CUDA Tensors
 #
 # Tensors can be moved onto GPU using the `.cuda` function.
-
-# In[15]:
-
 
 x = x.cuda()
 y = y.cuda()
@@ -149,41 +104,23 @@ x + y
 # If you want to compute the derivatives, you can call `.backward()` on a
 # `Variable`.
 
-# In[53]:
-
-
 x = Variable(torch.ones(2, 2), requires_grad=True)
 x
-
-
-# In[54]:
 
 
 y = x + 2
 y
 
 
-# In[55]:
-
-
 y.creator
-
-
-# In[56]:
 
 
 z = y * y * 3
 z
 
 
-# In[57]:
-
-
 out = z.mean()
 out
-
-
-# In[58]:
 
 
 # You never have to look at these in practice - this is just showing how the
@@ -192,13 +129,7 @@ print(out.creator.previous_functions[0][0])
 print(out.creator.previous_functions[0][0].previous_functions[0][0])
 
 
-# In[59]:
-
-
 out.backward()
-
-
-# In[60]:
 
 
 # d(out)/dx
@@ -210,14 +141,8 @@ x.grad
 # Because PyTorch is a dynamic computation framework, we can take the
 # gradients of all kinds of interesting computations, even loops!
 
-# In[34]:
-
-
 x = torch.randn(3)
 x = Variable(x, requires_grad=True)
-
-
-# In[35]:
 
 
 y = x * 2
@@ -225,20 +150,11 @@ while y.data.norm() < 1000:
     y = y * 2
 
 
-# In[36]:
-
-
 y
-
-
-# In[37]:
 
 
 gradients = torch.FloatTensor([0.1, 1.0, 0.0001])
 y.backward(gradients)
-
-
-# In[38]:
 
 
 x.grad
@@ -250,9 +166,6 @@ x.grad
 #
 # An `nn.Module` contains layers, and a method `forward(input)`that
 # returns the `output`.
-
-# In[81]:
-
 
 class Net(nn.Module):
     def __init__(self):
@@ -277,9 +190,6 @@ class Net(nn.Module):
         return reduce(operator.mul, x.size()[1:])
 
 
-# In[82]:
-
-
 net = Net()
 net
 
@@ -288,13 +198,7 @@ net
 #
 # The learnable parameters of a model are returned by `net.parameters()`
 
-# In[83]:
-
-
 net.cuda()
-
-
-# In[84]:
 
 
 params = list(net.parameters())
@@ -303,15 +207,9 @@ len(params), params[0].size()
 
 # The input to the forward is a `Variable`, and so is the output.
 
-# In[85]:
-
-
 input = Variable(torch.randn(1, 1, 32, 32)).cuda()
 out = net(input)
 out
-
-
-# In[86]:
 
 
 net.zero_grad()  # zeroes the gradient buffers of all parameters
@@ -324,9 +222,6 @@ out.backward(torch.randn(1, 10).cuda())  # backprops with random gradients
 # package](http://pytorch.org/docs/nn.html#loss-functions). A simple loss
 # is: `nn.MSELoss` which computes the mean-squared error between the input
 # and the target.
-
-# In[87]:
-
 
 output = net(input)
 target = Variable(torch.range(1, 10)).cuda()  # a dummy target, for example
@@ -346,9 +241,6 @@ loss
 # So, when we call `loss.backward()`, the whole graph is differentiated w.r.t. the loss, and all Variables in the graph will have their `.grad` Variable accumulated with the gradient.
 #
 
-# In[88]:
-
-
 # now we shall call loss.backward(), and have a look at gradients before
 # and after
 net.zero_grad()  # zeroes the gradient buffers of all parameters
@@ -357,9 +249,6 @@ print(net.conv1.bias.grad)
 loss.backward()
 print('conv1.bias.grad after backward')
 print(net.conv1.bias.grad)
-
-
-# In[89]:
 
 
 optimizer = optim.SGD(net.parameters(), lr=0.01)
@@ -393,14 +282,8 @@ optimizer.step()  # Does the update
 #
 # Using `torch.vision`, it's extremely easy to load CIFAR10.
 
-# In[75]:
-
-
 import torchvision
 from torchvision import transforms, datasets
-
-
-# In[78]:
 
 
 # The output of torchvision datasets are PILImage images of range [0, 1].
@@ -428,14 +311,8 @@ classes = ('plane', 'car', 'bird', 'cat',
            'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
 
 
-# In[90]:
-
-
 def imshow(img):
     plt.imshow(np.transpose((img / 2 + 0.5).numpy(), (1, 2, 0)))
-
-
-# In[91]:
 
 
 # show some random training images
@@ -449,9 +326,6 @@ print(' '.join('%5s' % classes[labels[j]] for j in range(4)))
 
 
 # ### 2. Define a Convolution Neural Network
-
-# In[92]:
-
 
 class Net(nn.Module):
     def __init__(self):
@@ -478,9 +352,6 @@ net = Net().cuda()
 
 # ### 2. Define a Loss function and optimizer
 
-# In[93]:
-
-
 criterion = nn.CrossEntropyLoss().cuda()
 optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
 
@@ -491,9 +362,6 @@ optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
 #
 # We simply have to loop over our data iterator, and feed the inputs to
 # the network and optimize
-
-# In[94]:
-
 
 for epoch in range(2):  # loop over the dataset multiple times
 
@@ -522,9 +390,6 @@ for epoch in range(2):  # loop over the dataset multiple times
 #
 # First, let's display an image from the test set to get familiar.
 
-# In[97]:
-
-
 dataiter = iter(testloader)
 images, labels = dataiter.next()
 
@@ -535,9 +400,6 @@ imshow(torchvision.utils.make_grid(images))
 
 # Okay, now let us see what the neural network thinks these examples above are:
 
-# In[96]:
-
-
 outputs = net(Variable(images).cuda())
 _, predicted = torch.max(outputs.data, 1)
 ' '.join('%5s' % classes[predicted[j][0]] for j in range(4))
@@ -545,9 +407,6 @@ _, predicted = torch.max(outputs.data, 1)
 
 # The results seem pretty good. Let us look at how the network performs on
 # the whole dataset.
-
-# In[98]:
-
 
 correct, total = 0, 0
 for data in testloader:

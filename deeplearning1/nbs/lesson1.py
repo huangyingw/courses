@@ -26,9 +26,6 @@
 # This shows plots in the web page itself - we always wants to use this
 # when using jupyter notebook:
 
-# In[1]:
-
-
 get_ipython().magic(u'matplotlib inline')
 
 
@@ -36,17 +33,11 @@ get_ipython().magic(u'matplotlib inline')
 # your notebooks folder, and then exclude that directory from git control
 # by adding it to .gitignore.)
 
-# In[2]:
-
-
 path = "data/dogscats/"
 #path = "data/dogscats/sample/"
 
 
 # A few basic libraries that we'll need for the initial exercises:
-
-# In[3]:
-
 
 from __future__ import division, print_function
 
@@ -61,9 +52,6 @@ from matplotlib import pyplot as plt
 # We have created a file most imaginatively called 'utils.py' to store any
 # little convenience functions we'll want to use. We will discuss these as
 # we use them.
-
-# In[4]:
-
 
 import utils
 reload(utils)
@@ -84,25 +72,16 @@ from utils import plots
 # since at this stage we're just going to focus on the minimum necessary
 # to actually do useful work.
 
-# In[5]:
-
-
 # As large as you can, but no larger than 64 is recommended.
 # If you have an older or cheaper GPU, you'll run out of memory, so will
 # have to decrease this.
 batch_size = 64
 
 
-# In[6]:
-
-
 # Import our class, and instantiate
 import vgg16
 reload(vgg16)
 from vgg16 import Vgg16
-
-
-# In[ ]:
 
 
 vgg = Vgg16()
@@ -126,9 +105,6 @@ vgg.fit(batches, val_batches, nb_epoch=1)
 #
 # First, create a Vgg16 object:
 
-# In[12]:
-
-
 vgg = Vgg16()
 
 
@@ -136,18 +112,12 @@ vgg = Vgg16()
 #
 # Let's grab batches of data from our training folder:
 
-# In[13]:
-
-
 batches = vgg.get_batches(path + 'train', batch_size=4)
 
 
 # (BTW, when Keras refers to 'classes', it doesn't mean python classes - but rather it refers to the categories of the labels, such as 'pug', or 'tabby'.)
 #
 # *Batches* is just a regular python iterator. Each iteration returns both the images themselves, as well as the labels.
-
-# In[14]:
-
 
 imgs, labels = next(batches)
 
@@ -158,9 +128,6 @@ imgs, labels = next(batches)
 # and dog). If we had three categories (e.g. cats, dogs, and kangaroos),
 # then the arrays would each contain two 0's, and one 1.
 
-# In[15]:
-
-
 plots(imgs, titles=labels)
 
 
@@ -168,17 +135,11 @@ plots(imgs, titles=labels)
 # probabilities, category indexes, and category names for each image's VGG
 # prediction.
 
-# In[16]:
-
-
 vgg.predict(imgs, True)
 
 
 # The category indexes are based on the ordering of categories used in the
 # VGG model - e.g here are the first four:
-
-# In[17]:
-
 
 vgg.classes[:4]
 
@@ -197,13 +158,7 @@ vgg.classes[:4]
 # training or predicting, in order to speed up training, and to avoid
 # running out of memory.
 
-# In[18]:
-
-
 batch_size = 64
-
-
-# In[19]:
 
 
 batches = vgg.get_batches(path + 'train', batch_size=batch_size)
@@ -214,18 +169,12 @@ val_batches = vgg.get_batches(path + 'valid', batch_size=batch_size)
 # based on the data in the batches provided - in this case, to predict
 # either 'dog' or 'cat'.
 
-# In[20]:
-
-
 vgg.finetune(batches)
 
 
 # Finally, we *fit()* the parameters of the model using the training data,
 # reporting the accuracy on the validation set after every epoch. (An
 # *epoch* is one full pass through the training data.)
-
-# In[21]:
-
 
 vgg.fit(batches, val_batches, nb_epoch=1)
 
@@ -250,9 +199,6 @@ vgg.fit(batches, val_batches, nb_epoch=1)
 # We need to import all the modules we'll be using from numpy, scipy, and
 # keras:
 
-# In[22]:
-
-
 from numpy.random import random, permutation
 from scipy import misc, ndimage
 from scipy.ndimage.interpolation import zoom
@@ -271,10 +217,8 @@ from keras.preprocessing import image
 # Let's import the mappings from VGG ids to imagenet category ids and
 # descriptions, for display purposes later.
 
-# In[23]:
-
-
-FILES_PATH = 'http://files.fast.ai/models/'; CLASS_FILE = 'imagenet_class_index.json'
+FILES_PATH = 'http://files.fast.ai/models/'
+CLASS_FILE = 'imagenet_class_index.json'
 # Keras' get_file() is a handy function that downloads files, and caches
 # them for re-use later
 fpath = get_file(CLASS_FILE, FILES_PATH + CLASS_FILE, cache_subdir='models')
@@ -286,9 +230,6 @@ classes = [class_dict[str(i)][1] for i in range(len(class_dict))]
 
 # Here's a few examples of the categories we just imported:
 
-# In[24]:
-
-
 classes[:5]
 
 
@@ -299,9 +240,6 @@ classes[:5]
 # VGG has just one type of convolutional block, and one type of fully
 # connected ('dense') block. Here's the convolutional block definition:
 
-# In[25]:
-
-
 def ConvBlock(layers, model, filters):
     for i in range(layers):
         model.add(ZeroPadding2D((1, 1)))
@@ -310,9 +248,6 @@ def ConvBlock(layers, model, filters):
 
 
 # ...and here's the fully-connected definition.
-
-# In[26]:
-
 
 def FCBlock(model):
     model.add(Dense(4096, activation='relu'))
@@ -326,9 +261,6 @@ def FCBlock(model):
 # uses R,G,B. We need to preprocess our data to make these two changes, so
 # that it is compatible with the VGG model:
 
-# In[27]:
-
-
 # Mean of each channel as provided by VGG researchers
 vgg_mean = np.array([123.68, 116.779, 103.939]).reshape((3, 1, 1))
 
@@ -340,9 +272,6 @@ def vgg_preprocess(x):
 
 # Now we're ready to define the VGG model architecture - look at how
 # simple it is, now that we have the basic blocks defined!
-
-# In[28]:
-
 
 def VGG_16():
     model = Sequential()
@@ -369,9 +298,6 @@ def VGG_16():
 # Now that we've defined the architecture, we can create the model like
 # any python object:
 
-# In[29]:
-
-
 model = VGG_16()
 
 
@@ -382,9 +308,6 @@ model = VGG_16()
 # archive, and train the model for many days! It's very helpful when
 # researchers release their weights, as they did here.
 
-# In[30]:
-
-
 fpath = get_file('vgg16.h5', FILES_PATH + 'vgg16.h5', cache_subdir='models')
 model.load_weights(fpath)
 
@@ -393,9 +316,6 @@ model.load_weights(fpath)
 #
 # The setup of the imagenet model is now complete, so all we have to do is
 # grab a batch of images and call *predict()* on them.
-
-# In[31]:
-
 
 batch_size = 4
 
@@ -407,9 +327,6 @@ batch_size = 4
 # little wrapper to define some helpful defaults appropriate for imagenet
 # data:
 
-# In[32]:
-
-
 def get_batches(dirname, gen=image.ImageDataGenerator(), shuffle=True,
                 batch_size=batch_size, class_mode='categorical'):
     return gen.flow_from_directory(path + dirname, target_size=(224, 224),
@@ -418,9 +335,6 @@ def get_batches(dirname, gen=image.ImageDataGenerator(), shuffle=True,
 
 # From here we can use exactly the same steps as before to look at
 # predictions from the model.
-
-# In[33]:
-
 
 batches = get_batches('train', batch_size=batch_size)
 val_batches = get_batches('valid', batch_size=batch_size)
@@ -435,9 +349,6 @@ plots(imgs, titles=labels)
 # category for each image. By finding the index with the largest
 # probability (with *np.argmax()*) we can find the predicted label.
 
-# In[34]:
-
-
 def pred_batch(imgs):
     preds = model.predict(imgs)
     idxs = np.argmax(preds, axis=1)
@@ -450,9 +361,6 @@ def pred_batch(imgs):
     for i in range(len(idxs)):
         idx = idxs[i]
         print ('  {:.4f}/{}'.format(preds[i, idx], classes[idx]))
-
-
-# In[35]:
 
 
 pred_batch(imgs)

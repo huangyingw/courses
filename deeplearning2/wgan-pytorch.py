@@ -3,17 +3,11 @@
 
 # # Wasserstein GAN in Pytorch
 
-# In[39]:
-
-
 get_ipython().magic(u'matplotlib inline')
 import importlib
 import utils2
 importlib.reload(utils2)
 from utils2 import *
-
-
-# In[40]:
 
 
 import torch_utils
@@ -25,17 +19,11 @@ from torch_utils import *
 #
 # First, we, set up batch size, image size, and size of noise vector:
 
-# In[ ]:
-
-
 bs, sz, nz = 64, 64, 100
 
 
 # Pytorch has the handy [torch-vision](https://github.com/pytorch/vision)
 # library which makes handling images fast and easy.
-
-# In[45]:
-
 
 PATH = 'data/cifar10/'
 data = datasets.CIFAR10(root=PATH, download=True,
@@ -46,9 +34,6 @@ data = datasets.CIFAR10(root=PATH, download=True,
                                 (0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
                         ])
                         )
-
-
-# In[46]:
 
 
 PATH = 'data/lsun/'
@@ -64,9 +49,6 @@ data = datasets.LSUN(db_path=PATH, classes=['bedroom_train'],
 
 # Even parallel processing is handling automatically by torch-vision.
 
-# In[62]:
-
-
 dataloader = torch.utils.data.DataLoader(data, bs, True, num_workers=8)
 n = len(dataloader)
 n
@@ -74,9 +56,6 @@ n
 
 # Our activation function will be `tanh`, so we need to do some processing
 # to view the generated images.
-
-# In[48]:
-
 
 def show(img, fs=(6, 6)):
     plt.figure(figsize=fs)
@@ -97,18 +76,12 @@ def show(img, fs=(6, 6)):
 
 # The CNN definitions are a little big for a notebook, so we import them.
 
-# In[49]:
-
-
 import dcgan
 importlib.reload(dcgan)
 from dcgan import DCGAN_D, DCGAN_G
 
 
 # Pytorch uses `module.apply()` for picking an initializer.
-
-# In[47]:
-
 
 def weights_init(m):
     if isinstance(m, (nn.Conv2d, nn.ConvTranspose2d)):
@@ -118,14 +91,8 @@ def weights_init(m):
         m.bias.data.fill_(0)
 
 
-# In[50]:
-
-
 netG = DCGAN_G(sz, nz, 3, 64, 1, 1).cuda()
 netG.apply(weights_init)
-
-
-# In[51]:
 
 
 netD = DCGAN_D(sz, 3, 64, 1, 1).cuda()
@@ -134,23 +101,14 @@ netD.apply(weights_init)
 
 # Just some shortcuts to create tensors and variables.
 
-# In[52]:
-
-
 from torch import FloatTensor as FT
 
 
 def Var(*params): return Variable(FT(*params).cuda())
 
 
-# In[53]:
-
-
 def create_noise(b):
     return Variable(FT(b, nz, 1, 1).cuda().normal_(0, 1))
-
-
-# In[71]:
 
 
 # Input placeholder
@@ -165,17 +123,11 @@ mone = one * -1
 # An optimizer needs to be told what variables to optimize. A module
 # automatically keeps track of its variables.
 
-# In[64]:
-
-
 optimizerD = optim.RMSprop(netD.parameters(), lr=1e-4)
 optimizerG = optim.RMSprop(netG.parameters(), lr=1e-4)
 
 
 # One forward step and one backward step for D
-
-# In[65]:
-
 
 def step_D(v, init_grad):
     err = netD(v)
@@ -183,15 +135,9 @@ def step_D(v, init_grad):
     return err
 
 
-# In[72]:
-
-
 def make_trainable(net, val):
     for p in net.parameters():
         p.requires_grad = val
-
-
-# In[66]:
 
 
 def train(niter, first=True):
@@ -231,39 +177,21 @@ def train(niter, first=True):
 # errD.data[0], errG.data[0], errD_real.data[0], errD_fake.data[0]))
 
 
-# In[67]:
-
-
 get_ipython().magic(u'time train(200, True)')
 
 
 # ## View
 
-# In[68]:
-
-
 fake = netG(fixed_noise).data.cpu()
 
 
-# In[449]:
-
-
 show(vutils.make_grid(fake))
-
-
-# In[450]:
 
 
 show(vutils.make_grid(iter(dataloader).next()[0]))
 
 
-# In[69]:
-
-
 show(vutils.make_grid(fake))
-
-
-# In[70]:
 
 
 show(vutils.make_grid(iter(dataloader).next()[0]))

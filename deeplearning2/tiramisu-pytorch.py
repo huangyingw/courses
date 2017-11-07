@@ -3,9 +3,6 @@
 
 # # One Hundred Layers Tiramisu
 
-# In[1]:
-
-
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -13,9 +10,6 @@ from collections import OrderedDict
 
 
 # ### Initial Conv Block
-
-# In[29]:
-
 
 class _FirstConv(nn.Sequential):
     def __init__(self, num_input_features):
@@ -39,17 +33,11 @@ class _FirstConv(nn.Sequential):
                 padding=1))
 
 
-# In[30]:
-
-
 # Test
 conv1 = _FirstConv(5)
 
 
 # ### Dense Layer
-
-# In[31]:
-
 
 class _DenseLayer(nn.Sequential):
     def __init__(self, num_input_features, growth_rate, bn_size, drop_rate):
@@ -74,17 +62,11 @@ class _DenseLayer(nn.Sequential):
         return torch.cat([x, new_features], 1)
 
 
-# In[32]:
-
-
 # Test
 dense1 = _DenseLayer(5, 3, 1, .5)
 
 
 # ### Dense Block
-
-# In[33]:
-
 
 class _DenseBlock(nn.Sequential):
     def __init__(self, num_layers, num_input_features,
@@ -101,17 +83,11 @@ class _DenseBlock(nn.Sequential):
             self.add_module('denselayer%d' % (i + 1), layer)
 
 
-# In[34]:
-
-
 # Test
 denseBlock1 = _DenseBlock(4, 4, 1, 4, .5)
 
 
 # ### Transition Up
-
-# In[35]:
-
 
 class _TransitionUp(nn.Sequential):
     def __init__(self, num_input_features, num_output_features):
@@ -123,17 +99,11 @@ class _TransitionUp(nn.Sequential):
         self.add_module('pool', nn.AvgPool2d(kernel_size=2, stride=2))
 
 
-# In[36]:
-
-
 # Test
 transUp = _TransitionUp(5, 10)
 
 
 # ### Transition Down
-
-# In[37]:
-
 
 class _TransitionDown(nn.Sequential):
     def __init__(self, num_input_features, num_output_features):
@@ -145,17 +115,11 @@ class _TransitionDown(nn.Sequential):
         self.add_module('pool', nn.AvgPool2d(kernel_size=2, stride=2))
 
 
-# In[38]:
-
-
 # Test
 transDown = _TransitionDown(5, 10)
 
 
 # ### Final Model
-
-# In[45]:
-
 
 class FCDenseNet(nn.Module):
     r"""FC-DenseNet model class, based on
@@ -205,9 +169,6 @@ class FCDenseNet(nn.Module):
         out = F.avg_pool2d(out, kernel_size=7).view(features.size(0), -1)
         out = self.classifier(out)
         return out
-
-
-# In[46]:
 
 
 # Test

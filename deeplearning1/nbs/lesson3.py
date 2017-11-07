@@ -3,13 +3,7 @@
 
 # # Training a better model
 
-# In[1]:
-
-
 from theano.sandbox import cuda
-
-
-# In[2]:
 
 
 get_ipython().magic(u'matplotlib inline')
@@ -17,9 +11,6 @@ import utils
 reload(utils)
 from utils import *
 from __future__ import division, print_function
-
-
-# In[3]:
 
 
 #path = "data/dogscats/sample/"
@@ -58,16 +49,10 @@ batch_size = 64
 # As before we need to start with a working model, so let's bring in our
 # working VGG 16 model and change it to predict our binary dependent...
 
-# In[4]:
-
-
 model = vgg_ft(2)
 
 
 # ...and load our fine-tuned weights.
-
-# In[5]:
-
 
 model.load_weights(model_path + 'finetune3.h5')
 
@@ -78,32 +63,17 @@ model.load_weights(model_path + 'finetune3.h5')
 # in our model, and creating a new model that contains just the layers up
 # to and including this layer:
 
-# In[6]:
-
-
 layers = model.layers
-
-
-# In[7]:
 
 
 last_conv_idx = [index for index, layer in enumerate(layers)
                  if isinstance(layer, Convolution2D)][-1]
 
 
-# In[8]:
-
-
 last_conv_idx
 
 
-# In[9]:
-
-
 layers[last_conv_idx]
-
-
-# In[10]:
 
 
 conv_layers = layers[:last_conv_idx + 1]
@@ -117,9 +87,6 @@ fc_layers = layers[last_conv_idx + 1:]
 # last lesson - it's only the model that has changed. As you're seeing,
 # there's a fairly small number of "recipes" that can get us a long way!
 
-# In[4]:
-
-
 batches = get_batches(path + 'train', shuffle=False, batch_size=batch_size)
 val_batches = get_batches(path + 'valid', shuffle=False, batch_size=batch_size)
 
@@ -129,39 +96,21 @@ val_labels = onehot(val_classes)
 trn_labels = onehot(trn_classes)
 
 
-# In[5]:
-
-
 batches.class_indices
-
-
-# In[12]:
 
 
 val_features = conv_model.predict_generator(val_batches, val_batches.nb_sample)
 
 
-# In[ ]:
-
-
 trn_features = conv_model.predict_generator(batches, batches.nb_sample)
-
-
-# In[41]:
 
 
 save_array(model_path + 'train_convlayer_features.bc', trn_features)
 save_array(model_path + 'valid_convlayer_features.bc', val_features)
 
 
-# In[89]:
-
-
 trn_features = load_array(model_path + 'train_convlayer_features.bc')
 val_features = load_array(model_path + 'valid_convlayer_features.bc')
-
-
-# In[90]:
 
 
 trn_features.shape
@@ -172,22 +121,13 @@ trn_features.shape
 # copy pre-trained weights over from that model. However, we'll set the
 # dropout layer's p values to zero, so as to effectively remove dropout.
 
-# In[16]:
-
-
 # Copy the weights from the pre-trained model.
 # NB: Since we're removing dropout, we want to half the weights
 def proc_wgts(layer): return [o / 2 for o in layer.get_weights()]
 
 
-# In[17]:
-
-
 # Such a finely tuned model needs to be updated very slowly!
 opt = RMSprop(lr=0.00001, rho=0.7)
-
-
-# In[18]:
 
 
 def get_fc_model():
@@ -211,28 +151,16 @@ def get_fc_model():
     return model
 
 
-# In[19]:
-
-
 fc_model = get_fc_model()
 
 
 # And fit the model in the usual way:
 
-# In[15]:
-
-
 fc_model.fit(trn_features, trn_labels, nb_epoch=8,
              batch_size=batch_size, validation_data=(val_features, val_labels))
 
 
-# In[16]:
-
-
 fc_model.save_weights(model_path + 'no_dropout.h5')
-
-
-# In[ ]:
 
 
 fc_model.load_weights(model_path + 'no_dropout.h5')
@@ -269,9 +197,6 @@ fc_model.load_weights(model_path + 'no_dropout.h5')
 # randomly is changed according to these settings. Here's how to define a
 # generator that includes data augmentation:
 
-# In[26]:
-
-
 # dim_ordering='tf' uses tensorflow dimension ordering,
 #   which is the same order as matplotlib uses for display.
 # Therefore when just using for display purposes, this is more convenient
@@ -284,23 +209,14 @@ gen = image.ImageDataGenerator(rotation_range=10, width_shift_range=0.1,
 # details of this code don't matter much, but feel free to read the
 # comments and keras docs to understand the details if you're interested).
 
-# In[27]:
-
-
 # Create a 'batch' of a single image
 img = np.expand_dims(ndimage.imread('data/dogscats/test/7.jpg'), 0)
 # Request the generator to create batches from this image
 aug_iter = gen.flow(img)
 
 
-# In[28]:
-
-
 # Get eight examples of these augmented images
 aug_imgs = [next(aug_iter)[0].astype(np.uint8) for i in range(8)]
-
-
-# In[12]:
 
 
 # The original
@@ -313,14 +229,8 @@ plt.imshow(img[0])
 # augmentation, although it's a good idea to test your intuition by
 # checking the results of different augmentation approaches.
 
-# In[29]:
-
-
 # Augmented data
 plots(aug_imgs, (20, 7), 2)
-
-
-# In[22]:
 
 
 # Ensure that we return to theano dimension ordering
@@ -335,14 +245,8 @@ K.set_image_dim_ordering('th')
 # will use a generator with augmentation configured. Here's how we set up
 # the generator, and create batches from it:
 
-# In[14]:
-
-
 gen = image.ImageDataGenerator(rotation_range=15, width_shift_range=0.1,
                                height_shift_range=0.1, zoom_range=0.1, horizontal_flip=True)
-
-
-# In[15]:
 
 
 batches = get_batches(path + 'train', gen, batch_size=batch_size)
@@ -357,13 +261,7 @@ val_batches = get_batches(path + 'valid', shuffle=False, batch_size=batch_size)
 # convolutional model--after ensuring that the convolutional layers are
 # not trainable:
 
-# In[18]:
-
-
 fc_model = get_fc_model()
-
-
-# In[19]:
 
 
 for layer in conv_model.layers:
@@ -376,36 +274,21 @@ conv_model.add(fc_model)
 # use *fit_generator()* since we want to pull random images from the
 # directories on every batch.
 
-# In[22]:
-
-
 conv_model.compile(
     optimizer=opt,
     loss='categorical_crossentropy',
     metrics=['accuracy'])
 
 
-# In[52]:
-
-
 conv_model.fit_generator(batches, samples_per_epoch=batches.nb_sample, nb_epoch=8,
                          validation_data=val_batches, nb_val_samples=val_batches.nb_sample)
-
-
-# In[24]:
 
 
 conv_model.fit_generator(batches, samples_per_epoch=batches.nb_sample, nb_epoch=3,
                          validation_data=val_batches, nb_val_samples=val_batches.nb_sample)
 
 
-# In[53]:
-
-
 conv_model.save_weights(model_path + 'aug1.h5')
-
-
-# In[23]:
 
 
 conv_model.load_weights(model_path + 'aug1.h5')
@@ -445,13 +328,7 @@ conv_model.load_weights(model_path + 'aug1.h5')
 # We can use nearly the same approach as before - but this time we'll add
 # batchnorm layers (and dropout layers):
 
-# In[16]:
-
-
 conv_layers[-1].output_shape[1:]
-
-
-# In[34]:
 
 
 def get_bn_layers(p):
@@ -468,9 +345,6 @@ def get_bn_layers(p):
     ]
 
 
-# In[26]:
-
-
 def load_fc_weights_from_vgg16bn(model):
     "Load weights for model from the dense layers of the Vgg16BN model."
     # See imagenet_batchnorm.ipynb for info on how the weights for
@@ -481,25 +355,13 @@ def load_fc_weights_from_vgg16bn(model):
     copy_weights(fc_layers, model.layers)
 
 
-# In[27]:
-
-
 p = 0.6
-
-
-# In[69]:
 
 
 bn_model = Sequential(get_bn_layers(0.6))
 
 
-# In[ ]:
-
-
 load_fc_weights_from_vgg16bn(bn_model)
-
-
-# In[71]:
 
 
 def proc_wgts(layer, prev_p, new_p):
@@ -507,15 +369,9 @@ def proc_wgts(layer, prev_p, new_p):
     return [o * scal for o in layer.get_weights()]
 
 
-# In[72]:
-
-
 for l in bn_model.layers:
     if isinstance(l, Dense):
         l.set_weights(proc_wgts(l, 0.5, 0.6))
-
-
-# In[73]:
 
 
 bn_model.pop()
@@ -523,19 +379,10 @@ for layer in bn_model.layers:
     layer.trainable = False
 
 
-# In[74]:
-
-
 bn_model.add(Dense(2, activation='softmax'))
 
 
-# In[75]:
-
-
 bn_model.compile(Adam(), 'categorical_crossentropy', metrics=['accuracy'])
-
-
-# In[76]:
 
 
 bn_model.fit(
@@ -547,27 +394,15 @@ bn_model.fit(
         val_labels))
 
 
-# In[77]:
-
-
 bn_model.save_weights(model_path + 'bn.h5')
-
-
-# In[44]:
 
 
 bn_model.load_weights(model_path + 'bn.h5')
 
 
-# In[78]:
-
-
 bn_layers = get_bn_layers(0.6)
 bn_layers.pop()
 bn_layers.append(Dense(2, activation='softmax'))
-
-
-# In[79]:
 
 
 final_model = Sequential(conv_layers)
@@ -577,60 +412,33 @@ for layer in bn_layers:
     final_model.add(layer)
 
 
-# In[80]:
-
-
 for l1, l2 in zip(bn_model.layers, bn_layers):
     l2.set_weights(l1.get_weights())
-
-
-# In[81]:
 
 
 final_model.compile(optimizer=Adam(),
                     loss='categorical_crossentropy', metrics=['accuracy'])
 
 
-# In[82]:
-
-
 final_model.fit_generator(batches, samples_per_epoch=batches.nb_sample, nb_epoch=1,
                           validation_data=val_batches, nb_val_samples=val_batches.nb_sample)
-
-
-# In[83]:
 
 
 final_model.save_weights(model_path + 'final1.h5')
 
 
-# In[84]:
-
-
 final_model.fit_generator(batches, samples_per_epoch=batches.nb_sample, nb_epoch=4,
                           validation_data=val_batches, nb_val_samples=val_batches.nb_sample)
-
-
-# In[85]:
 
 
 final_model.save_weights(model_path + 'final2.h5')
 
 
-# In[86]:
-
-
 final_model.optimizer.lr = 0.001
-
-
-# In[92]:
 
 
 final_model.fit_generator(batches, samples_per_epoch=batches.nb_sample, nb_epoch=4,
                           validation_data=val_batches, nb_val_samples=val_batches.nb_sample)
-
-
-# In[ ]:
 
 
 bn_model.save_weights(model_path + 'final3.h5')

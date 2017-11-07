@@ -7,9 +7,6 @@
 # * Text: neural translation, text to speech, image captioning
 # * Image: Segmentation, artistic filters, image sharpening and cleaning
 
-# In[1]:
-
-
 get_ipython().magic(u'matplotlib inline')
 import importlib
 import utils2
@@ -23,9 +20,6 @@ from keras import metrics
 from vgg16_avg import VGG16_Avg
 
 
-# In[2]:
-
-
 # Tell Tensorflow to use no more GPU RAM than necessary
 limit_mem()
 
@@ -34,9 +28,6 @@ limit_mem()
 # [here](http://files.fast.ai/data/imagenet-sample-train.tar.gz). Update
 # path below to where you download data to. Optionally use a 2nd path for
 # fast (e.g. SSD) storage - set both to the same path if using AWS.
-
-# In[5]:
-
 
 path = '/data/datasets/imagenet/sample/'
 dpath = '/data/jhoward/fast/imagenet/sample/'
@@ -58,22 +49,13 @@ dpath = '/data/jhoward/fast/imagenet/sample/'
 
 # Our first step is to list out the files we have, and then grab some image.
 
-# In[14]:
-
-
 fnames = glob.glob(path + '**/*.JPEG', recursive=True)
 n = len(fnames)
 n
 
 
-# In[19]:
-
-
 fn = fnames[50]
 fn
-
-
-# In[20]:
 
 
 img = Image.open(fnames[50])
@@ -87,9 +69,6 @@ img
 # We can do this in one step using *broadcasting*, which is a topic we'll
 # be returning to many times during this course.
 
-# In[21]:
-
-
 rn_mean = np.array([123.68, 116.779, 103.939], dtype=np.float32)
 
 
@@ -99,13 +78,7 @@ def preproc(x): return (x - rn_mean)[:, :, :, ::-1]
 # When we generate images from this network, we'll need to undo the above
 # preprocessing in order to view them.
 
-# In[22]:
-
-
 def deproc(x, s): return np.clip(x.reshape(s)[:, :, :, ::-1] + rn_mean, 0, 255)
-
-
-# In[23]:
 
 
 img_arr = preproc(np.expand_dims(np.array(img), 0))
@@ -114,25 +87,13 @@ shp = img_arr.shape
 
 # #### Broadcasting examples
 
-# In[24]:
-
-
 np.array([1, 2, 3]) - 2
-
-
-# In[25]:
 
 
 np.array([2, 3]).reshape(1, 1, 1, 2)
 
 
-# In[26]:
-
-
 np.array([2, 3]).reshape(1, 1, 2, 1)
-
-
-# In[27]:
 
 
 a = np.random.randn(5, 1, 3, 2)
@@ -158,25 +119,16 @@ b = np.random.randn(2)
 # information about the original input area. Instead we will use average
 # pooling, as this does not throw away as much information.
 
-# In[28]:
-
-
 model = VGG16_Avg(include_top=False)
 
 
 # Here we're grabbing the activations from near the end of the
 # convolutional model).
 
-# In[29]:
-
-
 layer = model.get_layer('block5_conv1').output
 
 
 # And let's calculate the target activations for this layer:
-
-# In[30]:
-
 
 layer_model = Model(model.input, layer)
 targ = K.variable(layer_model.predict(img_arr))
@@ -185,9 +137,6 @@ targ = K.variable(layer_model.predict(img_arr))
 # In our implementation, we need to define an object that will allow us to
 # separately access the loss function and gradients of a function, since
 # that is what scikit-learn's optimizers require.
-
-# In[31]:
-
 
 class Evaluator(object):
     def __init__(self, f, shp): self.f, self.shp = f, shp
@@ -202,9 +151,6 @@ class Evaluator(object):
 # We'll define our loss function to calculate the mean squared error
 # between the two outputs at the specified convolutional layer.
 
-# In[32]:
-
-
 loss = metrics.mse(layer, targ)
 grads = K.gradients(loss, model.input)
 fn = K.function([model.input], [loss] + grads)
@@ -214,9 +160,6 @@ evaluator = Evaluator(fn, shp)
 # Now we're going to optimize this loss function with a deterministic
 # approach to optimization that uses a line search, which we can implement
 # with sklearn's `fmin_l_bfgs_b` funtionc.
-
-# In[33]:
-
 
 def solve_image(eval_obj, niter, x):
     for i in range(niter):
@@ -230,9 +173,6 @@ def solve_image(eval_obj, niter, x):
 
 # Next we need to generate a random image.
 
-# In[34]:
-
-
 def rand_img(shape): return np.random.uniform(-2.5, 2.5, shape) / 100
 
 
@@ -243,13 +183,7 @@ plt.imshow(x[0])
 # Now we'll run through this optimization approach ten times and train the
 # noise image's pixels as desired.
 
-# In[35]:
-
-
 iterations = 10
-
-
-# In[148]:
 
 
 x = solve_image(evaluator, iterations, x)
@@ -260,9 +194,6 @@ x = solve_image(evaluator, iterations, x)
 # things it has reconstructed particularly well are those things that we
 # expect Vgg16 to be good at recognizing, such as an eye or a beak.
 
-# In[42]:
-
-
 Image.open(path + 'results/res_at_iteration_9.png')
 
 
@@ -272,20 +203,11 @@ Image.open(path + 'results/res_at_iteration_9.png')
 # at an earlier layer means that we have a smaller receptive field and the
 # features are more based on geometric details rather than broad features.
 
-# In[169]:
-
-
 Image.open(path + 'results/res_at_iteration_9.png')
-
-
-# In[319]:
 
 
 from IPython.display import HTML
 from matplotlib import animation, rc
-
-
-# In[320]:
 
 
 fig, ax = plt.subplots()
@@ -297,9 +219,6 @@ def animate(i): ax.imshow(Image.open(f'{path}results/res_at_iteration_{i}.png'))
 # The optimizer first focuses on the important details of the bird, before
 # trying to match the background.
 
-# In[321]:
-
-
 anim = animation.FuncAnimation(fig, animate, frames=10, interval=200)
 HTML(anim.to_html5_video())
 
@@ -310,13 +229,7 @@ HTML(anim.to_html5_video())
 #
 # Here are some examples of images we can extract style from.
 
-# In[18]:
-
-
 def plot_arr(arr): plt.imshow(deproc(arr, arr.shape)[0].astype('uint8'))
-
-
-# In[19]:
 
 
 style = Image.open('data/starry_night.jpg')
@@ -324,15 +237,9 @@ style = style.resize(np.divide(style.size, 3.5).astype('int32'))
 style
 
 
-# In[212]:
-
-
 style = Image.open('data/bird.jpg')
 style = style.resize(np.divide(style.size, 2.4).astype('int32'))
 style
-
-
-# In[349]:
 
 
 style = Image.open('data/simpsons.jpg')
@@ -342,14 +249,8 @@ style
 
 # We're going to repeat the same approach as before, but with some differences.
 
-# In[20]:
-
-
 style_arr = preproc(np.expand_dims(style, 0)[:, :, :, :3])
 shp = style_arr.shape
-
-
-# In[21]:
 
 
 model = VGG16_Avg(include_top=False, input_shape=shp[1:])
@@ -361,13 +262,7 @@ outputs = {l.name: l.output for l in model.layers}
 # there's no reason you couldn't try using multiple layers in your content
 # loss function, if you wanted to try that).
 
-# In[22]:
-
-
 layers = [outputs['block{}_conv1'.format(o)] for o in range(1, 3)]
-
-
-# In[23]:
 
 
 layers_model = Model(model.input, layers)
@@ -384,9 +279,6 @@ targs = [K.variable(o) for o in layers_model.predict(style_arr)]
 # matrix of channels can only match some type of texture information, not
 # location information.
 
-# In[155]:
-
-
 def gram_matrix(x):
     # We want each row to be a channel, and the columns to be flattened x,y
     # locations
@@ -397,13 +289,7 @@ def gram_matrix(x):
         x.get_shape().num_elements()
 
 
-# In[156]:
-
-
 def style_loss(x, targ): return metrics.mse(gram_matrix(x), gram_matrix(targ))
-
-
-# In[157]:
 
 
 loss = sum(style_loss(l1[0], l2[0]) for l1, l2 in zip(layers, targs))
@@ -414,9 +300,6 @@ evaluator = Evaluator(style_fn, shp)
 
 # We then solve as we did before.
 
-# In[158]:
-
-
 def rand_img(shape): return np.random.uniform(-2.5, 2.5, shape) / 1
 
 
@@ -424,20 +307,11 @@ x = rand_img(shp)
 x = scipy.ndimage.filters.gaussian_filter(x, [0, 2, 2, 0])
 
 
-# In[159]:
-
-
 plt.imshow(x[0])
-
-
-# In[160]:
 
 
 iterations = 10
 x = rand_img(shp)
-
-
-# In[161]:
 
 
 x = solve_image(evaluator, iterations, x)
@@ -448,13 +322,7 @@ x = solve_image(evaluator, iterations, x)
 # an image that captures the raw style of the original image, with
 # absolutely no structure or meaning.
 
-# In[314]:
-
-
 Image.open(path + 'results/res_at_iteration_9.png')
-
-
-# In[801]:
 
 
 Image.open(path + 'res_at_iteration_9.png')
@@ -466,9 +334,6 @@ Image.open(path + 'res_at_iteration_9.png')
 # image that captures the style of an original image. The obvious idea may
 # be to just combine these two approaches by weighting and adding the two
 # loss functions.
-
-# In[162]:
-
 
 w, h = style.size
 src = img_arr[:, :h, :w]
@@ -485,22 +350,13 @@ plot_arr(src)
 # ensures that the image "looks like" the same subject, even if it doesn't
 # have the same details.
 
-# In[163]:
-
-
 style_layers = [outputs['block{}_conv2'.format(o)] for o in range(1, 6)]
 content_name = 'block4_conv2'
 content_layer = outputs[content_name]
 
 
-# In[164]:
-
-
 style_model = Model(model.input, style_layers)
 style_targs = [K.variable(o) for o in style_model.predict(style_arr)]
-
-
-# In[165]:
 
 
 content_model = Model(model.input, content_layer)
@@ -516,13 +372,7 @@ content_targ = K.variable(content_model.predict(src))
 # unstructured style. Likewise, if it is too small than the image will not
 # have enough style.
 
-# In[166]:
-
-
 style_wgts = [0.05, 0.2, 0.2, 0.25, 0.3]
-
-
-# In[167]:
 
 
 loss = sum(style_loss(l1[0], l2[0]) * w
@@ -532,20 +382,11 @@ grads = K.gradients(loss, model.input)
 transfer_fn = K.function([model.input], [loss] + grads)
 
 
-# In[168]:
-
-
 evaluator = Evaluator(transfer_fn, shp)
-
-
-# In[169]:
 
 
 iterations = 10
 x = rand_img(shp)
-
-
-# In[443]:
 
 
 x = solve_image(evaluator, iterations, x)
@@ -554,19 +395,10 @@ x = solve_image(evaluator, iterations, x)
 # These results are remarkable. Each does a fantastic job at recreating
 # the original image in the style of the artist.
 
-# In[444]:
-
-
 Image.open(path + 'results/res_at_iteration_9.png')
 
 
-# In[932]:
-
-
 Image.open(path + 'res_at_iteration_9.png')
-
-
-# In[914]:
 
 
 Image.open(path + 'res_at_iteration_9.png')
@@ -587,14 +419,8 @@ Image.open(path + 'res_at_iteration_9.png')
 # at this implementation for Super resolution. We are following the
 # approach in [this paper](https://arxiv.org/abs/1603.08155).
 
-# In[7]:
-
-
 arr_lr = bcolz.open(dpath + 'trn_resized_72_r.bc')[:]
 arr_hr = bcolz.open(dpath + 'trn_resized_288_r.bc')[:]
-
-
-# In[ ]:
 
 
 parms = {'verbose': 0, 'callbacks': [TQDMNotebookCallback(leave_inner=True)]}
@@ -609,9 +435,6 @@ parms = {'verbose': 0, 'callbacks': [TQDMNotebookCallback(leave_inner=True)]}
 # "undo" the convolutional function. It does this by padding the smaller
 # image in such a way to apply filters on it to produce a larger image.
 
-# In[ ]:
-
-
 def conv_block(x, filters, size, stride=(2, 2), mode='same', act=True):
     x = Convolution2D(
         filters,
@@ -623,16 +446,10 @@ def conv_block(x, filters, size, stride=(2, 2), mode='same', act=True):
     return Activation('relu')(x) if act else x
 
 
-# In[ ]:
-
-
 def res_block(ip, nf=64):
     x = conv_block(ip, nf, 3, (1, 1))
     x = conv_block(x, nf, 3, (1, 1), act=False)
     return merge([x, ip], mode='sum')
-
-
-# In[ ]:
 
 
 def deconv_block(x, filters, size, shape, stride=(2, 2)):
@@ -640,9 +457,6 @@ def deconv_block(x, filters, size, shape, stride=(2, 2)):
                         border_mode='same', output_shape=(None,) + shape)(x)
     x = BatchNormalization(mode=2)(x)
     return Activation('relu')(x)
-
-
-# In[ ]:
 
 
 def up_block(x, filters, size):
@@ -655,9 +469,6 @@ def up_block(x, filters, size):
 # This model here is using the previously defined blocks to encode a low
 # resolution image and then upsample it to match the same image in high
 # resolution.
-
-# In[737]:
-
 
 inp = Input(arr_lr.shape[1:])
 x = conv_block(inp, 64, 9, (1, 1))
@@ -677,9 +488,6 @@ outp = Lambda(lambda x: (x + 1) * 127.5)(x)
 # are able to train a network that can upsample an image and recreate the
 # higher resolution details.
 
-# In[ ]:
-
-
 vgg_inp = Input(shp)
 vgg = VGG16(include_top=False, input_tensor=Lambda(preproc)(vgg_inp))
 
@@ -687,9 +495,6 @@ vgg = VGG16(include_top=False, input_tensor=Lambda(preproc)(vgg_inp))
 # Since we only want to learn the "upsampling network", and are just using
 # VGG to calculate the loss function, we set the Vgg layers to not be
 # trainable.
-
-# In[ ]:
-
 
 for l in vgg.layers:
     l.trainable = False
@@ -699,9 +504,6 @@ for l in vgg.layers:
 # function. We use what's known as a perceptual loss function (which is
 # simply the content loss for some layer).
 
-# In[ ]:
-
-
 def get_outp(m, ln): return m.get_layer(f'block{ln}_conv1').output
 
 
@@ -710,15 +512,9 @@ vgg1 = vgg_content(vgg_inp)
 vgg2 = vgg_content(outp)
 
 
-# In[ ]:
-
-
 def mean_sqr_b(diff):
     dims = list(range(1, K.ndim(diff)))
     return K.expand_dims(K.sqrt(K.mean(diff**2, dims)), 0)
-
-
-# In[ ]:
 
 
 w = [0.1, 0.8, 0.1]
@@ -732,9 +528,6 @@ def content_fn(x):
     return res
 
 
-# In[743]:
-
-
 m_sr = Model([inp, vgg_inp], Lambda(content_fn)(vgg1 + vgg2))
 targ = np.zeros((arr_hr.shape[0], 1))
 
@@ -744,17 +537,11 @@ targ = np.zeros((arr_hr.shape[0], 1))
 # define a zero vector as a target parameter, which is a necessary
 # parameter when calling fit on a keras model.
 
-# In[744]:
-
-
 m_sr.compile('adam', 'mse')
 m_sr.fit([arr_lr, arr_hr], targ, 8, 2, **parms)
 
 
 # We use learning rate annealing to get a better fit.
-
-# In[745]:
-
 
 K.set_value(m_sr.optimizer.lr, 1e-4)
 m_sr.fit([arr_lr, arr_hr], targ, 16, 1, **parms)
@@ -763,13 +550,7 @@ m_sr.fit([arr_lr, arr_hr], targ, 16, 1, **parms)
 # We are only interested in the trained part of the model, which does the
 # actual upsampling.
 
-# In[746]:
-
-
 top_model = Model(inp, outp)
-
-
-# In[747]:
 
 
 p = top_model.predict(arr_lr[10:11])
@@ -780,25 +561,13 @@ p = top_model.predict(arr_lr[10:11])
 # image has filled in a lot of detail, including the shadows under the
 # greens and the texture of the food.
 
-# In[267]:
-
-
 plt.imshow(arr_lr[10].astype('uint8'))
-
-
-# In[748]:
 
 
 plt.imshow(p[0].astype('uint8'))
 
 
-# In[749]:
-
-
 top_model.save_weights(dpath + 'sr_final.h5')
-
-
-# In[198]:
 
 
 top_model.load_weights(dpath + 'top_final.h5')
@@ -828,9 +597,6 @@ top_model.load_weights(dpath + 'top_final.h5')
 #
 # (This is also a nice simple example of a custom later that you can refer to when creating your own custom layers in the future.)
 
-# In[4]:
-
-
 class ReflectionPadding2D(Layer):
     def __init__(self, padding=(1, 1), **kwargs):
         self.padding = tuple(padding)
@@ -849,21 +615,12 @@ class ReflectionPadding2D(Layer):
 
 # Testing the reflection padding layer:
 
-# In[5]:
-
-
 inp = Input((288, 288, 3))
 ref_model = Model(inp, ReflectionPadding2D((40, 10))(inp))
 ref_model.compile('adam', 'mse')
 
 
-# In[13]:
-
-
 p = ref_model.predict(arr_hr[10:11])
-
-
-# In[14]:
 
 
 plt.imshow(p[0].astype('uint8'))
@@ -874,13 +631,7 @@ plt.imshow(p[0].astype('uint8'))
 # This approach is exactly the same as super resolution, except now the
 # loss includes the style loss.
 
-# In[ ]:
-
-
 shp = arr_hr.shape[1:]
-
-
-# In[38]:
 
 
 style = Image.open('data/starry_night.jpg')
@@ -889,17 +640,11 @@ style = np.array(style)[:shp[0], :shp[1], :shp[2]]
 plt.imshow(style)
 
 
-# In[39]:
-
-
 def res_crop_block(ip, nf=64):
     x = conv_block(ip, nf, 3, (1, 1), 'valid')
     x = conv_block(x, nf, 3, (1, 1), 'valid', False)
     ip = Lambda(lambda x: x[:, 2:-2, 2:-2])(ip)
     return merge([x, ip], mode='sum')
-
-
-# In[40]:
 
 
 inp = Input(shp)
@@ -915,16 +660,10 @@ x = Convolution2D(3, 9, 9, activation='tanh', border_mode='same')(x)
 outp = Lambda(lambda x: (x + 1) * 127.5)(x)
 
 
-# In[41]:
-
-
 vgg_inp = Input(shp)
 vgg = VGG16(include_top=False, input_tensor=Lambda(preproc)(vgg_inp))
 for l in vgg.layers:
     l.trainable = False
-
-
-# In[42]:
 
 
 def get_outp(m, ln): return m.get_layer(f'block{ln}_conv2').output
@@ -935,20 +674,11 @@ vgg_content = Model(vgg_inp, [get_outp(vgg, o) for o in [2, 3, 4, 5]])
 
 # Here we alter the super resolution approach by adding style outputs
 
-# In[43]:
-
-
 style_targs = [K.variable(o) for o in
                vgg_content.predict(np.expand_dims(style, 0))]
 
 
-# In[44]:
-
-
 [K.eval(K.shape(o)) for o in style_targs]
-
-
-# In[45]:
 
 
 vgg1 = vgg_content(vgg_inp)
@@ -958,18 +688,12 @@ vgg2 = vgg_content(outp)
 # Our loss now includes the mse for the content loss and the gram matrix
 # for the style
 
-# In[46]:
-
-
 def gram_matrix_b(x):
     x = K.permute_dimensions(x, (0, 3, 1, 2))
     s = K.shape(x)
     feat = K.reshape(x, (s[0], s[1], s[2] * s[3]))
     return K.batch_dot(feat, K.permute_dimensions(feat, (0, 2, 1))
                        ) / K.prod(K.cast(s[1:], K.floatx()))
-
-
-# In[47]:
 
 
 w = [0.1, 0.2, 0.6, 0.1]
@@ -985,29 +709,17 @@ def tot_loss(x):
     return loss
 
 
-# In[48]:
-
-
 loss = Lambda(tot_loss)(vgg1 + vgg2)
 m_style = Model([inp, vgg_inp], loss)
 targ = np.zeros((arr_hr.shape[0], 1))
-
-
-# In[ ]:
 
 
 m_style.compile('adam', 'mae')
 m_style.fit([arr_hr, arr_hr], targ, 8, 2, **parms)
 
 
-# In[732]:
-
-
 K.set_value(m_style.optimizer.lr, 1e-4)
 m_style.fit([arr_hr, arr_hr], targ, 16, 1, **parms)
-
-
-# In[49]:
 
 
 top_model = Model(inp, outp)
@@ -1016,25 +728,13 @@ top_model = Model(inp, outp)
 # Now we can pass any image through this CNN and it will produce it in the
 # style desired!
 
-# In[54]:
-
-
 p = top_model.predict(arr_hr[:20])
-
-
-# In[69]:
 
 
 plt.imshow(np.round(p[1]).astype('uint8'))
 
 
-# In[736]:
-
-
 top_model.save_weights(dpath + 'style_final.h5')
-
-
-# In[50]:
 
 
 top_model.load_weights(dpath + 'style_final.h5')

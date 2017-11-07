@@ -11,9 +11,6 @@
 # We take our data set from [The CMU pronouncing
 # dictionary](https://en.wikipedia.org/wiki/CMU_Pronouncing_Dictionary)
 
-# In[1]:
-
-
 get_ipython().magic(u'matplotlib inline')
 import importlib
 import utils2
@@ -23,13 +20,7 @@ np.set_printoptions(4)
 PATH = 'data/spellbee/'
 
 
-# In[2]:
-
-
 limit_mem()
-
-
-# In[3]:
 
 
 from sklearn.model_selection import train_test_split
@@ -46,9 +37,6 @@ from sklearn.model_selection import train_test_split
 # Here we iterate through each line of the file and grab each word/phoneme
 # pair that starts with an uppercase letter.
 
-# In[4]:
-
-
 lines = [l.strip().split("  ") for l in open(PATH + "cmudict-0.7b", encoding='latin1')
          if re.match('^[A-Z]', l)]
 lines = [(w, ps.split()) for w, ps in lines]
@@ -58,14 +46,8 @@ lines[0], lines[-1]
 # Next we're going to get a list of the unique phonemes in our vocabulary,
 # as well as add a null "_" for zero-padding.
 
-# In[5]:
-
-
 phonemes = ["_"] + sorted(set(p for w, ps in lines for p in ps))
 phonemes[:5]
-
-
-# In[6]:
 
 
 len(phonemes)
@@ -76,9 +58,6 @@ len(phonemes)
 # Our letters include the padding element "_", but also "*" which we'll
 # explain later.
 
-# In[7]:
-
-
 p2i = dict((v, k) for k, v in enumerate(phonemes))
 letters = "_abcdefghijklmnopqrstuvwxyz*"
 l2i = dict((v, k) for k, v in enumerate(letters))
@@ -87,9 +66,6 @@ l2i = dict((v, k) for k, v in enumerate(letters))
 # Let's create a dictionary mapping words to the sequence of indices
 # corresponding to it's phonemes, and let's do it only for words between 5
 # and 15 characters long.
-
-# In[8]:
-
 
 maxlen = 15
 pronounce_dict = {w.lower(): [p2i[p] for p in ps] for w, ps in lines
@@ -103,9 +79,6 @@ len(pronounce_dict)
 # * the third is similar to the second, but is read and behaves like a nested loop
 #     * Since there is no inner bracket, there are no lists wrapping the inner loop
 
-# In[9]:
-
-
 a = ['xyz', 'abc']
 [o.upper() for o in a if o[0] == 'x'], [[p for p in o]
                                         for o in a], [p for o in a for p in o]
@@ -115,13 +88,7 @@ a = ['xyz', 'abc']
 # split into training, validation, test sets. Note we also find the max
 # phoneme sequence length for padding.
 
-# In[10]:
-
-
 maxlen_p = max([len(v) for k, v in pronounce_dict.items()])
-
-
-# In[11]:
 
 
 pairs = np.random.permutation(list(pronounce_dict.keys()))
@@ -136,9 +103,6 @@ for i, k in enumerate(pairs):
         labels_[i][j] = l2i[letter]
 
 
-# In[12]:
-
-
 go_token = l2i["*"]
 dec_input_ = np.concatenate(
     [np.ones((n, 1)) * go_token, labels_[:, :-1]], axis=1)
@@ -147,26 +111,14 @@ dec_input_ = np.concatenate(
 # Sklearn's <tt>train_test_split</tt> is an easy way to split data into
 # training and testing sets.
 
-# In[13]:
-
-
 (input_train, input_test, labels_train, labels_test, dec_input_train, dec_input_test
  ) = train_test_split(input_, labels_, dec_input_, test_size=0.1)
-
-
-# In[14]:
 
 
 input_train.shape
 
 
-# In[15]:
-
-
 labels_train.shape
-
-
-# In[16]:
 
 
 input_vocab_size, output_vocab_size = len(phonemes), len(letters)
@@ -177,23 +129,14 @@ input_vocab_size, output_vocab_size
 
 # ## Keras code
 
-# In[17]:
-
-
 parms = {'verbose': 0, 'callbacks': [TQDMNotebookCallback(leave_inner=True)]}
 lstm_params = {}
-
-
-# In[18]:
 
 
 dim = 240
 
 
 # ### Without attention
-
-# In[19]:
-
 
 def get_rnn(return_sequences=True):
     return LSTM(dim, dropout_U=0.1, dropout_W=0.1,
@@ -209,9 +152,6 @@ def get_rnn(return_sequences=True):
 #     * We use <tt>RepeatVector</tt> to help our RNN remember at each point what the original word is that it's trying to translate.
 #
 #
-
-# In[20]:
-
 
 inp = Input((maxlen_p,))
 x = Embedding(input_vocab_size, 120)(inp)
@@ -229,19 +169,10 @@ x = TimeDistributed(Dense(output_vocab_size, activation='softmax'))(x)
 #
 # Now we can fit our model
 
-# In[21]:
-
-
 model = Model(inp, x)
 
 
-# In[22]:
-
-
 model.compile(Adam(), 'sparse_categorical_crossentropy', metrics=['acc'])
-
-
-# In[23]:
 
 
 hist = model.fit(input_train, np.expand_dims(labels_train, -1),
@@ -249,17 +180,11 @@ hist = model.fit(input_train, np.expand_dims(labels_train, -1),
                  batch_size=64, **parms, nb_epoch=3)
 
 
-# In[ ]:
-
-
 hist.history['val_loss']
 
 
 # To evaluate, we don't want to know what percentage of letters are
 # correct but what percentage of words are.
-
-# In[ ]:
-
 
 def eval_keras(input):
     preds = model.predict(input, batch_size=128)
@@ -270,14 +195,8 @@ def eval_keras(input):
 
 # The accuracy isn't great.
 
-# In[ ]:
-
-
 acc, preds = eval_keras(input_test)
 acc
-
-
-# In[51]:
 
 
 def print_examples(preds):
@@ -297,9 +216,6 @@ def print_examples(preds):
 # That's understandable; we'd expect larger sequences to lose more
 # information in an encoding.
 
-# In[52]:
-
-
 print_examples(preds)
 
 
@@ -310,9 +226,6 @@ print_examples(preds)
 # <img src="https://smerity.com/media/images/articles/2016/bahdanau_attn.png" width="600">
 #
 # This can be mitigated using an attentional model.
-
-# In[62]:
-
 
 import attention_wrapper
 importlib.reload(attention_wrapper)
@@ -339,9 +252,6 @@ from attention_wrapper import Attention
 # Teacher forcing allows the model to still learn how to predict later
 # characters, even if the earlier characters were all wrong.
 
-# In[66]:
-
-
 inp = Input((maxlen_p,))
 inp_dec = Input((maxlen,))
 emb_dec = Embedding(output_vocab_size, 120)(inp_dec)
@@ -357,14 +267,8 @@ x = TimeDistributed(Dense(output_vocab_size, activation='softmax'))(x)
 
 # We can now train, passing in the decoder inputs as well for teacher forcing.
 
-# In[67]:
-
-
 model = Model([inp, inp_dec], x)
 model.compile(Adam(), 'sparse_categorical_crossentropy', metrics=['acc'])
-
-
-# In[68]:
 
 
 hist = model.fit([input_train, dec_input_train], np.expand_dims(labels_train, -1),
@@ -373,19 +277,10 @@ hist = model.fit([input_train, dec_input_train], np.expand_dims(labels_train, -1
                  batch_size=64, **parms, nb_epoch=3)
 
 
-# In[25]:
-
-
 hist.history['val_loss']
 
 
-# In[998]:
-
-
 K.set_value(model.optimizer.lr, 1e-4)
-
-
-# In[999]:
 
 
 hist = model.fit([input_train, dec_input_train], np.expand_dims(labels_train, -1),
@@ -394,13 +289,7 @@ hist = model.fit([input_train, dec_input_train], np.expand_dims(labels_train, -1
                  batch_size=64, **parms, nb_epoch=5)
 
 
-# In[1000]:
-
-
 np.array(hist.history['val_loss'])
-
-
-# In[1001]:
 
 
 def eval_keras():
@@ -412,9 +301,6 @@ def eval_keras():
 
 # Better accuracy!
 
-# In[895]:
-
-
 acc, preds = eval_keras()
 acc
 
@@ -422,9 +308,6 @@ acc
 # This model is certainly performing better with longer words. The
 # mistakes it's making are reasonable, and it even succesfully formed the
 # word "partisanship".
-
-# In[896]:
-
 
 print("pronunciation".ljust(40), "real spelling".ljust(17),
       "model spelling".ljust(17), "is correct")
@@ -439,114 +322,60 @@ for index in range(20):
 
 # ## Test code for the attention layer
 
-# In[301]:
-
-
 nb_samples, nb_time, input_dim, output_dim = (64, 4, 32, 48)
-
-
-# In[302]:
 
 
 x = tf.placeholder(np.float32, (nb_samples, nb_time, input_dim))
 
 
-# In[303]:
-
-
 xr = K.reshape(x, (-1, nb_time, 1, input_dim))
-
-
-# In[304]:
 
 
 W1 = tf.placeholder(np.float32, (input_dim, input_dim))
 W1.shape
 
 
-# In[305]:
-
-
 W1r = K.reshape(W1, (1, input_dim, input_dim))
 
 
-# In[306]:
-
-
 W1r2 = K.reshape(W1, (1, 1, input_dim, input_dim))
-
-
-# In[307]:
 
 
 xW1 = K.conv1d(x, W1r, border_mode='same')
 xW1.shape
 
 
-# In[308]:
-
-
 xW12 = K.conv2d(xr, W1r2, border_mode='same')
 xW12.shape
-
-
-# In[251]:
 
 
 xW2 = K.dot(x, W1)
 
 
-# In[245]:
-
-
 x1 = np.random.normal(size=(nb_samples, nb_time, input_dim))
-
-
-# In[246]:
 
 
 w1 = np.random.normal(size=(input_dim, input_dim))
 
 
-# In[248]:
-
-
 res = sess.run(xW1, {x: x1, W1: w1})
-
-
-# In[252]:
 
 
 res2 = sess.run(xW2, {x: x1, W1: w1})
 
 
-# In[253]:
-
-
 np.allclose(res, res2)
-
-
-# In[283]:
 
 
 W2 = tf.placeholder(np.float32, (output_dim, input_dim))
 W2.shape
 
 
-# In[295]:
-
-
 h = tf.placeholder(np.float32, (nb_samples, output_dim))
-
-
-# In[296]:
 
 
 hW2 = K.dot(h, W2)
 hW2.shape
-
-
-# In[297]:
 
 
 hW2 = K.reshape(hW2, (-1, 1, 1, input_dim))

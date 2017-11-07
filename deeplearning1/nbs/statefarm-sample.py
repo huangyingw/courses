@@ -3,14 +3,8 @@
 
 # # Enter State Farm
 
-# In[1]:
-
-
 from theano.sandbox import cuda
 cuda.use('gpu1')
-
-
-# In[2]:
 
 
 get_ipython().magic(u'matplotlib inline')
@@ -23,9 +17,6 @@ from utils import *
 from IPython.display import FileLink
 
 
-# In[3]:
-
-
 batch_size = 64
 
 
@@ -35,19 +26,10 @@ batch_size = 64
 # remember that the training and validation set should contain *different
 # drivers*, as mentioned on the Kaggle competition page.
 
-# In[ ]:
-
-
 get_ipython().magic(u'cd data/state')
 
 
-# In[ ]:
-
-
 get_ipython().magic(u'cd train')
-
-
-# In[ ]:
 
 
 get_ipython().magic(u'mkdir ../sample')
@@ -55,21 +37,12 @@ get_ipython().magic(u'mkdir ../sample/train')
 get_ipython().magic(u'mkdir ../sample/valid')
 
 
-# In[ ]:
-
-
 for d in glob('c?'):
     os.mkdir('../sample/train/' + d)
     os.mkdir('../sample/valid/' + d)
 
 
-# In[ ]:
-
-
 from shutil import copyfile
-
-
-# In[ ]:
 
 
 g = glob('c?/*.jpg')
@@ -78,13 +51,7 @@ for i in range(1500):
     copyfile(shuf[i], '../sample/train/' + shuf[i])
 
 
-# In[ ]:
-
-
 get_ipython().magic(u'cd ../valid')
-
-
-# In[ ]:
 
 
 g = glob('c?/*.jpg')
@@ -93,19 +60,10 @@ for i in range(1000):
     copyfile(shuf[i], '../sample/valid/' + shuf[i])
 
 
-# In[ ]:
-
-
 get_ipython().magic(u'cd ../../..')
 
 
-# In[ ]:
-
-
 get_ipython().magic(u'mkdir data/state/results')
-
-
-# In[8]:
 
 
 get_ipython().magic(u'mkdir data/state/sample/test')
@@ -113,17 +71,11 @@ get_ipython().magic(u'mkdir data/state/sample/test')
 
 # ## Create batches
 
-# In[56]:
-
-
 batches = get_batches(path + 'train', batch_size=batch_size)
 val_batches = get_batches(
     path + 'valid',
     batch_size=batch_size * 2,
     shuffle=False)
-
-
-# In[5]:
 
 
 (val_classes, trn_classes, val_labels, trn_labels, val_filenames, filenames,
@@ -138,9 +90,6 @@ val_batches = get_batches(
 # trick of making the first layer a batchnorm layer - that way we don't
 # have to worry about normalizing the input ourselves.
 
-# In[6]:
-
-
 model = Sequential([
     BatchNormalization(axis=1, input_shape=(3, 224, 224)),
     Flatten(),
@@ -150,9 +99,6 @@ model = Sequential([
 
 # As you can see below, this training is going nowhere...
 
-# In[7]:
-
-
 model.compile(Adam(), loss='categorical_crossentropy', metrics=['accuracy'])
 model.fit_generator(batches, batches.nb_sample, nb_epoch=2, validation_data=val_batches,
                     nb_val_samples=val_batches.nb_sample)
@@ -161,18 +107,12 @@ model.fit_generator(batches, batches.nb_sample, nb_epoch=2, validation_data=val_
 # Let's first check the number of parameters to see that there's enough
 # parameters to find some useful relationships:
 
-# In[66]:
-
-
 model.summary()
 
 
 # Over 1.5 million parameters - that should be enough. Incidentally, it's
 # worth checking you understand why this is the number of parameters in
 # this layer:
-
-# In[67]:
-
 
 10 * 3 * 224 * 224
 
@@ -185,17 +125,11 @@ model.summary()
 # better than random, and there is likely to be where we would end up with
 # a high learning rate. So let's check:
 
-# In[10]:
-
-
 np.round(model.predict_generator(batches, batches.n)[:10], 2)
 
 
 # Our hypothesis was correct. It's nearly always predicting class 1 or 6,
 # with very high confidence. So let's try a lower learning rate:
-
-# In[14]:
-
 
 model = Sequential([
     BatchNormalization(axis=1, input_shape=(3, 224, 224)),
@@ -214,13 +148,7 @@ model.fit_generator(batches, batches.nb_sample, nb_epoch=2, validation_data=val_
 # Great - we found our way out of that hole... Now we can increase the
 # learning rate and see where we can get to.
 
-# In[15]:
-
-
 model.optimizer.lr = 0.001
-
-
-# In[16]:
 
 
 model.fit_generator(batches, batches.nb_sample, nb_epoch=4, validation_data=val_batches,
@@ -231,16 +159,10 @@ model.fit_generator(batches, batches.nb_sample, nb_epoch=4, validation_data=val_
 # better than random. Before moving on, let's check that our validation
 # set on the sample is large enough that it gives consistent results:
 
-# In[6]:
-
-
 rnd_batches = get_batches(
     path + 'valid',
     batch_size=batch_size * 2,
     shuffle=True)
-
-
-# In[11]:
 
 
 val_res = [
@@ -261,9 +183,6 @@ np.round(val_res, 2)
 # regularization](http://www.kdnuggets.com/2015/04/preventing-overfitting-neural-networks.html/2)
 # (i.e. add the sum of squares of the weights to our loss function):
 
-# In[20]:
-
-
 model = Sequential([
     BatchNormalization(axis=1, input_shape=(3, 224, 224)),
     Flatten(),
@@ -278,13 +197,7 @@ model.fit_generator(batches, batches.nb_sample, nb_epoch=2, validation_data=val_
                     nb_val_samples=val_batches.nb_sample)
 
 
-# In[21]:
-
-
 model.optimizer.lr = 0.001
-
-
-# In[22]:
 
 
 model.fit_generator(batches, batches.nb_sample, nb_epoch=4, validation_data=val_batches,
@@ -299,9 +212,6 @@ model.fit_generator(batches, batches.nb_sample, nb_epoch=4, validation_data=val_
 # ### Single hidden layer
 
 # The next simplest model is to add a single hidden layer.
-
-# In[34]:
-
 
 model = Sequential([
     BatchNormalization(axis=1, input_shape=(3, 224, 224)),
@@ -332,9 +242,6 @@ model.fit_generator(batches, batches.nb_sample, nb_epoch=5, validation_data=val_
 # 2 conv layers with max pooling followed by a simple dense network is a
 # good simple CNN to start with:
 
-# In[61]:
-
-
 def conv1(batches):
     model = Sequential([
         BatchNormalization(axis=1, input_shape=(3, 224, 224)),
@@ -363,9 +270,6 @@ def conv1(batches):
     return model
 
 
-# In[62]:
-
-
 conv1(batches)
 
 
@@ -385,14 +289,8 @@ conv1(batches)
 
 # Width shift: move the image left and right -
 
-# In[63]:
-
-
 gen_t = image.ImageDataGenerator(width_shift_range=0.1)
 batches = get_batches(path + 'train', gen_t, batch_size=batch_size)
-
-
-# In[64]:
 
 
 model = conv1(batches)
@@ -400,14 +298,8 @@ model = conv1(batches)
 
 # Height shift: move the image up and down -
 
-# In[65]:
-
-
 gen_t = image.ImageDataGenerator(height_shift_range=0.05)
 batches = get_batches(path + 'train', gen_t, batch_size=batch_size)
-
-
-# In[66]:
 
 
 model = conv1(batches)
@@ -415,14 +307,8 @@ model = conv1(batches)
 
 # Random shear angles (max in radians) -
 
-# In[67]:
-
-
 gen_t = image.ImageDataGenerator(shear_range=0.1)
 batches = get_batches(path + 'train', gen_t, batch_size=batch_size)
-
-
-# In[68]:
 
 
 model = conv1(batches)
@@ -430,14 +316,8 @@ model = conv1(batches)
 
 # Rotation: max in degrees -
 
-# In[69]:
-
-
 gen_t = image.ImageDataGenerator(rotation_range=15)
 batches = get_batches(path + 'train', gen_t, batch_size=batch_size)
-
-
-# In[70]:
 
 
 model = conv1(batches)
@@ -445,14 +325,8 @@ model = conv1(batches)
 
 # Channel shift: randomly changing the R,G,B colors -
 
-# In[76]:
-
-
 gen_t = image.ImageDataGenerator(channel_shift_range=20)
 batches = get_batches(path + 'train', gen_t, batch_size=batch_size)
-
-
-# In[77]:
 
 
 model = conv1(batches)
@@ -460,15 +334,9 @@ model = conv1(batches)
 
 # And finally, putting it all together!
 
-# In[75]:
-
-
 gen_t = image.ImageDataGenerator(rotation_range=15, height_shift_range=0.05,
                                  shear_range=0.1, channel_shift_range=20, width_shift_range=0.1)
 batches = get_batches(path + 'train', gen_t, batch_size=batch_size)
-
-
-# In[59]:
 
 
 model = conv1(batches)
@@ -479,18 +347,12 @@ model = conv1(batches)
 # and still has a long way to go in accuracy - so we should try annealing
 # our learning rate and running more epochs, before we make a decisions.
 
-# In[60]:
-
-
 model.optimizer.lr = 0.0001
 model.fit_generator(batches, batches.nb_sample, nb_epoch=5, validation_data=val_batches,
                     nb_val_samples=val_batches.nb_sample)
 
 
 # Lucky we tried that - we starting to make progress! Let's keep going.
-
-# In[61]:
-
 
 model.fit_generator(batches, batches.nb_sample, nb_epoch=25, validation_data=val_batches,
                     nb_val_samples=val_batches.nb_sample)

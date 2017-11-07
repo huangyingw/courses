@@ -9,9 +9,6 @@
 # generate some data and show them in action. We'll start off by importing
 # the libraries we'll be using today.
 
-# In[1]:
-
-
 get_ipython().magic(u'matplotlib inline')
 import math
 import numpy as np
@@ -22,9 +19,6 @@ import torch
 
 # ## Create data
 
-# In[2]:
-
-
 n_clusters = 6
 n_samples = 250
 
@@ -32,9 +26,6 @@ n_samples = 250
 # To generate our data, we're going to pick 6 random points, which we'll
 # call centroids, and for each point we're going to generate 250 random
 # points about it.
-
-# In[3]:
-
 
 centroids = np.random.uniform(-35, 35, (n_clusters, 2))
 slices = [np.random.multivariate_normal(centroids[i], np.diag([5., 5.]), n_samples)
@@ -44,9 +35,6 @@ data = np.concatenate(slices).astype(np.float32)
 
 # Below we can see each centroid marked w/ X, and the coloring associated
 # to each respective cluster.
-
-# In[18]:
-
 
 def plot_data(centroids, data, n_samples):
     colour = plt.cm.rainbow(np.linspace(0, 1, len(centroids)))
@@ -67,9 +55,6 @@ def plot_data(centroids, data, n_samples):
             marker="x",
             color='m',
             mew=2)
-
-
-# In[19]:
 
 
 plot_data(centroids, data, n_samples)
@@ -95,9 +80,6 @@ plot_data(centroids, data, n_samples)
 # So here's the definition of the gaussian kernel, which you may remember
 # from high school...
 
-# In[20]:
-
-
 def gaussian(d, bw):
     return np.exp(-0.5 * ((d / bw))**2) / (bw * math.sqrt(2 * math.pi))
 
@@ -111,9 +93,6 @@ def gaussian(d, bw):
 # One easy way to choose bandwidth is to find which bandwidth covers one
 # third of the data.
 
-# In[21]:
-
-
 def meanshift(data):
     X = np.copy(data)
     for it in range(5):
@@ -124,9 +103,6 @@ def meanshift(data):
     return X
 
 
-# In[22]:
-
-
 get_ipython().magic(u'time X=meanshift(data)')
 
 
@@ -135,9 +111,6 @@ get_ipython().magic(u'time X=meanshift(data)')
 # What is impressive is that this algorithm nearly reproduced the original
 # clusters without telling it how many clusters there should be.
 
-# In[25]:
-
-
 plot_data(centroids + 2, X, n_samples)
 
 
@@ -145,34 +118,19 @@ plot_data(centroids + 2, X, n_samples)
 
 # ## Broadcasting
 
-# In[38]:
-
-
 v = np.array([1, 2, 3])
 v, v.shape
-
-
-# In[39]:
 
 
 m = np.array([v, v * 2, v * 3])
 m, m.shape
 
 
-# In[34]:
-
-
 m + v
-
-
-# In[40]:
 
 
 v1 = np.expand_dims(v, -1)
 v1, v1.shape
-
-
-# In[41]:
 
 
 m + v1
@@ -180,9 +138,6 @@ m + v1
 
 # Pytorch does not support broadcasting, therefore I have replaced the
 # operators with broadcasting versions.
-
-# In[42]:
-
 
 def unit_prefix(x, n=1):
     for i in range(n):
@@ -229,17 +184,11 @@ def div(x, y): return aligned_op(x, y, operator.truediv)
 # instance, the definition of `gaussian` is identical, except for the
 # namespace.
 
-# In[27]:
-
-
 def gaussian(d, bw):
     return torch.exp(-0.5 * ((d / bw))**2) / (bw * math.sqrt(2 * math.pi))
 
 
 # And the implementation of meanshift is nearly identical too!
-
-# In[28]:
-
 
 def meanshift(data):
     X = torch.FloatTensor(np.copy(data))
@@ -255,9 +204,6 @@ def meanshift(data):
 # This implementation actually takes longer. Oh dear! What do you think is
 # causing this?
 
-# In[29]:
-
-
 get_ipython().magic(u'time X = meanshift(data).numpy()')
 
 
@@ -267,9 +213,6 @@ get_ipython().magic(u'time X = meanshift(data).numpy()')
 # iteration doesn't have enough processing to do to fill up all of the
 # threads of the GPU. But at least the results are correct...
 
-# In[44]:
-
-
 plot_data(centroids + 2, X, n_samples)
 
 
@@ -278,14 +221,8 @@ plot_data(centroids + 2, X, n_samples)
 # To truly accelerate the algorithm, we need to be performing updates on a
 # batch of points per iteration, instead of just one as we were doing.
 
-# In[45]:
-
-
 def dist_b(a, b):
     return torch.sqrt((sub(a.unsqueeze(0), b.unsqueeze(1))**2).sum(2))
-
-
-# In[46]:
 
 
 a = torch.rand(2, 2)
@@ -293,20 +230,11 @@ b = torch.rand(3, 2)
 dist_b(b, a).squeeze(2)
 
 
-# In[34]:
-
-
 # def gaussian(d, bw):
 #     return torch.exp(-0.5*((d/bw))**2) / (bw*math.sqrt(2*math.pi))
 
 
-# In[47]:
-
-
 def sum_sqz(a, axis): return a.sum(axis).squeeze(axis)
-
-
-# In[48]:
 
 
 def meanshift(data, bs=500):
@@ -325,17 +253,11 @@ def meanshift(data, bs=500):
 # now fewer iterations, and the acceleration from updating a batch of
 # points more than makes up for it.
 
-# In[50]:
-
-
 get_ipython().magic(u'time X = meanshift(data).cpu().numpy()')
 
 
 # That's more like it! We've gone from 914ms to 44ms, which is a speedup
 # of over 2000%. Oh, and it even gives the right answer:
-
-# In[54]:
-
 
 plot_data(centroids + 2, X, n_samples)
 

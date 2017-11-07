@@ -3,17 +3,11 @@
 
 # # Babi End to End MemNN
 
-# In[1]:
-
-
 get_ipython().magic(u'matplotlib inline')
 import importlib
 import utils2
 importlib.reload(utils2)
 from utils2 import *
-
-
-# In[2]:
 
 
 np.set_printoptions(4)
@@ -39,18 +33,12 @@ K.set_session(K.tf.Session(config=cfg))
 
 # This section shows how to construct the dataset from the raw data.
 
-# In[3]:
-
-
 def tokenize(sent):
     return [x.strip() for x in re.split('(\W+)?', sent) if x.strip()]
 
 
 # This parser formats the story into a time-order labelled sequence of
 # sentences, followed by the question and the labelled answer.
-
-# In[4]:
-
 
 def parse_stories(lines):
     data = []
@@ -74,15 +62,9 @@ def parse_stories(lines):
 
 # Next we download and parse the data set.
 
-# In[5]:
-
-
 path = get_file('babi-tasks-v1-2.tar.gz',
                 origin='https://s3.amazonaws.com/text-datasets/babi_tasks_1-20_v1-2.tar.gz')
 tar = tarfile.open(path)
-
-
-# In[8]:
 
 
 challenges = {
@@ -97,15 +79,9 @@ challenge_type = 'single_supporting_fact_10k'
 challenge = challenges[challenge_type]
 
 
-# In[9]:
-
-
 def get_stories(f):
     data = parse_stories(f.readlines())
     return [(story, q, answer) for story, q, answer in data]
-
-
-# In[10]:
 
 
 train_stories = get_stories(tar.extractfile(challenge.format('train')))
@@ -115,21 +91,12 @@ test_stories = get_stories(tar.extractfile(challenge.format('test')))
 # Here we calculate upper bounds for things like words in sentence,
 # sentences in a story, etc. for the corpus, which will be useful later.
 
-# In[11]:
-
-
 stories = train_stories + test_stories
-
-
-# In[12]:
 
 
 story_maxlen = max((len(s) for x, _, _ in stories for s in x))
 story_maxsents = max((len(x) for x, _, _ in stories))
 query_maxlen = max(len(x) for _, x, _ in stories)
-
-
-# In[13]:
 
 
 def do_flatten(el):
@@ -147,15 +114,9 @@ def flatten(l):
 
 # Create vocabulary of corpus and find size, including a padding element.
 
-# In[14]:
-
-
 vocab = sorted(set(flatten(stories)))
 vocab.insert(0, '<PAD>')
 vocab_size = len(vocab)
-
-
-# In[13]:
 
 
 story_maxsents, vocab_size, story_maxlen, query_maxlen, len(
@@ -172,16 +133,10 @@ story_maxsents, vocab_size, story_maxlen, query_maxlen, len(
 # means that we only need to find one sentence in the story to answer our
 # question.
 
-# In[14]:
-
-
 test_stories[534]
 
 
 # Create an index mapping for the vocabulary.
-
-# In[15]:
-
 
 word_idx = dict((c, i) for i, c in enumerate(vocab))
 
@@ -189,9 +144,6 @@ word_idx = dict((c, i) for i, c in enumerate(vocab))
 # Next we vectorize our dataset by mapping words to their indices. We
 # enforce consistent dimension by padding vectors up to the upper bounds
 # we calculated earlier with our pad element.
-
-# In[16]:
-
 
 def vectorize_stories(data, word_idx, story_maxlen, query_maxlen):
     X = []
@@ -208,16 +160,10 @@ def vectorize_stories(data, word_idx, story_maxlen, query_maxlen):
             pad_sequences(Xq, maxlen=query_maxlen), np.array(Y))
 
 
-# In[17]:
-
-
 inputs_train, queries_train, answers_train = vectorize_stories(train_stories,
                                                                word_idx, story_maxlen, query_maxlen)
 inputs_test, queries_test, answers_test = vectorize_stories(test_stories,
                                                             word_idx, story_maxlen, query_maxlen)
-
-
-# In[18]:
 
 
 def stack_inputs(inputs):
@@ -231,16 +177,10 @@ inputs_train = stack_inputs(inputs_train)
 inputs_test = stack_inputs(inputs_test)
 
 
-# In[18]:
-
-
 inputs_train.shape, inputs_test.shape
 
 
 # Our inputs for keras.
-
-# In[19]:
-
 
 inps = [inputs_train, queries_train]
 val_inps = [inputs_test, queries_test]
@@ -255,18 +195,12 @@ val_inps = [inputs_test, queries_test]
 # relatively small length of these sentences we can expect the sum to
 # capture relevant information.
 
-# In[48]:
-
-
 emb_dim = 20
 parms = {'verbose': 2, 'callbacks': [TQDMNotebookCallback(leave_inner=False)]}
 
 
 # We use <tt>TimeDistributed</tt> here to apply the embedding to every
 # element of the sequence, then the <tt>Lambda</tt> layer adds them up
-
-# In[21]:
-
 
 def emb_sent_bow(inp):
     emb = TimeDistributed(Embedding(vocab_size, emb_dim))(inp)
@@ -276,9 +210,6 @@ def emb_sent_bow(inp):
 # The embedding works as desired; the raw input has 10 sentences of 8
 # words, and the output has 10 sentence embeddings of length 20.
 
-# In[49]:
-
-
 inp_story = Input((story_maxsents, story_maxlen))
 emb_story = emb_sent_bow(inp_story)
 inp_story.shape, emb_story.shape
@@ -287,9 +218,6 @@ inp_story.shape, emb_story.shape
 # We do the same for the queries, omitting the <tt>TimeDistributed</tt>
 # since there is only one query. We use <tt>Reshape</tt> to match the rank
 # of the input.
-
-# In[50]:
-
 
 inp_q = Input((query_maxlen,))
 emb_q = Embedding(vocab_size, emb_dim)(inp_q)
@@ -303,9 +231,6 @@ inp_q.shape, emb_q.shape
 # * For each story, we take the dot product of every sentence embedding with that story's query embedding. This gives us a list of numbers proportional to how similar each sentence is with the query.
 # * We pass this vector of dot products through a softmax function to return a list of scalars that sum to one and tell us how similar the query is to each sentence.
 
-# In[51]:
-
-
 x = merge([emb_story, emb_q], mode='dot', dot_axes=2)
 x = Reshape((story_maxsents,))(x)
 x = Activation('softmax')(x)
@@ -317,22 +242,13 @@ match.shape
 # * We then take the weighted average of these embeddings, using the softmax outputs as weights
 # * Finally, we pass this weighted average though a dense layer and classify it w/ a softmax into one of the words in the vocabulary
 
-# In[52]:
-
-
 emb_c = emb_sent_bow(inp_story)
 x = merge([match, emb_c], mode='dot', dot_axes=1)
 response = Reshape((emb_dim,))(x)
 res = Dense(vocab_size, activation='softmax')(response)
 
 
-# In[53]:
-
-
 answer = Model([inp_story, inp_q], res)
-
-
-# In[54]:
 
 
 answer.compile(optimizer='rmsprop', loss='sparse_categorical_crossentropy',
@@ -340,9 +256,6 @@ answer.compile(optimizer='rmsprop', loss='sparse_categorical_crossentropy',
 
 
 # And it works extremely well
-
-# In[55]:
-
 
 K.set_value(answer.optimizer.lr, 1e-2)
 hist = answer.fit(inps, answers_train, **parms, nb_epoch=4, batch_size=32,
@@ -354,19 +267,10 @@ hist = answer.fit(inps, answers_train, **parms, nb_epoch=4, batch_size=32,
 # We can look inside our model to see how it's weighting the sentence
 # embeddings.
 
-# In[31]:
-
-
 f = Model([inp_story, inp_q], match)
 
 
-# In[33]:
-
-
 qnum = 6
-
-
-# In[34]:
 
 
 l_st = len(train_stories[qnum][0]) + 1
@@ -380,33 +284,18 @@ train_stories[qnum]
 # what is important; this is why we added the counter at the beginning of
 # each sentence.
 
-# In[35]:
-
-
 np.squeeze(f.predict([inputs_train[qnum:qnum + 1],
                       queries_train[qnum:qnum + 1]]))[:l_st]
 
 
-# In[36]:
-
-
 answers_train[qnum:qnum + 10, 0]
-
-
-# In[37]:
 
 
 np.argmax(answer.predict(
     [inputs_train[qnum:qnum + 10], queries_train[qnum:qnum + 10]]), 1)
 
 
-# In[39]:
-
-
 answer.predict([inputs_train[qnum:qnum + 1], queries_train[qnum:qnum + 1]])
-
-
-# In[57]:
 
 
 vocab[19]
@@ -416,9 +305,6 @@ vocab[19]
 
 # Next, let's look at an example of a two-supporting fact story.
 
-# In[70]:
-
-
 test_stories[534]
 
 
@@ -426,23 +312,14 @@ test_stories[534]
 # facts to answer, "Daniel traveled to the hallway" and "Daniel left the
 # milk there".
 
-# In[71]:
-
-
 inputs_train.shape, inputs_test.shape
 
 
 # The approach is basically the same; we add more embedding dimensions to
 # account for the increased task complexity.
 
-# In[94]:
-
-
 parms = {'verbose': 2, 'callbacks': [TQDMNotebookCallback(leave_inner=False)]}
 emb_dim = 30
-
-
-# In[95]:
 
 
 def emb_sent_bow(inp):
@@ -453,27 +330,15 @@ def emb_sent_bow(inp):
     return emb, emb_op
 
 
-# In[96]:
-
-
 inp_story = Input((story_maxsents, story_maxlen))
 inp_q = Input((query_maxlen,))
-
-
-# In[97]:
 
 
 emb_story, emb_story_op = emb_sent_bow(inp_story)
 
 
-# In[98]:
-
-
 emb_q = emb_story_op.layer(inp_q)
 emb_q = Lambda(lambda x: K.sum(x, 1))(emb_q)
-
-
-# In[99]:
 
 
 h = Dense(emb_dim)
@@ -482,9 +347,6 @@ h = Dense(emb_dim)
 # The main difference is that we are going to do the same process twice.
 # Here we've defined a "hop" as the operation that returns the weighted
 # average of the input sentence embeddings.
-
-# In[100]:
-
 
 def one_hop(u, A):
     C, _ = emb_sent_bow(inp_story)
@@ -513,21 +375,12 @@ def one_hop(u, A):
 # This approach can be extended to n-supporting factor problems by doing n
 # hops.
 
-# In[101]:
-
-
 response, emb_story = one_hop(emb_q, emb_story)
 response, emb_story = one_hop(response, emb_story)
 # response, emb_story = one_hop(response, emb_story)
 
 
-# In[102]:
-
-
 res = Dense(vocab_size, activation='softmax')(response)
-
-
-# In[103]:
 
 
 answer = Model([inp_story, inp_q], res)
@@ -537,24 +390,15 @@ answer.compile(optimizer='rmsprop', loss='sparse_categorical_crossentropy',
 
 # Fitting this model can be tricky.
 
-# In[104]:
-
-
 K.set_value(answer.optimizer.lr, 5e-3)
 hist = answer.fit(inps, answers_train, **parms, nb_epoch=8, batch_size=32,
                   validation_data=(val_inps, answers_test))
-
-
-# In[34]:
 
 
 np.array(hist.history['val_acc'])
 
 
 # ## Custom bias layer
-
-# In[68]:
-
 
 class Elemwise(Layer):
     def __init__(self, axis, is_mult, init='glorot_uniform', **kwargs):

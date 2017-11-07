@@ -1,14 +1,8 @@
 
 # coding: utf-8
 
-# In[1]:
-
-
 from theano.sandbox import cuda
 cuda.use('gpu0')
-
-
-# In[2]:
 
 
 get_ipython().magic(u'matplotlib inline')
@@ -20,9 +14,6 @@ from __future__ import division, print_function
 
 # ## Setup
 
-# In[3]:
-
-
 path = "data/dogscats/"
 model_path = path + 'models/'
 if not os.path.exists(model_path):
@@ -31,14 +22,8 @@ if not os.path.exists(model_path):
 batch_size = 64
 
 
-# In[4]:
-
-
 batches = get_batches(path + 'train', shuffle=False, batch_size=batch_size)
 val_batches = get_batches(path + 'valid', shuffle=False, batch_size=batch_size)
-
-
-# In[6]:
 
 
 (val_classes, trn_classes, val_labels, trn_labels,
@@ -55,27 +40,15 @@ val_batches = get_batches(path + 'valid', shuffle=False, batch_size=batch_size)
 # So first, we need to create our VGG model and pre-compute the output of
 # the conv layers:
 
-# In[15]:
-
-
 model = Vgg16().model
 conv_layers, fc_layers = split_at(model, Convolution2D)
-
-
-# In[16]:
 
 
 conv_model = Sequential(conv_layers)
 
 
-# In[17]:
-
-
 val_features = conv_model.predict_generator(val_batches, val_batches.nb_sample)
 trn_features = conv_model.predict_generator(batches, batches.nb_sample)
-
-
-# In[33]:
 
 
 save_array(model_path + 'train_convlayer_features.bc', trn_features)
@@ -84,9 +57,6 @@ save_array(model_path + 'valid_convlayer_features.bc', val_features)
 
 # In the future we can just load these precomputed features:
 
-# In[6]:
-
-
 trn_features = load_array(model_path + 'train_convlayer_features.bc')
 val_features = load_array(model_path + 'valid_convlayer_features.bc')
 
@@ -94,14 +64,8 @@ val_features = load_array(model_path + 'valid_convlayer_features.bc')
 # We can also save some time by pre-computing the training and validation
 # arrays with the image decoding and resizing already done:
 
-# In[7]:
-
-
 trn = get_data(path + 'train')
 val = get_data(path + 'valid')
-
-
-# In[8]:
 
 
 save_array(model_path + 'train_data.bc', trn)
@@ -110,9 +74,6 @@ save_array(model_path + 'valid_data.bc', val)
 
 # In the future we can just load these resized images:
 
-# In[7]:
-
-
 trn = load_array(model_path + 'train_data.bc')
 val = load_array(model_path + 'valid_data.bc')
 
@@ -120,28 +81,16 @@ val = load_array(model_path + 'valid_data.bc')
 # Finally, we can precompute the output of all but the last dropout and
 # dense layers, for creating the first stage of the model:
 
-# In[19]:
-
-
 model.pop()
 model.pop()
-
-
-# In[20]:
 
 
 ll_val_feat = model.predict_generator(val_batches, val_batches.nb_sample)
 ll_feat = model.predict_generator(batches, batches.nb_sample)
 
 
-# In[21]:
-
-
 save_array(model_path + 'train_ll_feat.bc', ll_feat)
 save_array(model_path + 'valid_ll_feat.bc', ll_val_feat)
-
-
-# In[8]:
 
 
 ll_feat = load_array(model_path + 'train_ll_feat.bc')
@@ -150,14 +99,8 @@ ll_val_feat = load_array(model_path + 'valid_ll_feat.bc')
 
 # ...and let's also grab the test data, for when we need to submit:
 
-# In[16]:
-
-
 test = get_data(path + 'test')
 save_array(model_path + 'test_data.bc', test)
-
-
-# In[22]:
 
 
 test = load_array(model_path + 'test_data.bc')
@@ -168,18 +111,12 @@ test = load_array(model_path + 'test_data.bc')
 # The functions automate creating a model that trains the last layer from
 # scratch, and then adds those new layers on to the main model.
 
-# In[9]:
-
-
 def get_ll_layers():
     return [
         BatchNormalization(input_shape=(4096,)),
         Dropout(0.5),
         Dense(2, activation='softmax')
     ]
-
-
-# In[46]:
 
 
 def train_last_layer(i):
@@ -234,9 +171,6 @@ def train_last_layer(i):
 
 # ## Dense model
 
-# In[47]:
-
-
 def get_conv_model(model):
     layers = model.layers
     last_conv_idx = [index for index, layer in enumerate(layers)
@@ -246,9 +180,6 @@ def get_conv_model(model):
     conv_model = Sequential(conv_layers)
     fc_layers = layers[last_conv_idx + 1:]
     return conv_model, fc_layers, last_conv_idx
-
-
-# In[48]:
 
 
 def get_fc_layers(p, in_shape):
@@ -263,9 +194,6 @@ def get_fc_layers(p, in_shape):
         Dropout(p),
         Dense(2, activation='softmax')
     ]
-
-
-# In[49]:
 
 
 def train_dense_layers(i, model):
@@ -312,9 +240,6 @@ def train_dense_layers(i, model):
 
 # ## Build ensemble
 
-# In[50]:
-
-
 for i in range(5):
     i = str(i)
     model = train_last_layer(i)
@@ -323,15 +248,9 @@ for i in range(5):
 
 # ## Combine ensemble and test
 
-# In[4]:
-
-
 ens_model = vgg_ft(2)
 for layer in ens_model.layers:
     layer.trainable = True
-
-
-# In[52]:
 
 
 def get_ens_pred(arr, fname):
@@ -344,19 +263,10 @@ def get_ens_pred(arr, fname):
     return ens_pred
 
 
-# In[55]:
-
-
 val_pred2 = get_ens_pred(val, 'aug')
 
 
-# In[56]:
-
-
 val_avg_preds2 = np.stack(val_pred2).mean(axis=0)
-
-
-# In[61]:
 
 
 categorical_accuracy(val_labels, val_avg_preds2).eval()

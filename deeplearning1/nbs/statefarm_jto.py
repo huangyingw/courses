@@ -90,14 +90,8 @@
 # ## 代码解释
 # 以下是课程notebook核心代码解释，可以直接点击这里，下载本篇ipynb文件。
 
-# In[1]:
-
-
 from theano.sandbox import cuda
 cuda.use('gpu0')
-
-
-# In[2]:
 
 
 get_ipython().magic(u'matplotlib inline')
@@ -111,13 +105,7 @@ from utils import *
 from IPython.display import FileLink
 
 
-# In[3]:
-
-
 batch_size = 64
-
-
-# In[6]:
 
 
 batches = get_batches(path + 'train', batch_size=batch_size)
@@ -127,9 +115,6 @@ val_batches = get_batches(
     shuffle=False)
 
 
-# In[7]:
-
-
 (val_classes, trn_classes, val_labels, trn_labels,
  val_filenames, filenames, test_filenames) = get_classes(path)
 
@@ -137,17 +122,11 @@ val_batches = get_batches(
 # ## Basic Model - linear model
 # 现在先从最简单的线性模型开始，慢慢加入新东西。
 
-# In[9]:
-
-
 model = Sequential([
     BatchNormalization(axis=1, input_shape=(3, 224, 224)),
     Flatten(),
     Dense(10, activation='softmax')
 ])
-
-
-# In[15]:
 
 
 model.compile(Adam(), loss='categorical_crossentropy', metrics=['accuracy'])
@@ -159,16 +138,10 @@ model.fit_generator(
     nb_val_samples=val_batches.nb_sample)
 
 
-# In[17]:
-
-
 model.summary()
 
 
 # try lower learning rate
-
-# In[18]:
-
 
 model = Sequential([
     BatchNormalization(axis=1, input_shape=(3, 224, 224)),
@@ -188,9 +161,6 @@ model.fit_generator(
     nb_val_samples=val_batches.nb_sample)
 
 
-# In[19]:
-
-
 model.optimizer.lr = 0.0001
 model.fit_generator(
     batches,
@@ -202,9 +172,6 @@ model.fit_generator(
 
 # ### Add L2 regularization
 # 现在已经严重过拟合，我们加入L2正则化来控制过拟合。
-
-# In[20]:
-
 
 model = Sequential([
     BatchNormalization(axis=1, input_shape=(3, 224, 224)),
@@ -224,9 +191,6 @@ model.fit_generator(
     nb_val_samples=val_batches.nb_sample)
 
 
-# In[21]:
-
-
 model.optimizer.lr = 0.0001
 model.fit_generator(
     batches,
@@ -234,9 +198,6 @@ model.fit_generator(
     nb_epoch=4,
     validation_data=val_batches,
     nb_val_samples=val_batches.nb_sample)
-
-
-# In[22]:
 
 
 model.optimizer.lr = 0.001
@@ -250,9 +211,6 @@ model.fit_generator(
 
 # ## Add single hidden layer
 # 加入单个隐藏层
-
-# In[23]:
-
 
 model = Sequential([
     BatchNormalization(axis=1, input_shape=(3, 224, 224)),
@@ -284,9 +242,6 @@ model.fit_generator(
 
 # ## Add single conv layer
 # 加入单个卷积层，包括Conv2D、MaxPooling2D、BN、Conv2D、MaxPooling2D、BN
-
-# In[26]:
-
 
 def conv1(batches):
     model = Sequential([
@@ -325,13 +280,7 @@ def conv1(batches):
     return model
 
 
-# In[27]:
-
-
 model = conv1(batches)
-
-
-# In[28]:
 
 
 def conv2(batches):
@@ -371,13 +320,7 @@ def conv2(batches):
     return model
 
 
-# In[29]:
-
-
 model = conv2(batches)
-
-
-# In[30]:
 
 
 model.summary()
@@ -388,20 +331,11 @@ model.summary()
 
 # ### 第一种：宽度偏移，向左或右偏移图像
 
-# In[31]:
-
-
 gen_t = image.ImageDataGenerator(width_shift_range=0.1)
 batches = get_batches(path + 'train', gen_t, batch_size=batch_size)
 
 
-# In[32]:
-
-
 model = conv2(batches)
-
-
-# In[33]:
 
 
 model = conv1(batches)
@@ -409,20 +343,11 @@ model = conv1(batches)
 
 # 从以上两次调用conv1和conv2的情况可以看到，前三轮conv2的准确率比conv1的要高，因为conv2的maxpooling层下采样的大小为2×2， 比conv1的3×3保留了更多的信息，因此准确率会稍高。但到后面几轮发现conv2的准确率开始降低，但conv1的准确率基本维持在0.22左右。
 
-# In[34]:
-
-
 gen_t = image.ImageDataGenerator(width_shift_range=0.3)
 batches = get_batches(path + 'train', gen_t, batch_size=batch_size)
 
 
-# In[35]:
-
-
 model = conv2(batches)
-
-
-# In[36]:
 
 
 model = conv1(batches)
@@ -432,14 +357,8 @@ model = conv1(batches)
 
 # ### 第二种：高度偏移，上下移动图像 - Height shift: move the image up and down
 
-# In[37]:
-
-
 gen_t = image.ImageDataGenerator(height_shift_range=0.05)
 batches = get_batches(path + 'train', gen_t, batch_size=batch_size)
-
-
-# In[38]:
 
 
 model = conv1(batches)
@@ -447,14 +366,8 @@ model = conv1(batches)
 
 # ### 第三种：随机剪切角（最大弧度） - Random shear angles (max in radians)
 
-# In[39]:
-
-
 gen_t = image.ImageDataGenerator(shear_range=0.1)
 batches = get_batches(path + 'train', gen_t, batch_size=batch_size)
-
-
-# In[40]:
 
 
 model = conv1(batches)
@@ -462,14 +375,8 @@ model = conv1(batches)
 
 # ### 第四种：旋转度：最大度数 -Rotation: max in degrees
 
-# In[41]:
-
-
 gen_t = image.ImageDataGenerator(rotation_range=15)
 batches = get_batches(path + 'train', gen_t, batch_size=batch_size)
-
-
-# In[42]:
 
 
 model = conv1(batches)
@@ -477,15 +384,9 @@ model = conv1(batches)
 
 # ### 综合使用前面四种处理方法
 
-# In[43]:
-
-
 gen_t = image.ImageDataGenerator(rotation_range=15, height_shift_range=0.05,
                                  shear_range=0.1, channel_shift_range=20, width_shift_range=0.1)
 batches = get_batches(path + 'train', gen_t, batch_size=batch_size)
-
-
-# In[44]:
 
 
 model = conv1(batches)
@@ -493,15 +394,9 @@ model = conv1(batches)
 
 # 改变学习率，再跑多几轮
 
-# In[45]:
-
-
 model.optimizer.lr = 0.0001
 model.fit_generator(batches, batches.nb_sample, nb_epoch=5, validation_data=val_batches,
                     nb_val_samples=val_batches.nb_sample)
-
-
-# In[47]:
 
 
 model.fit_generator(batches, batches.nb_sample, nb_epoch=10, validation_data=val_batches,
@@ -510,9 +405,6 @@ model.fit_generator(batches, batches.nb_sample, nb_epoch=10, validation_data=val
 
 # ## 引入VGG16模型
 
-# In[4]:
-
-
 vgg = Vgg16()
 model = vgg.model
 last_conv_idx = [i for i, l in enumerate(
@@ -520,20 +412,11 @@ last_conv_idx = [i for i, l in enumerate(
 conv_layers = model.layers[:last_conv_idx + 1]
 
 
-# In[5]:
-
-
 conv_model = Sequential(conv_layers)
-
-
-# In[6]:
 
 
 (val_classes, trn_classes, val_labels, trn_labels,
     val_filenames, filenames, test_filenames) = get_classes(path)
-
-
-# In[7]:
 
 
 batches = get_batches(path + 'train', batch_size=batch_size, shuffle=False)
@@ -544,28 +427,16 @@ val_batches = get_batches(
 test_batches = get_batches(path + 'test', batch_size=batch_size)
 
 
-# In[10]:
-
-
 trn_data = get_data(path + 'train')
 val_data = get_data(path + 'valid')
-
-
-# In[12]:
 
 
 save_array(path + 'results/val.dat', val_data)
 save_array(path + 'results/trn.dat', trn_data)
 
 
-# In[ ]:
-
-
 val = load_array(path + 'results/val.dat')
 trn = load_array(path + 'results/trn.dat')
-
-
-# In[8]:
 
 
 conv_feat = conv_model.predict_generator(batches, batches.nb_sample)
@@ -573,27 +444,15 @@ conv_val_feat = conv_model.predict_generator(
     val_batches, val_batches.nb_sample)
 
 
-# In[8]:
-
-
 conv_test_feat = conv_model.predict_generator(
     test_batches, test_batches.nb_sample)
-
-
-# In[9]:
 
 
 save_array(path + 'results/conv_val_feat.dat', conv_val_feat)
 save_array(path + 'results/conv_feat.dat', conv_feat)
 
 
-# In[9]:
-
-
 save_array(path + 'results/conv_test_feat.dat', conv_test_feat)
-
-
-# In[13]:
 
 
 conv_feat = load_array(path + 'results/conv_feat.dat')
@@ -602,9 +461,6 @@ conv_val_feat.shape
 
 
 # 设置bn_model，以修改dropout
-
-# In[14]:
-
 
 def get_bn_layers(p):
     return [
@@ -621,13 +477,7 @@ def get_bn_layers(p):
     ]
 
 
-# In[33]:
-
-
 p = 0.5
-
-
-# In[34]:
 
 
 bn_model = Sequential(get_bn_layers(p))
@@ -639,9 +489,6 @@ bn_model.compile(
 
 
 # 下面这一步是已经运行了72轮才有这个结果，同学们可以多试几轮。
-
-# In[43]:
-
 
 bn_model.fit(
     conv_feat,
@@ -655,9 +502,6 @@ bn_model.fit(
 
 # 注意，这两次尝试都已经严重过拟合，可以设置高一点的P，同时设置新学习率看看效果，留给同学们去尝试。
 
-# In[46]:
-
-
 bn_model.optimizer.lr = 0.0001
 bn_model.fit(
     conv_feat,
@@ -669,17 +513,11 @@ bn_model.fit(
         val_labels))
 
 
-# In[45]:
-
-
 bn_model.save_weights(path + 'models/conv_72e_p05_2dense100_lr6.h5')
 
 
 # ### 引入Data Augmentation，预计算卷积层
 # 由于使用图像增广技术，在fit model的时候必须使用整个数据集，因此并不能预计算卷积层。但有一个解决方法是，先用图像增广技术把整个训练集扩大到6倍，同时把trn_labels扩大到6倍（因为即使把图像增广用在了训练集，训练集的性质依然没变，猫依然是猫，狗依然是狗，只是图片稍微变了形），那么就相当于在原数据集上使用了图像增广。这样就可以预计算卷积层，后面就不需要等待长时间的训练了。
-
-# In[9]:
-
 
 gen_t = image.ImageDataGenerator(rotation_range=15, height_shift_range=0.05,
                                  shear_range=0.1, channel_shift_range=20, width_shift_range=0.1)
@@ -690,38 +528,20 @@ da_batches = get_batches(
     shuffle=False)
 
 
-# In[10]:
-
-
 da_conv_feat = conv_model.predict_generator(
     da_batches, da_batches.nb_sample * 3)
-
-
-# In[11]:
 
 
 save_array(path + 'results/da_conv_feat3.dat', da_conv_feat)
 
 
-# In[9]:
-
-
 da_conv_feat = load_array(path + 'results/da_conv_feat2.dat')
-
-
-# In[14]:
 
 
 da_conv_feat = np.concatenate([da_conv_feat, conv_feat])
 
 
-# In[16]:
-
-
 da_trn_labels = np.concatenate([trn_labels] * 4)
-
-
-# In[10]:
 
 
 def get_bn_da_layers(p):
@@ -739,13 +559,7 @@ def get_bn_da_layers(p):
     ]
 
 
-# In[11]:
-
-
 p = 0.8
-
-
-# In[12]:
 
 
 bn_model = Sequential(get_bn_da_layers(p))
@@ -756,33 +570,18 @@ bn_model.compile(
     metrics=['accuracy'])
 
 
-# In[53]:
-
-
 bn_model.fit(da_conv_feat, da_trn_labels, batch_size=batch_size, nb_epoch=1,
              validation_data=(conv_val_feat, val_labels))
 
 
-# In[54]:
-
-
 bn_model.optimizer.lr = 0.01
-
-
-# In[56]:
 
 
 bn_model.fit(da_conv_feat, da_trn_labels, batch_size=batch_size, nb_epoch=2,
              validation_data=(conv_val_feat, val_labels))
 
 
-# In[57]:
-
-
 bn_model.save_weights(path + 'models/da_p8_e2_4e.h5')
-
-
-# In[13]:
 
 
 bn_model.load_weights(path + 'models/da_p8_e2_4e.h5')
@@ -790,50 +589,26 @@ bn_model.load_weights(path + 'models/da_p8_e2_4e.h5')
 
 # 不用再训练了，再训练多4轮的话就会产生过拟合，以上这个结果是刚好。
 
-# In[14]:
-
-
 def do_clip(arr, mx): return np.clip(arr, (1 - mx) / 9, mx)
-
-
-# In[ ]:
 
 
 keras.metrics.categorical_crossentropy(
     val_labels, do_clip(val_preds, 0.93)).eval()
 
 
-# In[ ]:
-
-
 conv_test_feat = load_array(path + 'results/conv_test_feat.dat')
-
-
-# In[16]:
 
 
 preds = bn_model.predict(conv_test_feat, batch_size=batch_size * 2)
 
 
-# In[17]:
-
-
 subm = do_clip(preds, 0.93)
-
-
-# In[18]:
 
 
 subm_name = path + 'results/subm.gz'
 
 
-# In[19]:
-
-
 classes = sorted(batches.class_indices, key=batches.class_indices.get)
-
-
-# In[20]:
 
 
 # 注意，原文第二行代码原本为a[4:]，但这对于我们的目录来说应该是a[5:]。
@@ -842,13 +617,7 @@ submission.insert(0, 'img', [a[5:] for a in test_filenames])
 submission.head()
 
 
-# In[21]:
-
-
 submission.to_csv(subm_name, index=False, compression='gzip')
-
-
-# In[22]:
 
 
 FileLink(subm_name)
