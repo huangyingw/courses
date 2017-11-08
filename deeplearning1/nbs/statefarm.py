@@ -4,6 +4,7 @@
 # # Enter State Farm
 
 from theano.sandbox import cuda
+from keras import callbacks
 cuda.use('gpu0')
 
 
@@ -20,6 +21,7 @@ from IPython.display import FileLink
 model_path = path + 'models/'
 if not os.path.exists(model_path):
     os.mkdir(model_path)
+file_name = model_path + 'weights.{epoch:02d}-{val_loss:.2f}.model'
 
 
 batch_size = 64
@@ -83,10 +85,16 @@ def conv1(batches):
             lr=1e-4),
         loss='categorical_crossentropy',
         metrics=['accuracy'])
-    model.fit_generator(batches, batches.nb_sample, nb_epoch=2, validation_data=val_batches,
+    save_best_only = True
+    monitor = 'val_acc'
+    cbks = [callbacks.ModelCheckpoint(file_name + '.1.h5', monitor=monitor,
+                                      save_best_only=save_best_only)]
+    model.fit_generator(batches, batches.nb_sample, callbacks=cbks, nb_epoch=2, validation_data=val_batches,
                         nb_val_samples=val_batches.nb_sample)
     model.optimizer.lr = 0.001
-    model.fit_generator(batches, batches.nb_sample, nb_epoch=4, validation_data=val_batches,
+    cbks = [callbacks.ModelCheckpoint(file_name + '.2.h5', monitor=monitor,
+                                      save_best_only=save_best_only)]
+    model.fit_generator(batches, batches.nb_sample, callbacks=cbks, nb_epoch=4, validation_data=val_batches,
                         nb_val_samples=val_batches.nb_sample)
     return model
 
