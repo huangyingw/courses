@@ -5,6 +5,7 @@
 
 from theano.sandbox import cuda
 from keras import callbacks
+from keras.models import load_model
 cuda.use('gpu0')
 
 
@@ -102,10 +103,10 @@ def conv1(batches):
 model = conv1(batches)
 
 
-model.save_weights(model_path + 'statefarm1.h5')
+model.save(model_path + 'statefarm1.h5')
 
 
-model.load_weights(model_path + 'statefarm1.h5')
+model = load_model(model_path + 'statefarm1.h5')
 
 
 # Interestingly, with no regularization or augmentation we're getting some
@@ -122,10 +123,9 @@ batches = get_batches(path + 'train', gen_t, batch_size=batch_size)
 model = conv1(batches)
 
 
-model.save_weights(model_path + 'statefarm2.h5')
+model.save(model_path + 'statefarm2.h5')
 
-
-model.load_weights(model_path + 'statefarm2.h5')
+model = load_model(model_path + 'statefarm2.h5')
 
 
 model.optimizer.lr = 0.0001
@@ -289,7 +289,7 @@ bn_model.fit(conv_feat, trn_labels, batch_size=batch_size, nb_epoch=2,
              validation_data=(conv_val_feat, val_labels))
 
 
-bn_model.save_weights(path + 'models/conv8.h5')
+bn_model.save(path + 'models/conv8.h5')
 
 
 # Looking good! Let's try pre-computing 5 epochs worth of augmented data,
@@ -384,7 +384,7 @@ bn_model.fit(da_conv_feat, da_trn_labels, batch_size=batch_size, nb_epoch=4,
 
 # Looks good - let's save those weights.
 
-bn_model.save_weights(path + 'models/da_conv8_1.h5')
+bn_model.save(path + 'models/da_conv8_1.h5')
 
 
 # ### Pseudo labeling
@@ -412,7 +412,7 @@ comb_feat = np.concatenate([da_conv_feat, conv_val_feat])
 
 # ...and fine-tune our model using that data.
 
-bn_model.load_weights(path + 'models/da_conv8_1.h5')
+bn_model = load_model(path + 'models/da_conv8_1.h5')
 
 
 bn_model.fit(comb_feat, comb_pseudo, batch_size=batch_size, nb_epoch=1,
@@ -433,7 +433,7 @@ bn_model.fit(comb_feat, comb_pseudo, batch_size=batch_size, nb_epoch=4,
 # That's a distinct improvement - even although the validation set isn't
 # very big. This looks encouraging for when we try this on the test set.
 
-bn_model.save_weights(path + 'models/bn-ps8.h5')
+bn_model.save(path + 'models/bn-ps8.h5')
 
 
 # ### Submit
@@ -544,10 +544,10 @@ conv_model.fit_generator(batches, batches.N, nb_epoch=8, validation_data=val_bat
                          nb_val_samples=val_batches.N)
 
 
-conv_model.save_weights(path + 'models/conv8_ps.h5')
+conv_model.save(path + 'models/conv8_ps.h5')
 
 
-conv_model.load_weights(path + 'models/conv8_da.h5')
+conv_model = load_model(path + 'models/conv8_da.h5')
 
 
 val_pseudo = conv_model.predict(val, batch_size=batch_size * 2)
