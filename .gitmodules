@@ -11,3 +11,6 @@
 [submodule "Theano"]
 	path = Theano
 	url = https://github.com/Theano/Theano.git
+[submodule "pandas"]
+	path = pandas
+	url = https://github.com/pandas-dev/pandas.git
