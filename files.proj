@@ -767,6 +767,7 @@
 "./deeplearning1/nbs/utils.py"
 "./deeplearning1/nbs/vgg16.py"
 "./deeplearning1/nbs/vgg16bn.py"
+"./deeplearning1/nbs/wordvectors.py"
 "./deeplearning2/DCGAN.py"
 "./deeplearning2/Keras-Tensorflow-Tutorial.py"
 "./deeplearning2/LICENSE"
