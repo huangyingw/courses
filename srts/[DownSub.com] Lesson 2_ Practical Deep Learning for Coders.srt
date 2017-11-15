@@ -1,0 +1,6184 @@
+1
+00:00:01,730 --> 00:00:07,000
+So one of the things I wanted to talk about
+(this really came up when I was looking at
+
+2
+00:00:07,000 --> 00:00:13,490
+the survey responses) what is different about
+how we're trying to teach this course and
+
+3
+00:00:13,490 --> 00:00:17,369
+how will it impact you as participants in
+this course.
+
+4
+00:00:17,369 --> 00:00:22,800
+Really we're trying to teach this course in
+a very different way from the way most teaching
+
+5
+00:00:22,800 --> 00:00:29,050
+is done, at least most teaching in the United
+States.
+
+6
+00:00:29,050 --> 00:00:35,710
+Rachel and I are both very keen fans of David
+Perkins, who has this wonderful book called
+
+7
+00:00:35,710 --> 00:00:40,449
+"Making Learning Whole, How Seven Principles
+of Teaching can Transform Education".
+
+8
+00:00:40,449 --> 00:00:43,390
+We are trying to put these principles in practice
+in this course.
+
+9
+00:00:43,390 --> 00:00:51,040
+I'll give you a little anecdote from the book
+to give you a sense of how this works.
+
+10
+00:00:51,040 --> 00:00:59,609
+If you were to learn baseball the way that
+math is taught, you would first learn about
+
+11
+00:00:59,609 --> 00:01:01,260
+the shape of a parabola.
+
+12
+00:01:01,260 --> 00:01:06,650
+Then you would learn about the materials science
+design behind stitching baseballs, and so
+
+13
+00:01:06,650 --> 00:01:07,650
+forth.
+
+14
+00:01:07,650 --> 00:01:11,150
+And 20 years later, after you completed your
+PhD and post-doc, you'd be taken to your first
+
+15
+00:01:11,150 --> 00:01:14,830
+baseball game and you'd be introduced to the
+rules of baseball.
+
+16
+00:01:14,830 --> 00:01:19,340
+And then 10 years later, you might get to
+hit.
+
+17
+00:01:19,340 --> 00:01:24,920
+The way that in practice baseball is taught
+is we take a kid down to the baseball diamond
+
+18
+00:01:24,920 --> 00:01:29,520
+and we say, "These people are playing baseball,
+would you like to play?"
+
+19
+00:01:29,520 --> 00:01:32,280
+And they say, "Yea, sure I would."
+
+20
+00:01:32,280 --> 00:01:36,000
+"Okay, stand here, I'm going to throw this.
+
+21
+00:01:36,000 --> 00:01:37,290
+Hit it, now run."
+
+22
+00:01:37,290 --> 00:01:39,990
+Good, you're playing baseball.
+
+23
+00:01:39,990 --> 00:01:45,850
+So that's why we started our first class with,
+"Here are 7 lines of code you can run to do
+
+24
+00:01:45,850 --> 00:01:46,850
+deep-learning."
+
+25
+00:01:46,850 --> 00:01:51,820
+Not just to do deep-learning but to do image
+classification on any dataset as long as you
+
+26
+00:01:51,820 --> 00:01:56,320
+structure it in the right way.
+
+27
+00:01:56,320 --> 00:01:59,860
+So this means you will very often be in the
+situation (we've heard a lot of your questions
+
+28
+00:01:59,860 --> 00:02:05,140
+about this during the week); Gosh, there's
+a whole lot of details I don't understand.
+
+29
+00:02:05,140 --> 00:02:07,330
+Like this fine-tuning thing.
+
+30
+00:02:07,330 --> 00:02:09,139
+What is fine-tuning?
+
+31
+00:02:09,139 --> 00:02:11,180
+And the answer is we haven't told you yet.
+
+32
+00:02:11,180 --> 00:02:17,409
+It's a thing you do in order to do effective
+image classification in deep-learning.
+
+33
+00:02:17,409 --> 00:02:22,530
+We're going to start from the top and gradually
+work our way down, and down, and down.
+
+34
+00:02:22,530 --> 00:02:27,930
+The reason that you are going to want to learn
+the additional level of detail is so that
+
+35
+00:02:27,930 --> 00:02:33,790
+when you get to the point where you want to
+do something that no one's done before, you'll
+
+36
+00:02:33,790 --> 00:02:39,609
+know how to go into that detail and create
+something that does what you want.
+
+37
+00:02:39,609 --> 00:02:44,249
+We're going to keep going down a level and
+down a level and down a level through the
+
+38
+00:02:44,249 --> 00:02:49,680
+hierarchy of software libraries, through the
+hierarchy of the way computers work, through
+
+39
+00:02:49,680 --> 00:02:58,430
+the hierarchy of the algorithms and the math,
+but only at the speed that's necessary to
+
+40
+00:02:58,430 --> 00:03:01,860
+let's make a better model, or let's make a
+model that can do something we couldn't do
+
+41
+00:03:01,860 --> 00:03:02,860
+before.
+
+42
+00:03:02,860 --> 00:03:05,920
+Those will always be our goals.
+
+43
+00:03:05,920 --> 00:03:06,920
+So it's very different.
+
+44
+00:03:06,920 --> 00:03:11,819
+I don't know if anybody's been reading the
+Yoshua Bengio, Ian Goodfellow and Aaron Courville
+
+45
+00:03:11,819 --> 00:03:15,409
+book (www.deeplearningbook.org), which is
+a great mathematical deep learning book.
+
+46
+00:03:15,409 --> 00:03:19,439
+It literally starts with 5 chapters of everything
+you need to know about probability, everything
+
+47
+00:03:19,439 --> 00:03:22,450
+you need to know about calculus, everything
+you need to know about linear algebra, everything
+
+48
+00:03:22,450 --> 00:03:28,180
+you need to know about optimizations, and
+so forth.
+
+49
+00:03:28,180 --> 00:03:32,969
+I don't know that in the whole book, there's
+ever actually a point where it says, here
+
+50
+00:03:32,969 --> 00:03:35,060
+is how you do deep-learning.
+
+51
+00:03:35,060 --> 00:03:37,670
+Even if you read the whole thing.
+
+52
+00:03:37,670 --> 00:03:40,620
+I've read 2/3 of it.
+
+53
+00:03:40,620 --> 00:03:42,940
+It's a really good math book.
+
+54
+00:03:42,940 --> 00:03:45,889
+Anybody who's interested in understanding
+the math of deep-learning, I would strongly
+
+55
+00:03:45,889 --> 00:03:46,889
+recommend.
+
+56
+00:03:46,889 --> 00:03:50,390
+But it's kind of the opposite of how we're
+teaching this course.
+
+57
+00:03:50,390 --> 00:03:55,900
+So if you often find yourself thinking, I
+don't really know what's going on, that's
+
+58
+00:03:55,900 --> 00:03:56,900
+fine.
+
+59
+00:03:56,900 --> 00:04:02,010
+But I also want you to always be thinking
+about, okay how can I figure out a bit more
+
+60
+00:04:02,010 --> 00:04:03,799
+about what's going on.
+
+61
+00:04:03,799 --> 00:04:05,700
+So we're trying to let you experiment.
+
+62
+00:04:05,700 --> 00:04:12,019
+Generally speaking, the assignments during
+the week are trying to give you enough room
+
+63
+00:04:12,019 --> 00:04:16,930
+to find a way to dig in into what you've learnt
+and do a little bit more.
+
+64
+00:04:16,930 --> 00:04:20,730
+Make sure you can do what you've seen and
+also that you can learn a little bit more
+
+65
+00:04:20,730 --> 00:04:22,350
+about it.
+
+66
+00:04:22,350 --> 00:04:23,880
+So you are all coders.
+
+67
+00:04:23,880 --> 00:04:29,480
+So you are all expected to look at that first
+notebook, and look at what are the inputs
+
+68
+00:04:29,480 --> 00:04:33,310
+to every one of those cells, what are the
+outputs from every one of those cells.
+
+69
+00:04:33,310 --> 00:04:37,930
+How is it that the output can be used as the
+input to that cell, why is this transformation
+
+70
+00:04:37,930 --> 00:04:39,180
+going on.
+
+71
+00:04:39,180 --> 00:04:45,090
+This is why we did not tell you how do you
+use Kaggle CLI, how do you prepare a submission
+
+72
+00:04:45,090 --> 00:04:50,870
+in the correct format, because we wanted you
+to see if you could figure it out and also
+
+73
+00:04:50,870 --> 00:04:56,420
+to leverage the community that we have to
+ask questions when you're stuck.
+
+74
+00:04:56,420 --> 00:04:59,560
+[Time: 5 minute mark]
+
+75
+00:04:59,560 --> 00:05:04,590
+Being stuck and failing is terrific because
+it means you have found some limit of your
+
+76
+00:05:04,590 --> 00:05:07,370
+knowledge or your current expertise.
+
+77
+00:05:07,370 --> 00:05:14,220
+You can then think really hard, read lots
+of documentation and ask the rest of the community
+
+78
+00:05:14,220 --> 00:05:16,870
+until you are no longer stuck.
+
+79
+00:05:16,870 --> 00:05:19,900
+At which point you now know something you
+didn't know before.
+
+80
+00:05:19,900 --> 00:05:22,480
+So that's the goal.
+
+81
+00:05:22,480 --> 00:05:26,170
+Asking for help is a key part of this, so
+there is a whole wiki page called "How to
+
+82
+00:05:26,170 --> 00:05:28,010
+ask for Help".
+
+83
+00:05:28,010 --> 00:05:34,010
+It's really important, and so far about half
+the times I have seen people ask for help,
+
+84
+00:05:34,010 --> 00:05:38,690
+there is not enough information for your colleagues
+to really help you effectively.
+
+85
+00:05:38,690 --> 00:05:42,810
+So when people point you at this page, it's
+not because they're trying to be a pain, it's
+
+86
+00:05:42,810 --> 00:05:46,680
+because they're saying I want to help you
+but you haven't given me enough information.
+
+87
+00:05:46,680 --> 00:05:49,750
+So, in particular, what have you tried so
+far.
+
+88
+00:05:49,750 --> 00:05:51,600
+What did you expect to happen?
+
+89
+00:05:51,600 --> 00:05:53,340
+What actually happened?
+
+90
+00:05:53,340 --> 00:05:54,820
+What do you think might be going on?
+
+91
+00:05:54,820 --> 00:05:57,020
+What have you tried to test this out?
+
+92
+00:05:57,020 --> 00:06:13,800
+And tell us everything you can about your
+computer and your software?
+
+93
+00:06:13,800 --> 00:06:16,020
+Show us screenshots, error messages, your
+code.
+
+94
+00:06:16,020 --> 00:06:23,710
+The better you get at asking for help, the
+more enjoyable experience you're going to
+
+95
+00:06:23,710 --> 00:06:28,870
+have because continually you'll find your
+problems can be solved very quickly and you
+
+96
+00:06:28,870 --> 00:06:30,220
+can move on.
+
+97
+00:06:30,220 --> 00:06:39,780
+There was a terrific recommendation from the
+head of Google Brain, Vincent Vanhoucke, on
+
+98
+00:06:39,780 --> 00:06:44,991
+a Reddit AMA a few weeks ago where he said
+he tells everybody in his team, if you're
+
+99
+00:06:44,991 --> 00:06:50,900
+stuck work at it yourself for half an hour
+(you have to work at it yourself for half
+
+100
+00:06:50,900 --> 00:06:51,900
+an hour).
+
+101
+00:06:51,900 --> 00:06:55,050
+If you're still stuck, you have to ask for
+help from somebody else.
+
+102
+00:06:55,050 --> 00:07:00,211
+The idea being that you are always making
+sure that you try everything you can, but
+
+103
+00:07:00,211 --> 00:07:03,500
+you're also never wasting your time when somebody
+else can help you.
+
+104
+00:07:03,500 --> 00:07:08,780
+I think that's a really good suggestion, so
+maybe you can think about this half an hour
+
+105
+00:07:08,780 --> 00:07:10,180
+rule yourself.
+
+106
+00:07:10,180 --> 00:07:15,200
+I wanted to highlight a great example of a
+really successful how to ask for help a great
+
+107
+00:07:15,200 --> 00:07:16,220
+example of a really successful how to ask
+for help.
+
+108
+00:07:16,220 --> 00:07:17,740
+Who asked this particular question?
+
+109
+00:07:17,740 --> 00:07:20,660
+That was really well done, really nice.
+
+110
+00:07:20,660 --> 00:07:41,360
+What's your background before taking this
+class, maybe you can introduce yourself quickly.
+
+111
+00:07:41,360 --> 00:07:52,200
+I graduated from USF two years ago with a
+bachelor's in Data Science.
+
+112
+00:07:52,200 --> 00:07:59,690
+You can see here that he explained here what
+he's going to do, what happened last time,
+
+113
+00:07:59,690 --> 00:08:00,740
+what error message he got.
+
+114
+00:08:00,740 --> 00:08:04,150
+He's got a screenshot to show you want he
+typed and what he came back.
+
+115
+00:08:04,150 --> 00:08:09,850
+He shows what resources he's going to use,
+what these resources say and so forth.
+
+116
+00:08:09,850 --> 00:08:13,540
+Did you get your question answered?
+
+117
+00:08:13,540 --> 00:08:18,730
+Kicho says, yes, Rachel emailed me.
+
+118
+00:08:18,730 --> 00:08:20,460
+Okay, great.
+
+119
+00:08:20,460 --> 00:08:30,830
+Rachel says the question was so clear, it
+was easy to answer.
+
+120
+00:08:30,830 --> 00:08:36,280
+As you might have noticed, the wiki is rapidly
+coming out with some great information, so
+
+121
+00:08:36,280 --> 00:08:38,849
+please start exploring it.
+
+122
+00:08:38,849 --> 00:08:43,828
+You'll see on the left-hand side, there is
+a recent changes section and you can see every
+
+123
+00:08:43,828 --> 00:08:49,190
+day there's lots of people who've been contributing
+lots of things, so it's continually improving.
+
+124
+00:08:49,190 --> 00:08:54,220
+There's some great kind of diagnostic sections.
+
+125
+00:08:54,220 --> 00:08:59,680
+If you are trying to diagnose something which
+is not covered and you solve it, please add
+
+126
+00:08:59,680 --> 00:09:06,380
+your solution to this diagnostic section.
+
+127
+00:09:06,380 --> 00:09:22,399
+One of the things I lvoed seeing today was
+Tom 
+
+128
+00:09:22,399 --> 00:09:28,910
+was asking a question about how fine-tuning
+works, we talked about the answers and then
+
+129
+00:09:28,910 --> 00:09:32,850
+he went ahead and created a very small little
+wiki page.
+
+130
+00:09:32,850 --> 00:09:36,120
+There's not much information there, but there's
+more than there used to be.
+
+131
+00:09:36,120 --> 00:09:38,110
+This is exactly what we want.
+
+132
+00:09:38,110 --> 00:09:42,499
+You can even see in the places where he wasn't
+quite sure, he put some question marks.
+
+133
+00:09:42,499 --> 00:09:46,649
+So now somebody else can go back and edit
+his wiki page, and Tom's going to come back
+
+134
+00:09:46,649 --> 00:09:50,889
+tomorrow and say now I've got even more questions
+answered.
+
+135
+00:09:50,889 --> 00:09:58,889
+This is the kind of approach where you're
+going to learn a lot.
+
+136
+00:09:58,889 --> 00:09:59,889
+[Time: 10 minute mark]
+
+137
+00:09:59,889 --> 00:10:02,699
+This is another great example of something
+that I think is very helpful.
+
+138
+00:10:02,699 --> 00:10:08,610
+Melissa, who we heard from earlier, went ahead
+and told us all, Here is my understanding
+
+139
+00:10:08,610 --> 00:10:13,610
+of the 17 steps necessary to complete the
+things we were asked to do this week.
+
+140
+00:10:13,610 --> 00:10:19,980
+So this is great for Melissa to make sure
+she understands it correctly, but everybody
+
+141
+00:10:19,980 --> 00:10:27,700
+else can say that's a really handy resource
+that we can draw on as well.
+
+142
+00:10:27,700 --> 00:10:32,339
+There are 718 messages in Slack in a single
+channel.
+
+143
+00:10:32,339 --> 00:10:40,149
+That's way too much to expect to use this
+as a learning resource, so this is my suggestion
+
+144
+00:10:40,149 --> 00:10:47,559
+as to how you might want to be careful of
+how you use Slack.
+
+145
+00:10:47,559 --> 00:10:53,120
+I wanted to spend maybe quite a lot of time
+talking about the resources that are available,
+
+146
+00:10:53,120 --> 00:10:58,500
+because I feel like if we get that out now
+then we're all going to speed along a lot
+
+147
+00:10:58,500 --> 00:10:59,500
+more quickly.
+
+148
+00:10:59,500 --> 00:11:07,480
+Thanks for your patience as we talk about
+some non-deep-learning stuff.
+
+149
+00:11:07,480 --> 00:11:13,589
+We expect the vast majority of learning to
+happen outside of class.
+
+150
+00:11:13,589 --> 00:11:22,670
+In fact, if we go back and finish off our
+survey, I know that one of the questions asked
+
+151
+00:11:22,670 --> 00:11:25,860
+about that.
+
+152
+00:11:25,860 --> 00:11:30,440
+How much time are you willing to commit most
+weeks to this class?
+
+153
+00:11:30,440 --> 00:11:34,329
+And the majority was 8-15 hours.
+
+154
+00:11:34,329 --> 00:11:38,670
+Some are 15-30, and a small number are Less
+than 8.
+
+155
+00:11:38,670 --> 00:11:43,149
+If you're in the Less than 8 group, I understand
+that's not something you can probably change.
+
+156
+00:11:43,149 --> 00:11:46,319
+If you had more time, you'd put in more time.
+
+157
+00:11:46,319 --> 00:11:52,820
+So if you're in the Less than 8 group, think
+about how you want to prioritize what you
+
+158
+00:11:52,820 --> 00:11:53,889
+want to get out of this course.
+
+159
+00:11:53,889 --> 00:11:58,369
+Be aware that it's not really designed that
+you're going to be able to do everything in
+
+160
+00:11:58,369 --> 00:12:07,769
+less than 8 hours a week, so maybe make more
+use of the forums and the wiki and focus your
+
+161
+00:12:07,769 --> 00:12:11,160
+assignments during the week on the stuff that
+you're most interested in.
+
+162
+00:12:11,160 --> 00:12:16,029
+Don't worry too much if you don't feel like
+you're getting everything because you have
+
+163
+00:12:16,029 --> 00:12:17,069
+less time available.
+
+164
+00:12:17,069 --> 00:12:21,959
+For those of you in the 15-30 group, I really
+hope that you'll find that you're getting
+
+165
+00:12:21,959 --> 00:12:27,589
+a huge amount out of the time that you're
+putting in.
+
+166
+00:12:27,589 --> 00:12:31,369
+Something I'm glad I asked (because I found
+it really helpful) was "How much of the material
+
+167
+00:12:31,369 --> 00:12:32,740
+from Lesson 1 was new to you?"
+
+168
+00:12:32,740 --> 00:12:37,069
+And for half of you, the answer is Most of
+it.
+
+169
+00:12:37,069 --> 00:12:42,430
+And for well over half of you, Most of it
+or Nearly all of it.
+
+170
+00:12:42,430 --> 00:12:47,949
+If you're one of the people that I've spoken
+to during the week who's said, "Holy shit,
+
+171
+00:12:47,949 --> 00:12:50,529
+that was a firehose of information.
+
+172
+00:12:50,529 --> 00:12:57,720
+I feel kind of overwhelmed, kind of excited,"
+you are amongst friends.
+
+173
+00:12:57,720 --> 00:13:03,749
+Remember, during the week there are about
+100 of you going through this same journey.
+
+174
+00:13:03,749 --> 00:13:08,170
+So if you want to catch up with some people
+during the week and have a coffee and talk
+
+175
+00:13:08,170 --> 00:13:13,459
+more about the class, or join a study group
+here at USF, or if you're from the South Bay,
+
+176
+00:13:13,459 --> 00:13:18,240
+find some people from the South Bay, I would
+strongly suggest doing that.
+
+177
+00:13:18,240 --> 00:13:23,730
+So for example, if you're in Menlo Park, you
+could create a Menlo Park Slack Channel and
+
+178
+00:13:23,730 --> 00:13:28,899
+put out a message, "Hey, anybody else in Menlo
+Park availabe on Wednesday night, I'd like
+
+179
+00:13:28,899 --> 00:13:34,529
+to get together and maybe do some peer programming
+or whatever."
+
+180
+00:13:34,529 --> 00:13:42,439
+For some of you, not very much of it was new
+and for those of you, I do want to make sure
+
+181
+00:13:42,439 --> 00:13:49,740
+that you feel comfortable pushing ahead, trying
+out your own projects and so forth.
+
+182
+00:13:49,740 --> 00:13:55,869
+Basically in the last lesson, what we learned
+was a pretty standard data science computing
+
+183
+00:13:55,869 --> 00:14:05,800
+stack - AWS, JuPyteR notebook, a bit of Numpy,
+Bash.
+
+184
+00:14:05,800 --> 00:14:09,950
+This is all stuff that regardless of what
+kind of data science you do, you're going
+
+185
+00:14:09,950 --> 00:14:13,559
+to be seeing a lot more of (if you stick in
+this area).
+
+186
+00:14:13,559 --> 00:14:16,119
+These are all very, very useful things.
+
+187
+00:14:16,119 --> 00:14:30,509
+Those of that who have spent some time in
+this field will have seen most of it before.
+
+188
+00:14:30,509 --> 00:14:36,910
+Hopefully that is useful background.
+
+189
+00:14:36,910 --> 00:14:46,119
+So last week we were really looking at the
+basic foundations, computing foundations necessary
+
+190
+00:14:46,119 --> 00:14:52,699
+for data science more generally, and for big
+learning more particularly.
+
+191
+00:14:52,699 --> 00:14:55,470
+This week, we're going to do something very
+similar, but we're going to be looking at
+
+192
+00:14:55,470 --> 00:14:56,720
+the key algorithm pieces.
+
+193
+00:14:56,720 --> 00:14:58,170
+[TIme: 15 minute mark]
+
+194
+00:14:58,170 --> 00:15:04,459
+So in particular, we're going to go back and
+say, "Hey, what did we actually do last week,
+
+195
+00:15:04,459 --> 00:15:08,300
+and why did that work, and how did that work."
+
+196
+00:15:08,300 --> 00:15:13,329
+For those of you who don't have much algorithmic
+background around machine learning, this is
+
+197
+00:15:13,329 --> 00:15:18,930
+going to be the same firehouse of information
+as last week was for those of you who don't
+
+198
+00:15:18,930 --> 00:15:23,009
+kind of have a software, Bash, AWS background.
+
+199
+00:15:23,009 --> 00:15:26,709
+So again, if there's a lot of information,
+don't worry.
+
+200
+00:15:26,709 --> 00:15:27,709
+This is being recorded.
+
+201
+00:15:27,709 --> 00:15:31,709
+There are all the resources during the week.
+
+202
+00:15:31,709 --> 00:15:37,180
+So the key this is to come away with an understanding
+of what are the key pieces being discussed.
+
+203
+00:15:37,180 --> 00:15:39,470
+Why are those pieces important?
+
+204
+00:15:39,470 --> 00:15:43,029
+What are they doing (even if you don't understand
+the detail).
+
+205
+00:15:43,029 --> 00:15:48,069
+So if at any point you're thinking, okay Jeremy's
+talking about activation functions.
+
+206
+00:15:48,069 --> 00:15:52,449
+I have no idea what he just said about what
+an activation function is, or why I should
+
+207
+00:15:52,449 --> 00:15:53,449
+care.
+
+208
+00:15:53,449 --> 00:16:02,449
+Please go on to the InClass Slack Channel,
+and probably @Rachel I don't know what Jeremy's
+
+209
+00:16:02,449 --> 00:16:06,250
+talking about at all; Rachel's got a microphone
+and she can let me know.
+
+210
+00:16:06,250 --> 00:16:10,610
+Or else put up your hand and ask.
+
+211
+00:16:10,610 --> 00:16:14,360
+So I do want to make sure you guys feel very
+comfortable asking questions.
+
+212
+00:16:14,360 --> 00:16:21,119
+I have done this class now once before because
+I did it for the Skype students last night.
+
+213
+00:16:21,119 --> 00:16:25,040
+I've heard a few of the questions already,
+so hopefully I can cover some things that
+
+214
+00:16:25,040 --> 00:16:28,660
+are likely to come up.
+
+215
+00:16:28,660 --> 00:16:35,589
+Before we look at digging in to what's going
+on, the first thing we're going to do is see
+
+216
+00:16:35,589 --> 00:16:40,019
+how do we do the basic homework assignment
+from last week.
+
+217
+00:16:40,019 --> 00:16:45,380
+So the basic homework assignment from last
+week was can you enter the Kaggle Dogs and
+
+218
+00:16:45,380 --> 00:16:47,959
+Cats Redux competition.
+
+219
+00:16:47,959 --> 00:16:53,939
+So how many of you managed to submit something
+to that competition and get some kind of result?
+
+220
+00:16:53,939 --> 00:16:55,660
+Okay, that's not bad.
+
+221
+00:16:55,660 --> 00:17:02,329
+So for those of you who haven't yet, keep
+trying during this week and use all of those
+
+222
+00:17:02,329 --> 00:17:07,439
+resources I showed you because quite a few
+of your colleagues have done it successfully
+
+223
+00:17:07,439 --> 00:17:08,939
+and therefore we can all help you.
+
+224
+00:17:08,939 --> 00:17:22,140
+And I can show you how I did it.
+
+225
+00:17:22,140 --> 00:17:36,010
+The basic idea here 
+is we have to download the data to a directory,
+
+226
+00:17:36,010 --> 00:17:46,190
+so to do that I just use "kg download" after
+using the "kg config" command.
+
+227
+00:17:46,190 --> 00:17:58,190
+kg is part of the Kaggle CLI and Kaggle CLI
+can be installed by typing "pip install kaggle-cli".
+
+228
+00:17:58,190 --> 00:18:06,220
+This works fine without any changes if you're
+using our AWS instances and setup scripts.
+
+229
+00:18:06,220 --> 00:18:11,720
+In fact, it's fine if you're using Anaconda
+pretty much anywhere.
+
+230
+00:18:11,720 --> 00:18:16,440
+If you're not doing any of those two things,
+you may have found this step more challenging.
+
+231
+00:18:16,440 --> 00:18:21,799
+But once it's installed it's as simple as
+saying "kg config", with your username, password
+
+232
+00:18:21,799 --> 00:18:24,480
+and competition name (kg config -g -u userName
+-p password -c competitionName).
+
+233
+00:18:24,480 --> 00:18:30,250
+When you put in the competition name, you
+can find that out by just going to the Kaggle
+
+234
+00:18:30,250 --> 00:18:38,340
+website and you'll see that when you go to
+the comptetion in the URL, it has here a name.
+
+235
+00:18:38,340 --> 00:18:43,299
+So just copy and paste that, that's the competion
+name.
+
+236
+00:18:43,299 --> 00:18:50,100
+kaggle-cli is a script that somebody created
+in their spare time and didn't spend a lot
+
+237
+00:18:50,100 --> 00:18:51,140
+of time on it.
+
+238
+00:18:51,140 --> 00:18:53,789
+There's no error-handling, there's no checking,
+or anything.
+
+239
+00:18:53,789 --> 00:18:59,320
+So for example, if you haven't gone to Kaggle
+and accepted the competition rules, then attempting
+
+240
+00:18:59,320 --> 00:19:04,590
+to run "kg download" will not give you an
+error, it will create a zip file that actually
+
+241
+00:19:04,590 --> 00:19:09,140
+contains the contents of the Kaggle webpage
+saying, Please accept the competition rules.
+
+242
+00:19:09,140 --> 00:19:12,840
+So for those of you that had to unzip that,
+and it said it's not a zipfile.
+
+243
+00:19:12,840 --> 00:19:17,559
+If you go ahead and cat that, you'll see it's
+not a zipfile it's a HTML file.
+
+244
+00:19:17,559 --> 00:19:26,320
+So this is pretty common with recent-ish data
+science tools, and particularly with deep-learning
+
+245
+00:19:26,320 --> 00:19:27,320
+stuff.
+
+246
+00:19:27,320 --> 00:19:32,269
+A lot of it's pretty new, it's pretty rough
+and you really have to expect to do a lot
+
+247
+00:19:32,269 --> 00:19:33,269
+of debugging.
+
+248
+00:19:33,269 --> 00:19:36,880
+It's very different than using Excel or PhotoShop
+or something.
+
+249
+00:19:36,880 --> 00:19:42,539
+So when I said "kg download", it created a
+test.zip and a train.zip, so I went ahead
+
+250
+00:19:42,539 --> 00:19:48,490
+and I unzipped both of those things, that
+created a test and a train, and they contain
+
+251
+00:19:48,490 --> 00:19:51,060
+a whole bunch of files, cat.1.jpg, and so
+forth.
+
+252
+00:19:51,060 --> 00:19:54,809
+[Time: 20 minute mark]
+
+253
+00:19:54,809 --> 00:20:01,980
+So the next thing I did to make my life easier
+was I made a list of what I belived I had
+
+254
+00:20:01,980 --> 00:20:07,029
+to do (I find life much easier with a to-do
+list).
+
+255
+00:20:07,029 --> 00:20:11,500
+I need to create a validation set, I need
+to create a sample, I need to move my cats
+
+256
+00:20:11,500 --> 00:20:16,749
+into a cats directory, my dogs into a dogs
+directory, I'm going to have to fine-tune
+
+257
+00:20:16,749 --> 00:20:17,910
+and train, I then need to submit.
+
+258
+00:20:17,910 --> 00:20:24,090
+I went ahead then and created Markdown headings
+for these things and started filling them
+
+259
+00:20:24,090 --> 00:20:25,090
+out.
+
+260
+00:20:25,090 --> 00:20:27,440
+So Create Validation Set and Sample.
+
+261
+00:20:27,440 --> 00:20:33,880
+A very handy thing in JuPyteR notebook is
+you can create a cell that starts with a "%" (percent
+
+262
+00:20:33,880 --> 00:20:37,160
+sign), and that allows you to type magic commands.
+
+263
+00:20:37,160 --> 00:20:40,100
+There are lots of magic commands, all kinds
+of useful things.
+
+264
+00:20:40,100 --> 00:20:45,070
+They do include things like "%cd", and "%mkdir"
+and so forth.
+
+265
+00:20:45,070 --> 00:20:49,880
+Another cool thing you can do is you can use
+the "!" (exclamation mark) and then type any
+
+266
+00:20:49,880 --> 00:20:50,880
+Bash command.
+
+267
+00:20:50,880 --> 00:20:57,510
+The nice thing about doing this stuff in a
+notebook rather than Bash is that you've got
+
+268
+00:20:57,510 --> 00:20:59,010
+a record of everything you did.
+
+269
+00:20:59,010 --> 00:21:01,330
+So if you want to go back and do it again,
+you can.
+
+270
+00:21:01,330 --> 00:21:04,000
+If you make a mistake, you can go back and
+figure it out.
+
+271
+00:21:04,000 --> 00:21:08,880
+This kind of reproducible research is very
+highly recommended.
+
+272
+00:21:08,880 --> 00:21:13,980
+I try to do everything in a single notebook
+so I can go back and fix the problems that
+
+273
+00:21:13,980 --> 00:21:14,980
+I always make.
+
+274
+00:21:14,980 --> 00:21:19,950
+Here you can see I've gone into the directory,
+I've created my validation set.
+
+275
+00:21:19,950 --> 00:21:29,679
+I then used 3 lines of Python to go ahead
+and grab all of the jpg file names [g=glob('*.jpg')],
+
+276
+00:21:29,679 --> 00:21:33,049
+create a random permutation of them [np.random.permutation(g)].
+
+277
+00:21:33,049 --> 00:21:38,471
+And so then the first 2000 of that random
+permutation are 2000 random files, and then
+
+278
+00:21:38,471 --> 00:21:42,669
+I move them into my validation directory,
+valid.
+
+279
+00:21:42,669 --> 00:21:50,690
+I did the exact same thing for my sample,
+but rather than moving them, I copied them.
+
+280
+00:21:50,690 --> 00:21:57,750
+And then I did that for my sample training
+and my sample validation, and that was enough
+
+281
+00:21:57,750 --> 00:22:00,149
+to create my validation set and sample.
+
+282
+00:22:00,149 --> 00:22:05,429
+The next thing I had to do was move all my
+cats into my cats directory and my dogs into
+
+283
+00:22:05,429 --> 00:22:06,429
+my dogs directory.
+
+284
+00:22:06,429 --> 00:22:15,809
+Which was as complex as typing "%mv cat.*.jpg
+cats/" and " mv dog.*.jpg dogs/".
+
+285
+00:22:15,809 --> 00:22:22,280
+And the cool thing is that now that I've done
+that I can just copy and paste the 7 lines
+
+286
+00:22:22,280 --> 00:22:28,820
+of code from our previous lesson, these lines
+of code are totally unchanged.
+
+287
+00:22:28,820 --> 00:22:33,610
+I added one more line of code which was save_weights.
+
+288
+00:22:33,610 --> 00:22:36,950
+Once you've trained something, it's a great
+idea to save the weights so that you don't
+
+289
+00:22:36,950 --> 00:22:38,130
+have to train it again.
+
+290
+00:22:38,130 --> 00:22:42,860
+You can always go back later and say load_weights.
+
+291
+00:22:42,860 --> 00:22:49,090
+So I now had a model which predicted cats
+and dogs through my Redux competition.
+
+292
+00:22:49,090 --> 00:22:53,210
+My final step was to submit it to Kaggle.
+
+293
+00:22:53,210 --> 00:22:56,320
+Kaggle tells us exactly what they expect.
+
+294
+00:22:56,320 --> 00:23:02,929
+The way they do that is by showing us a sample
+of the submission file.
+
+295
+00:23:02,929 --> 00:23:10,870
+And the sample shows us that they expect an
+id column and a label column.
+
+296
+00:23:10,870 --> 00:23:14,580
+The id is the file number.
+
+297
+00:23:14,580 --> 00:23:25,149
+So if you have a look at the test set, you'll
+see everyone's got a number.
+
+298
+00:23:25,149 --> 00:23:38,330
+So it's expecting to get 
+the number of the file along with your probability.
+
+299
+00:23:38,330 --> 00:23:46,320
+So you have to figure out how to take your
+model and create something of that form.
+
+300
+00:23:46,320 --> 00:23:49,830
+This is clearly something that you're going
+to be doing a lot, so once I figured out how
+
+301
+00:23:49,830 --> 00:23:53,120
+to do it, I actually created a method to do
+it in one step.
+
+302
+00:23:53,120 --> 00:24:08,220
+So I'm going to go and show you the method
+I wrote.
+
+303
+00:24:08,220 --> 00:24:17,820
+So I've got this utils module that I usually
+kind of tuck everything in, but I'm going
+
+304
+00:24:17,820 --> 00:24:22,720
+to put this in my vgg module (vgg16.py).
+
+305
+00:24:22,720 --> 00:24:24,980
+There's a few ways you can possibly do this.
+
+306
+00:24:24,980 --> 00:24:30,080
+Basically you know you have a way of grabbing
+a mini-batch of data at a time, or a mini-batch
+
+307
+00:24:30,080 --> 00:24:31,809
+of predictions at a time.
+
+308
+00:24:31,809 --> 00:24:36,750
+So one thing you could do would be to grab
+your mini-batch of size 64, you grab your
+
+309
+00:24:36,750 --> 00:24:43,279
+64 predictions and you just keep appending
+them, 64 at a time to an array until eventually
+
+310
+00:24:43,279 --> 00:24:50,389
+you have your 12500 test images, all with
+a prediction, in an array.
+
+311
+00:24:50,389 --> 00:24:52,269
+That is actually a perfectly valid way to
+do it.
+
+312
+00:24:52,269 --> 00:24:57,049
+How many people solved it using that kind
+of approach?
+
+313
+00:24:57,049 --> 00:24:58,049
+Not many of you.
+
+314
+00:24:58,049 --> 00:24:59,929
+That's interesting, but works perfectly well.
+
+315
+00:24:59,929 --> 00:25:01,220
+[Time: 25 minute mark]
+
+316
+00:25:01,220 --> 00:25:05,880
+Those of you who didn't (I guess) either asked
+on the forum or read the documentation and
+
+317
+00:25:05,880 --> 00:25:12,670
+discovered there's a very handy thing in Keras
+called predict_generator.
+
+318
+00:25:12,670 --> 00:25:18,870
+And what predict_generator does is it lets
+you send in a bunch of batches (something
+
+319
+00:25:18,870 --> 00:25:23,690
+we created with get_batches) and it will run
+the predictions on every one of those batches
+
+320
+00:25:23,690 --> 00:25:26,429
+and return them all in a single array.
+
+321
+00:25:26,429 --> 00:25:29,500
+So that's what we want to do.
+
+322
+00:25:29,500 --> 00:25:35,080
+If you read the Keras documentation (which
+you should do very often), you will find out
+
+323
+00:25:35,080 --> 00:25:43,200
+that predict_generator generally will give
+you the labels but not the probabilities (cat
+
+324
+00:25:43,200 --> 00:25:46,019
+1, dog 0).
+
+325
+00:25:46,019 --> 00:25:53,350
+In this case, for this competition, they told
+us that they want probabilities, not labels.
+
+326
+00:25:53,350 --> 00:26:00,919
+So instead of calling the get_batches which
+we wrote; here is the get_batches we wrote;
+
+327
+00:26:00,919 --> 00:26:07,190
+you can see all it's doing is it's calling
+something else which is flow_from directory.
+
+328
+00:26:07,190 --> 00:26:18,039
+To get predict_generator to give you probabilities
+instead of classes, you have to pass in an
+
+329
+00:26:18,039 --> 00:26:24,390
+extra argument, which is class_mode= and rather
+than "catgorical", you have to say "none".
+
+330
+00:26:24,390 --> 00:26:31,250
+So in my case, I actually modified get_batches
+to take an extra argument, which was "class_mode".
+
+331
+00:26:31,250 --> 00:26:36,429
+And then in my test mode that I created, I
+then added class_mode="none".
+
+332
+00:26:36,429 --> 00:26:46,509
+And so then I could call model.predict_generator
+passing in my batches, and that is going to
+
+333
+00:26:46,509 --> 00:26:51,870
+give me everything I need.
+
+334
+00:26:51,870 --> 00:26:59,500
+So once I do, I can say vgg.test, pass in
+my test directory, pass in my batch size.
+
+335
+00:26:59,500 --> 00:27:04,000
+That returns two things, it returns the predictions
+and it returns the batches.
+
+336
+00:27:04,000 --> 00:27:09,590
+I can then use batches.filenames to grab the
+filenames because I need the filenames in
+
+337
+00:27:09,590 --> 00:27:12,130
+order to grab the IDs.
+
+338
+00:27:12,130 --> 00:27:17,669
+So that, looks like this.
+
+339
+00:27:17,669 --> 00:27:30,659
+There's a few predictions, there's a few filenames.
+
+340
+00:27:30,659 --> 00:27:38,100
+Now one thing interesting, at least for the
+first 5 is the probabilities are all 1's and
+
+341
+00:27:38,100 --> 00:27:40,580
+0's, rather than .6, .8, and so forth.
+
+342
+00:27:40,580 --> 00:27:43,480
+We're going to talk about why that is in just
+a moment.
+
+343
+00:27:43,480 --> 00:27:45,261
+For now, it is what it is.
+
+344
+00:27:45,261 --> 00:27:52,860
+It's not doing anything wrong, it really thinks
+that that's the answer.
+
+345
+00:27:52,860 --> 00:27:58,049
+Because Kaggle wants something which is isDog,
+we grab the second column from this, and the
+
+346
+00:27:58,049 --> 00:28:02,899
+numbers from this, paste them together as
+columns and send that across.
+
+347
+00:28:02,899 --> 00:28:11,759
+So here is grabbing the first column from
+the predictions, call it "isdog".
+
+348
+00:28:11,759 --> 00:28:19,220
+Here is grabbing from the 8th character until
+the dot in filenames, turning it into an integer
+
+349
+00:28:19,220 --> 00:28:20,779
+to get my IDs.
+
+350
+00:28:20,779 --> 00:28:25,539
+Numpy has something called stack which lets
+you put 2 columns next to each other.
+
+351
+00:28:25,539 --> 00:28:29,320
+So here is my IDs and my probabilities.
+
+352
+00:28:29,320 --> 00:28:35,450
+And then Numpy lets you save that as a CSV
+file using savetxt.
+
+353
+00:28:35,450 --> 00:28:42,490
+You can now either ssh to your AWS instance
+and use "kg submit", or my preferred technique
+
+354
+00:28:42,490 --> 00:28:46,909
+is to use a handly little iPython thing called
+FileLink.
+
+355
+00:28:46,909 --> 00:28:51,980
+If you type FileLink and pass in a file that
+is on your server, it gives you a little URL
+
+356
+00:28:51,980 --> 00:28:58,470
+like this, which I can click on and it downloads
+it to my computer.
+
+357
+00:28:58,470 --> 00:29:03,019
+And so now on my computer I can go to Kaggle
+and I can submit it in the usual way.
+
+358
+00:29:03,019 --> 00:29:07,280
+I prefer that because it lets me find out
+if there's any error messages, or if there's
+
+359
+00:29:07,280 --> 00:29:11,100
+anything going wrong on Kaggle, I can see
+what's happening.
+
+360
+00:29:11,100 --> 00:29:19,559
+So as you can see, rerunning what we learnt
+last time to submit something to Kaggle really
+
+361
+00:29:19,559 --> 00:29:25,220
+requires just a little bit of coding to just
+creat the submission file, a little bit of
+
+362
+00:29:25,220 --> 00:29:29,580
+Bash scripting to move things to the right
+place, and rerunning the 7 lines of code,
+
+363
+00:29:29,580 --> 00:29:32,429
+the actual deep-learning itself is incredibly
+straightforward.
+
+364
+00:29:32,429 --> 00:29:36,809
+Here's where it gets interesting.
+
+365
+00:29:36,809 --> 00:29:54,129
+When I submitted (my 1's and 0's) to Kaggle,
+the first thing I submitted was isCat rather
+
+366
+00:29:54,129 --> 00:30:00,019
+than isDog, so that put me in last place.
+
+367
+00:30:00,019 --> 00:30:02,309
+[Time: 30 minute mark]
+
+368
+00:30:02,309 --> 00:30:08,020
+Then when I was putting in 1's and 0's, I
+was in 110th place, which is still not that
+
+369
+00:30:08,020 --> 00:30:09,020
+great.
+
+370
+00:30:09,020 --> 00:30:13,320
+Now the funny thing was I was pretty confident
+that my model was doing well because the validation
+
+371
+00:30:13,320 --> 00:30:21,190
+set for my model told me that my accuracy
+was 97.5%.
+
+372
+00:30:21,190 --> 00:30:29,070
+I'm pretty confident that the people are not
+all of them doing better than that.
+
+373
+00:30:29,070 --> 00:30:31,309
+So I thought something weird's going on.
+
+374
+00:30:31,309 --> 00:30:35,370
+So that's a good time to figure out what does
+this number mean?
+
+375
+00:30:35,370 --> 00:30:38,370
+What is 12, what is 17?
+
+376
+00:30:38,370 --> 00:30:39,650
+So let's go and find out.
+
+377
+00:30:39,650 --> 00:30:48,670
+It says here that it is a LogLoss, so if we
+go to Evaluation, we can find out what LogLoss
+
+378
+00:30:48,670 --> 00:30:53,470
+is, and here is the definition of LogLoss.
+
+379
+00:30:53,470 --> 00:31:00,139
+LogLoss is known in Keras as binary entropy
+or categorical entropy.
+
+380
+00:31:00,139 --> 00:31:13,480
+You'll actually find it very familiar because
+every single time we've been creating 
+
+381
+00:31:13,480 --> 00:31:25,600
+the model, when we compile the model we have
+been using categorical_crossentropy.
+
+382
+00:31:25,600 --> 00:31:30,440
+So it's probably a good time for us to find
+out what this is.
+
+383
+00:31:30,440 --> 00:31:35,549
+The short answer is that it's this mathematical
+function.
+
+384
+00:31:35,549 --> 00:31:40,019
+But let's dig into this a little bit more
+and find out what's going on.
+
+385
+00:31:40,019 --> 00:31:45,090
+I would strongly recommend that when you want
+to figure out how something works, you whip
+
+386
+00:31:45,090 --> 00:31:46,940
+out a spreadsheet.
+
+387
+00:31:46,940 --> 00:31:53,049
+Spreadsheets are my favorite tool for doing
+small scale data analysis.
+
+388
+00:31:53,049 --> 00:31:58,769
+They are among the least well-utilized tools
+among professional data scientists.
+
+389
+00:31:58,769 --> 00:32:03,610
+Which I find really surprising because back
+when I was in consulting, everybody used them
+
+390
+00:32:03,610 --> 00:32:04,610
+for everything.
+
+391
+00:32:04,610 --> 00:32:06,760
+They were the most over-used tool.
+
+392
+00:32:06,760 --> 00:32:12,610
+So what I've done here is I've gone ahead
+and created a little column of isCats and
+
+393
+00:32:12,610 --> 00:32:18,149
+isDogs, and a column of possible predictions.
+
+394
+00:32:18,149 --> 00:32:23,350
+And then I've gone in and I've typed in the
+formula from that Kaggle page.
+
+395
+00:32:23,350 --> 00:32:25,499
+And so here it is.
+
+396
+00:32:25,499 --> 00:32:35,429
+It's the truthLabel times logOfThePrediction
+minus (1-truthLabel) times log(1-prediction).
+
+397
+00:32:35,429 --> 00:32:44,970
+Now if you think about it, the truth label
+is always 1 or 0, so this is probably more
+
+398
+00:32:44,970 --> 00:32:47,509
+understood using an if function.
+
+399
+00:32:47,509 --> 00:32:49,059
+It's exactly the same thing.
+
+400
+00:32:49,059 --> 00:32:52,690
+Rather than multiplying by 1 and 0, let's
+use an if function.
+
+401
+00:32:52,690 --> 00:32:57,039
+If it's a cat, then take the log of the prediction.
+
+402
+00:32:57,039 --> 00:32:59,289
+Otherwise, take log of (1-prediction).
+
+403
+00:32:59,289 --> 00:33:01,639
+Now this is hopefully pretty intuitive.
+
+404
+00:33:01,639 --> 00:33:08,450
+If it's the cat and your prediction is really
+high, we're taking the log of that and getting
+
+405
+00:33:08,450 --> 00:33:09,610
+a small number.
+
+406
+00:33:09,610 --> 00:33:15,840
+If it's not a cat, and our prediction is really
+low, then we will take the log of 1 minus
+
+407
+00:33:15,840 --> 00:33:16,840
+that.
+
+408
+00:33:16,840 --> 00:33:19,320
+So you can kind of get a sense of it by looking
+here.
+
+409
+00:33:19,320 --> 00:33:28,340
+Here's like a non-cat, which we thought was
+a non-cat, and therefore we end up with 1
+
+410
+00:33:28,340 --> 00:33:31,100
+minus that, it's a low number.
+
+411
+00:33:31,100 --> 00:33:37,249
+Here's a cat which we're pretty confident
+isn't a cat, so here is log of that.
+
+412
+00:33:37,249 --> 00:33:41,419
+Notice this is all with a negative sign in
+the front just to make it so that smaller
+
+413
+00:33:41,419 --> 00:33:43,480
+numbers are better.
+
+414
+00:33:43,480 --> 00:33:50,809
+So this is LogLoss or binary or categorical
+crossentropy.
+
+415
+00:33:50,809 --> 00:33:56,730
+And this is where we find out what's going
+on because I'm now going to go and say well
+
+416
+00:33:56,730 --> 00:33:58,210
+hat did I submit.
+
+417
+00:33:58,210 --> 00:34:01,090
+I submitted predictions that were all 1's
+and 0's.
+
+418
+00:34:01,090 --> 00:34:07,570
+What if I submit 1's and 0's.
+
+419
+00:34:07,570 --> 00:34:08,929
+Ouch.
+
+420
+00:34:08,929 --> 00:34:13,280
+We're taking logs of 1's and 0's.
+
+421
+00:34:13,280 --> 00:34:15,030
+That's no good.
+
+422
+00:34:15,030 --> 00:34:19,739
+So Kaggle's been pretty nice not to return
+just an error.
+
+423
+00:34:19,739 --> 00:34:23,109
+I actually know why this happens because I
+wrote this functionality on Kaggle.
+
+424
+00:34:23,110 --> 00:34:30,449
+Kaggle modifies it by a tiny bit, like .0001,
+just to make sure it doesn't die.
+
+425
+00:34:30,449 --> 00:34:32,918
+So if you say 1, it actually treats it as
+.999.
+
+426
+00:34:32,918 --> 00:34:36,779
+If you say 0, it treats it as .0001.
+
+427
+00:34:36,780 --> 00:34:42,918
+So our incredibly over-confident model is
+getting massively penalized for that over-confidence.
+
+428
+00:34:42,918 --> 00:34:50,289
+So what would be better to do would be, instead
+of sending off 1's and 0's, why not send across
+
+429
+00:34:50,290 --> 00:34:52,219
+actual probabilities you think are reasonable.
+
+430
+00:34:52,219 --> 00:34:53,378
+[Time: 35 minute mark]
+
+431
+00:34:53,379 --> 00:35:21,750
+So in my case, what I did was I added a line
+which was Numpy clip (np.clip) and clip it
+
+432
+00:35:21,750 --> 00:35:23,119
+to .05 and .95.
+
+433
+00:35:23,119 --> 00:35:29,369
+So anything less than .05 becomes .05 and
+anything greater than .95 becomes .95.
+
+434
+00:35:29,369 --> 00:35:34,829
+And then I tried submitting that, and that
+moved me from 100th place to 40th place.
+
+435
+00:35:34,829 --> 00:35:37,460
+Suddenly I was in the top half.
+
+436
+00:35:37,460 --> 00:35:42,540
+So the goal of this week was to try and get
+in the top half of the competition and that's
+
+437
+00:35:42,540 --> 00:35:48,089
+all you had to do, run a single epoch and
+realize with this evalution function you need
+
+438
+00:35:48,089 --> 00:36:14,940
+to be submitting things that aren't 1's and
+0's.
+
+439
+00:36:14,940 --> 00:36:23,099
+So 
+probably I should have used (and I'd be interested
+
+440
+00:36:23,099 --> 00:36:29,260
+to try this tomorrow) for resubmission, I
+probably should have done .025 and .975 because
+
+441
+00:36:29,260 --> 00:36:34,650
+I know that my accuracy on the validation
+set was .975.
+
+442
+00:36:34,650 --> 00:36:38,349
+So that's probably the probability that I
+should have used.
+
+443
+00:36:38,349 --> 00:36:41,280
+I would need to think about it more though.
+
+444
+00:36:41,280 --> 00:36:46,420
+Because it's a non-linear loss function, is
+it better to under-estimate how confident
+
+445
+00:36:46,420 --> 00:36:50,190
+you are, or over-estimate how confident you
+are?
+
+446
+00:36:50,190 --> 00:36:57,010
+In the end, I said, it's about 97.5 and I
+have a feeling that being over-confident might
+
+447
+00:36:57,010 --> 00:37:02,820
+be a bad thing because the shape of the function,
+so I'll just be a little bit on the tame side.
+
+448
+00:37:02,820 --> 00:37:12,430
+I then tried .02 and .98 and I did actually
+get a slightly better answer.
+
+449
+00:37:12,430 --> 00:37:18,240
+I actually got a little bit better than that
+in the end.
+
+450
+00:37:18,240 --> 00:37:25,160
+This afternoon, I ran a couple more epochs
+just to see what would happen and that got
+
+451
+00:37:25,160 --> 00:37:27,510
+me to 24th.
+
+452
+00:37:27,510 --> 00:37:32,730
+So I'll show you how you can get to 24th position,
+and it's incredibly simple.
+
+453
+00:37:32,730 --> 00:37:39,069
+You take these two lines here vgg.fit and
+vgg.model.save_weights, and copy and paste
+
+454
+00:37:39,069 --> 00:37:41,730
+them a bunch of times.
+
+455
+00:37:41,730 --> 00:37:46,050
+And you can see I saved the weights under
+a different filename each time, just so that
+
+456
+00:37:46,050 --> 00:37:50,829
+I could always go back and use a model that
+I created earlier.
+
+457
+00:37:50,829 --> 00:37:56,700
+Something that we'll talk about more in the
+class later is that after 2 epochs, I changed
+
+458
+00:37:56,700 --> 00:38:03,339
+my learning rate from .1 to .01, just because
+I happen to know that this is often a good
+
+459
+00:38:03,339 --> 00:38:04,339
+idea.
+
+460
+00:38:04,339 --> 00:38:06,430
+I haen't tried it without doing that.
+
+461
+00:38:06,430 --> 00:38:10,630
+I suspect it might be just as good or even
+better, but that was just something I tried.
+
+462
+00:38:10,630 --> 00:38:16,140
+So interestingly by the time I run 4 epochs,
+my accuracy is 98.3%.
+
+463
+00:38:16,140 --> 00:38:22,540
+That would have been 2nd place in the original
+Cats and Dogs competition.
+
+464
+00:38:22,540 --> 00:38:27,099
+So you can see it doesn't take much to get
+really good results.
+
+465
+00:38:27,099 --> 00:38:51,150
+And each one of these took 10 minutes to run
+on my AWS P2 instance.
+
+466
+00:38:51,150 --> 00:38:55,540
+The original Cats and Dogs used a different
+evaluation function which was just accuracy.
+
+467
+00:38:55,540 --> 00:39:13,260
+They changed it for the Redux one to use LogLoss,
+which makes it a bit more interesting.
+
+468
+00:39:13,260 --> 00:39:20,480
+The reason I just didn't say nb_epoch=4 is
+that I really wanted to save the results after
+
+469
+00:39:20,480 --> 00:39:23,320
+each epoch under a different weights filename.
+
+470
+00:39:23,320 --> 00:39:29,780
+Just in case at some point it overfit a bit,
+I could always go back and use one that I
+
+471
+00:39:29,780 --> 00:39:41,810
+got in the middle.A
+
+472
+00:39:41,810 --> 00:39:47,820
+In this case, we have added a single linear
+layer to the end (we're going to learn a lot
+
+473
+00:39:47,820 --> 00:39:49,260
+about this).
+
+474
+00:39:49,260 --> 00:39:52,490
+And so we actually are not training very many
+parameters.
+
+475
+00:39:52,490 --> 00:39:57,451
+My guess would be that in this case we could
+run as many epochs as we like and it would
+
+476
+00:39:57,451 --> 00:40:00,420
+probably keep getting better and better until
+it eventually levels off.
+
+477
+00:40:00,420 --> 00:40:03,109
+That would be my guess.
+
+478
+00:40:03,109 --> 00:40:05,270
+[Time: 40 minute mark]
+
+479
+00:40:05,270 --> 00:40:10,310
+So I wanted to talk about what are these probabilities.
+
+480
+00:40:10,310 --> 00:40:16,280
+One way to do that, and also to talk about
+how can you make this model better, is anytime
+
+481
+00:40:16,280 --> 00:40:34,920
+I build a model and I think about how to make
+it better, my first step is to draw a picture.
+
+482
+00:40:34,920 --> 00:40:42,680
+Data scientists don't draw enough pictures.
+
+483
+00:40:42,680 --> 00:40:48,190
+Everything from printing out the first 5 lines
+of your array to see what it looks like to
+
+484
+00:40:48,190 --> 00:40:50,730
+drawing complex plots.
+
+485
+00:40:50,730 --> 00:40:55,720
+For computer vision, you can draw lots of
+pictures because we're classifying pictures.
+
+486
+00:40:55,720 --> 00:41:01,220
+I've given you some tips here about what I
+think are super-useful things to visualize.
+
+487
+00:41:01,220 --> 00:41:05,770
+So when I want to find out why my Kaggle submission
+is 110th place
+
+488
+00:41:05,770 --> 00:41:09,670
+Every time I build a model and think about
+how to make it better, I run my standard 5
+
+489
+00:41:09,670 --> 00:41:10,670
+steps.
+
+490
+00:41:10,670 --> 00:41:16,440
+The steps are lets look at a few examples
+of images we got right; let's look at a few
+
+491
+00:41:16,440 --> 00:41:21,690
+examples of images we got wrong; let's look
+at some of the cats we felt were the most
+
+492
+00:41:21,690 --> 00:41:27,079
+cat-like, some of the dogs we felt were the
+most dog-like, and vice-versa; some of the
+
+493
+00:41:27,079 --> 00:41:32,109
+cats we were most wrong about, some of the
+dogs we were most wrong about; and then finally
+
+494
+00:41:32,109 --> 00:41:36,470
+some of the most cats and dogs that are model
+is most unsure about.
+
+495
+00:41:36,470 --> 00:41:42,400
+This little bit of code I suggest you keep
+around somewhere because this is a super useful
+
+496
+00:41:42,400 --> 00:41:44,650
+thing to do any time you do image recognition.
+
+497
+00:41:44,650 --> 00:41:49,161
+So the first thing I did was I loaded my weights
+back up (just to make sure they were there)
+
+498
+00:41:49,161 --> 00:41:52,230
+just to make sure they were there from my
+very first epoch.
+
+499
+00:41:52,230 --> 00:41:56,280
+And I used my vgg.test method I showed you
+that I created.
+
+500
+00:41:56,280 --> 00:42:00,200
+This time I passed in my validation set, not
+the test set, because the validation set I
+
+501
+00:42:00,200 --> 00:42:03,440
+know the correct answer.
+
+502
+00:42:03,440 --> 00:42:08,329
+So then from the batches I can get the correct
+labels and I can get the filenames.
+
+503
+00:42:08,329 --> 00:42:14,349
+I then grab the probabilities and the class
+predictions, and that then allowed me to do
+
+504
+00:42:14,349 --> 00:42:16,829
+the 5 things I just mentioned.
+
+505
+00:42:16,829 --> 00:42:20,260
+So here's #1 - a few correct labels at random.
+
+506
+00:42:20,260 --> 00:42:25,980
+np.where(preds==labels)[0], numpy where the
+predictions are equal to the labels.
+
+507
+00:42:25,980 --> 00:42:31,720
+permutation(correct[:n_view], a random permutation
+and grab the first 4, and then plot them by
+
+508
+00:42:31,720 --> 00:42:32,720
+index.
+
+509
+00:42:32,720 --> 00:42:37,569
+So here are 4 examples of things that we got
+right.
+
+510
+00:42:37,569 --> 00:42:42,230
+Not suprisingly this cat looks like a cat
+and this dog looks like a dog.
+
+511
+00:42:42,230 --> 00:42:45,760
+Here are four things we got wrong.
+
+512
+00:42:45,760 --> 00:42:47,181
+It's kind of interesting.
+
+513
+00:42:47,181 --> 00:42:53,160
+You can see here a very black underexposed
+thing on a bright background.
+
+514
+00:42:53,160 --> 00:42:55,430
+Here is something that is on a totally unusual
+angle.
+
+515
+00:42:55,430 --> 00:42:58,030
+Here is somethign that is so curled up you
+can't see its face.
+
+516
+00:42:58,030 --> 00:43:01,990
+Here is something you can't see its face either.
+
+517
+00:43:01,990 --> 00:43:07,630
+So this gives me a sense of the things it's
+getting wrong, it's reasonable to get those
+
+518
+00:43:07,630 --> 00:43:08,630
+things wrong.
+
+519
+00:43:08,630 --> 00:43:12,160
+If you looked at this and they were really
+obvious cats and dogs, you would think there's
+
+520
+00:43:12,160 --> 00:43:13,160
+something wrong with your model.
+
+521
+00:43:13,160 --> 00:43:17,710
+But in this case, the things it's finding
+hard are genuinely hard.
+
+522
+00:43:17,710 --> 00:43:21,970
+Here are some cats that we felt very sure
+are cats.
+
+523
+00:43:21,970 --> 00:43:27,280
+Here are some dogs we felt very sure were
+dogs.
+
+524
+00:43:27,280 --> 00:43:38,369
+Question: The weights you're saving, are those
+ImageNet weights or the ones we trained on
+
+525
+00:43:38,369 --> 00:43:39,369
+Cats and Dogs?
+
+526
+00:43:39,369 --> 00:43:41,390
+Answer: So these weights, "results/ft1.h5",
+the "ft" stands for fine-tune.
+
+527
+00:43:41,390 --> 00:43:46,781
+As you can see here, I saved my weights after
+I did my fine-tuning, so these are for Cats
+
+528
+00:43:46,781 --> 00:43:48,150
+and Dogs.
+
+529
+00:43:48,150 --> 00:43:55,470
+Question: In the fine-tuning are you just
+training the last layer?
+
+530
+00:43:55,470 --> 00:43:56,470
+Answer: Yes, I'm just trainng the last layer.
+
+531
+00:43:56,470 --> 00:43:57,901
+We're not talking about that yet.
+
+532
+00:43:57,901 --> 00:44:05,089
+We just used the finetune command, and later
+today we're going to learn about what that
+
+533
+00:44:05,089 --> 00:44:06,280
+does.
+
+534
+00:44:06,280 --> 00:44:11,859
+These, I think, are the most interesting.
+
+535
+00:44:11,859 --> 00:44:17,200
+Here are the images we were most confident
+were cats, but they're actually dogs.
+
+536
+00:44:17,200 --> 00:44:23,270
+And you can see, well here's one that is only
+50x60 pixels, that's very difficult.
+
+537
+00:44:23,270 --> 00:44:28,430
+Here's one that is almost totally in front
+of a person and is also standing upright,
+
+538
+00:44:28,430 --> 00:44:31,370
+that's difficult because it's unusual.
+
+539
+00:44:31,370 --> 00:44:36,480
+This one is very white and is totally from
+the front, that's quite difficult.
+
+540
+00:44:36,480 --> 00:44:41,930
+This one, I'm guessing the color of the floor
+and the color of the fur are nearly identical.
+
+541
+00:44:41,930 --> 00:44:44,430
+So again, this makes senses.
+
+542
+00:44:44,430 --> 00:44:48,890
+These do look genuinely difficult and so if
+we want to do really well in this competition,
+
+543
+00:44:48,890 --> 00:44:54,119
+we want to think about should we start building
+some models of very very small images, because
+
+544
+00:44:54,119 --> 00:44:58,670
+we now know that sometimes Kaggle gives us
+50x50 images, which are going to be very difficult
+
+545
+00:44:58,670 --> 00:44:59,740
+for us to deal with.
+
+546
+00:44:59,740 --> 00:45:01,110
+[Time: 45 minute mark]
+
+547
+00:45:01,110 --> 00:45:05,390
+Here are some pictures that we were actually
+very confident were dogs, but they're actually
+
+548
+00:45:05,390 --> 00:45:06,530
+cats.
+
+549
+00:45:06,530 --> 00:45:12,049
+Again, not being able to see the face seems
+like a common problem.
+
+550
+00:45:12,049 --> 00:45:17,020
+And then finally, here's some examples that
+we were most uncertain about.
+
+551
+00:45:17,020 --> 00:45:22,510
+Notice that the most uncertain are still not
+very uncertain, they're still nearly 1 or
+
+552
+00:45:22,510 --> 00:45:23,510
+nearly 0.
+
+553
+00:45:23,510 --> 00:45:25,480
+So why is that?
+
+554
+00:45:25,480 --> 00:45:29,430
+We will learn in a moment about exactly what
+is going on from a mathematical point of view
+
+555
+00:45:29,430 --> 00:45:33,839
+when we calculate these things, but the short
+answer is the probabilities that come out
+
+556
+00:45:33,839 --> 00:45:40,740
+of a deep learning network are not probabilities
+in any statistical sense of the term.
+
+557
+00:45:40,740 --> 00:45:47,280
+So this is not actually saying that there
+is 1 chance out of a 100,000 that this is
+
+558
+00:45:47,280 --> 00:45:48,680
+a dog.
+
+559
+00:45:48,680 --> 00:45:51,640
+It's only a probability from a mathe mathematical
+point of view.
+
+560
+00:45:51,640 --> 00:45:57,109
+In math, a probability means between 0 and
+1, and all of the possibilities add up to
+
+561
+00:45:57,109 --> 00:45:58,109
+1.
+
+562
+00:45:58,109 --> 00:46:02,420
+It's not a probability in a sense that this
+actually tells you how often this is going
+
+563
+00:46:02,420 --> 00:46:04,920
+to be right, this is going to be wrong.
+
+564
+00:46:04,920 --> 00:46:06,700
+So for now, just be aware of that.
+
+565
+00:46:06,700 --> 00:46:12,270
+When we talk about these probabilities that
+come out of neural network training, you can't
+
+566
+00:46:12,270 --> 00:46:16,650
+interpret them in any kind of intuitive way.
+
+567
+00:46:16,650 --> 00:46:22,560
+We will learn about how to create better probabilities
+down the track.
+
+568
+00:46:22,560 --> 00:46:29,410
+Every time you do another epoch, your network
+is going to get more and more confident.
+
+569
+00:46:29,410 --> 00:46:34,680
+This is why when I loaded the weights, I loaded
+the weights from the very first epoch.
+
+570
+00:46:34,680 --> 00:46:38,869
+If I'd loaded the weights from the last epoch,
+they all would have been 1's and 0's.
+
+571
+00:46:38,869 --> 00:46:44,420
+So this is just something to be aware of.
+
+572
+00:46:44,420 --> 00:46:49,440
+So hopefully you can all go back and get great
+results on the Kaggle competition.
+
+573
+00:46:49,440 --> 00:46:56,440
+Even though I'm going to share all this, you
+will learn a lot more by trying to do it yourself,
+
+574
+00:46:56,440 --> 00:46:59,750
+and only referring to this when and if you're
+stuck.
+
+575
+00:46:59,750 --> 00:47:04,599
+If you do get stuck, rather than copying and
+pasting my code, find out what I used and
+
+576
+00:47:04,599 --> 00:47:08,680
+then go to the Keras documentation and read
+about it, and then try and write that line
+
+577
+00:47:08,680 --> 00:47:10,839
+of code without looking at mine.
+
+578
+00:47:10,839 --> 00:47:15,560
+The more you can do that, the more you'll
+think I can do this, I understand how to do
+
+579
+00:47:15,560 --> 00:47:18,630
+this myself.
+
+580
+00:47:18,630 --> 00:47:24,190
+Just some suggestions, it's entirely up to
+you.
+
+581
+00:47:24,190 --> 00:47:30,150
+Okay, let's move on.
+
+582
+00:47:30,150 --> 00:47:34,859
+I wanted to show you one other thing, which
+is the last part of the homework was redo
+
+583
+00:47:34,859 --> 00:47:37,990
+this on a different dataset.
+
+584
+00:47:37,990 --> 00:47:44,490
+And so, I decided to grab the State Farm Distracted
+Driving competition.
+
+585
+00:47:44,490 --> 00:47:50,650
+The Kaggle State Farm Distracted Driving competition
+has pictures of people in 10 different types
+
+586
+00:47:50,650 --> 00:47:58,440
+of distracted driving, ranging from drinking
+coffee to changing the radio station.
+
+587
+00:47:58,440 --> 00:48:02,460
+I wanted to show you how I entered this competition.
+
+588
+00:48:02,460 --> 00:48:06,190
+It took me 1/4 hour to enter the competition.
+
+589
+00:48:06,190 --> 00:48:18,150
+All I did was I duplicated my Dogs and Cats
+redux notebook and then I started re-running
+
+590
+00:48:18,150 --> 00:48:19,150
+everything.
+
+591
+00:48:19,150 --> 00:48:24,500
+But in this case, it was even easier because
+when you download the State Farm competition
+
+592
+00:48:24,500 --> 00:48:31,260
+data, they have already put it into directories,
+one for each type of distracted driving, which
+
+593
+00:48:31,260 --> 00:48:36,270
+I was delighted to discover.
+
+594
+00:48:36,270 --> 00:48:50,289
+If I type "tree -d" that shows you my directory
+structure.
+
+595
+00:48:50,289 --> 00:48:57,549
+You can see in the directory train, it already
+had 
+
+596
+00:48:57,549 --> 00:49:01,080
+the 10 directories, so I can skip that whole
+section.
+
+597
+00:49:01,080 --> 00:49:05,290
+So I only had to create the validation and
+sample set.
+
+598
+00:49:05,290 --> 00:49:10,420
+If all I wanted to do was enter the competition,
+I wouldn't have even had to have done that.
+
+599
+00:49:10,420 --> 00:49:15,190
+I won't go through it, it's basically exactly
+the same code I had before to create my validation
+
+600
+00:49:15,190 --> 00:49:16,930
+set and sample.
+
+601
+00:49:16,930 --> 00:49:21,480
+I deleted all of the bits which moved things
+into separate sub-folders.
+
+602
+00:49:21,480 --> 00:49:28,349
+I then used exactly the same 7 lines of code
+as before, and that was basically done.
+
+603
+00:49:28,349 --> 00:49:31,740
+I'm not getting good accuracy yet, I don't
+know why.
+
+604
+00:49:31,740 --> 00:49:33,859
+So I'm going to have to actually figure out
+what's going on with this.
+
+605
+00:49:33,859 --> 00:49:42,720
+But as you can see, this general approach
+works for any kind of image classification.
+
+606
+00:49:42,720 --> 00:49:45,049
+There's nothing specific about Cats and Dogs.
+
+607
+00:49:45,049 --> 00:49:50,290
+So you now have a very general tool in your
+toolbox.
+
+608
+00:49:50,290 --> 00:49:54,130
+And all of the stuff I showed you about visualizing
+the errors and stuff, you can use all that
+
+609
+00:49:54,130 --> 00:49:55,130
+as well.
+
+610
+00:49:55,130 --> 00:50:04,390
+So maybe when you're done you can try this
+as well.
+
+611
+00:50:04,390 --> 00:50:20,130
+[Time: 50 minute mark]
+
+612
+00:50:20,130 --> 00:50:31,630
+Question: Would this work for CT scans and
+cancer?
+
+613
+00:50:31,630 --> 00:50:35,700
+Answer: I can tell you that the answer is
+yes because I've done it.
+
+614
+00:50:35,700 --> 00:50:41,339
+My previous company I created was something
+called Enlitic, which was the first deep-learning
+
+615
+00:50:41,339 --> 00:50:43,559
+for medical diagnostics company.
+
+616
+00:50:43,559 --> 00:50:48,760
+And the first thing I did with 4 of my staff
+was we downloaded the National Lung Screening
+
+617
+00:50:48,760 --> 00:50:53,800
+Trial Data, which is 1000 examples of people
+with cancer, CT scans of their lungs; and
+
+618
+00:50:53,800 --> 00:50:57,960
+5000 people without cancer, CT scans of their
+lungs.
+
+619
+00:50:57,960 --> 00:51:05,030
+We did the same thing, we took ImageNet, we
+fine-tuned ImageNet, but in this case instead
+
+620
+00:51:05,030 --> 00:51:09,539
+of Cats and Dogs we had malignant tumor vs
+non-malignant tumor.
+
+621
+00:51:09,539 --> 00:51:13,500
+We then took the result of that and saw how
+accurate it was, and we discovered it was
+
+622
+00:51:13,500 --> 00:51:17,530
+more accurate than a panel of 4 of the world's
+best radiologists.
+
+623
+00:51:17,530 --> 00:51:22,050
+Tat ended up getting covered on TV, on CNN.
+
+624
+00:51:22,050 --> 00:51:31,940
+So making major breakthroughs in domains is
+not necessarily technically that challenging.
+
+625
+00:51:31,940 --> 00:51:37,119
+The technical challenges in this case were
+really about dealing with the fact that CT
+
+626
+00:51:37,119 --> 00:51:41,250
+scans are pretty big, so we've got some resource
+issues.
+
+627
+00:51:41,250 --> 00:51:45,319
+Also they're black and white, so we had to
+think about how we would change ImageNet pre-training
+
+628
+00:51:45,319 --> 00:51:47,510
+to black and white, and stuff like that.
+
+629
+00:51:47,510 --> 00:51:56,260
+But the basic example was not much more or
+different code than you see here.
+
+630
+00:51:56,260 --> 00:52:03,910
+Question: Earlier you had a learning rate
+of .01, is that the right rate????
+
+631
+00:52:03,910 --> 00:52:11,350
+Answer: The State Farm data is 4 gigabytes
+and I only downloaded it about 1/2 hour before
+
+632
+00:52:11,350 --> 00:52:16,869
+class started, so I only ran a small fraction
+of an epoch just ot make sure it works.
+
+633
+00:52:16,869 --> 00:52:24,740
+If I ran a whole epoch it probably would have
+taken overnight.
+
+634
+00:52:24,740 --> 00:52:36,099
+So let's go back to Lesson 1, and there was
+a little bit at the end that we didn't look
+
+635
+00:52:36,099 --> 00:53:11,930
+at.
+
+636
+00:53:11,930 --> 00:53:18,740
+How many of you have watched this video?
+
+637
+00:53:18,740 --> 00:53:22,069
+Some of you haven't; you need to.
+
+638
+00:53:22,069 --> 00:53:30,130
+Because I mentioned a couple of times in emails,
+the last 2/3 of it was a surprise Lesson 0
+
+639
+00:53:30,130 --> 00:53:34,290
+of this class and it's where I teach what
+convolutions are.
+
+640
+00:53:34,290 --> 00:53:39,089
+So if you haven't watched it, please do.
+
+641
+00:53:39,089 --> 00:53:44,500
+Rachel will add it to the in-class Slack channel
+and also to the Lesson 2 resources wiki page.
+
+642
+00:53:44,500 --> 00:53:50,190
+Really, really important that you watch this
+video.
+
+643
+00:53:50,190 --> 00:53:52,430
+The first 20 minutes or so is more of a general
+background of it.
+
+644
+00:53:52,430 --> 00:53:56,359
+The rest is a discussion of exactly what convolutions
+are.
+
+645
+00:53:56,359 --> 00:54:01,500
+For now, I'll try not to assume too much that
+you know what they are.
+
+646
+00:54:01,500 --> 00:54:06,250
+The rest of it hopefully will be reasonably
+stand-alone anyway.
+
+647
+00:54:06,250 --> 00:54:19,089
+But I want to talk about fine-tuning, and
+I 
+
+648
+00:54:19,089 --> 00:54:24,039
+want to talk about why we do fine-tuning.
+
+649
+00:54:24,039 --> 00:54:32,309
+Why do we start with an ImageNet network and
+then fine-tune it, rather than just train
+
+650
+00:54:32,309 --> 00:54:34,270
+our own network.
+
+651
+00:54:34,270 --> 00:54:40,960
+And the reason why is that an ImageNet network
+has learned a whole lot of stuff about what
+
+652
+00:54:40,960 --> 00:54:43,750
+the world looks like.
+
+653
+00:54:43,750 --> 00:54:50,559
+A guy called Matt Zeiler wrote this fantastic
+paper a few years ago in which he showed us
+
+654
+00:54:50,559 --> 00:54:53,500
+what these networks learn.
+
+655
+00:54:53,500 --> 00:54:59,150
+And in fact the year after he wrote this paper,
+he went on to win ImageNet so this is a powerful
+
+656
+00:54:59,150 --> 00:55:04,190
+example of why spending time thinking about
+visualizations are helpful.
+
+657
+00:55:04,190 --> 00:55:08,029
+By spending time thinking about visualizing
+networks, he then realized what was wrong
+
+658
+00:55:08,029 --> 00:55:09,660
+with the networks at the time.
+
+659
+00:55:09,660 --> 00:55:12,480
+He then made them better and won the next
+year's ImageNet.
+
+660
+00:55:12,480 --> 00:55:13,559
+[Time: 55 minute mark]
+
+661
+00:55:13,559 --> 00:55:16,350
+We're not going to talk about that, we're
+going to talk about some of these pictures
+
+662
+00:55:16,350 --> 00:55:19,069
+that he drew.
+
+663
+00:55:19,069 --> 00:55:28,079
+Here are 9 examples of what the very first
+layer of an ImageNet convolutional neural
+
+664
+00:55:28,079 --> 00:55:33,099
+network looks like, what do the filters look
+like.
+
+665
+00:55:33,099 --> 00:55:50,119
+And you can see here that here is a filter
+that learns to find a diagonal edge, a diagonal
+
+666
+00:55:50,119 --> 00:55:52,400
+line.
+
+667
+00:55:52,400 --> 00:55:57,300
+So you can see, it's saying look for something
+where there's no pixels, then there's bright
+
+668
+00:55:57,300 --> 00:56:01,849
+pixels and then there's no pixels, so that's
+finding a diagonal line.
+
+669
+00:56:01,849 --> 00:56:04,910
+Here's something that finds a diagnoal line
+in the other direction.
+
+670
+00:56:04,910 --> 00:56:11,730
+Here's something that finds a gradient, horizontal
+from orange to blue, here's one diagonal from
+
+671
+00:56:11,730 --> 00:56:12,869
+orange to blue.
+
+672
+00:56:12,869 --> 00:56:15,529
+As I said, these are just 9.
+
+673
+00:56:15,529 --> 00:56:24,289
+There are 60 or so of these filters in Layer
+1 of this ImageNet trained network.
+
+674
+00:56:24,289 --> 00:56:29,799
+So what happens (those of you who have watched
+the video I just mentioned will be aware of
+
+675
+00:56:29,799 --> 00:56:36,460
+this) is that each of these filters gets placed
+pixel by pixel, or group of pixels by group
+
+676
+00:56:36,460 --> 00:56:42,829
+of pixels, over a photo, over an image, to
+find which parts of an image get matches.
+
+677
+00:56:42,829 --> 00:56:45,670
+So which parts have a diagonal line.
+
+678
+00:56:45,670 --> 00:56:53,760
+And over here, it shows 9 examples of little
+bits of actual ImageNet images which match
+
+679
+00:56:53,760 --> 00:56:58,700
+this first filter.
+
+680
+00:56:58,700 --> 00:57:02,059
+As you can see they all are little diagonal
+lines.
+
+681
+00:57:02,059 --> 00:57:07,240
+So here are 9 examples which match the next
+filter with diagonal lines in the opposite
+
+682
+00:57:07,240 --> 00:57:09,420
+direction, and so forth.
+
+683
+00:57:09,420 --> 00:57:15,400
+The filters in the very first layer of a deep-learning
+network are very easy to display.
+
+684
+00:57:15,400 --> 00:57:20,119
+This has happened for a long time and we've
+also known for a long time that this is what
+
+685
+00:57:20,119 --> 00:57:21,220
+they look like.
+
+686
+00:57:21,220 --> 00:57:26,319
+We also know that the human vision system
+is very similar.
+
+687
+00:57:26,319 --> 00:57:38,190
+The human vision system has filters that look
+much the same.
+
+688
+00:57:38,190 --> 00:57:41,630
+To really answer the question of what are
+we doing back here, I would say watch the
+
+689
+00:57:41,630 --> 00:57:42,930
+video.
+
+690
+00:57:42,930 --> 00:57:51,869
+The short answer is this is a 7x7 pixel patch
+which is slid over the image one group of
+
+691
+00:57:51,869 --> 00:57:57,339
+7 pixels at a time to find which 7x7 patches
+look like that.
+
+692
+00:57:57,339 --> 00:58:04,380
+Here is one example of a 7x7 patch which looks
+like that.
+
+693
+00:58:04,380 --> 00:58:05,869
+So for example, this gradient.
+
+694
+00:58:05,869 --> 00:58:12,599
+Here are some examples of 7x7 patches that
+look like that.
+
+695
+00:58:12,599 --> 00:58:20,630
+So we know that the human vision system actually
+looks for very similar kinds of things.
+
+696
+00:58:20,630 --> 00:58:24,549
+The kind of things they look for are called
+Gabor Filters.
+
+697
+00:58:24,549 --> 00:58:33,140
+If you want to google for Gabor Filters, you
+can see some examples.
+
+698
+00:58:33,140 --> 00:58:38,890
+It's a little bit harder to visualize what
+the second layer of a neural net looks like,
+
+699
+00:58:38,890 --> 00:58:45,730
+but Zeiler figured out a way to do it, and
+in his paper he shows us a number of examples
+
+700
+00:58:45,730 --> 00:58:50,859
+of the second layer of his Internet trained
+neural network.
+
+701
+00:58:50,859 --> 00:58:55,700
+Because we can't directly visualize them,
+instead we have to show examples of what the
+
+702
+00:58:55,700 --> 00:58:57,460
+filter can look like.
+
+703
+00:58:57,460 --> 00:59:03,250
+So here is an example of a filter which clearly
+tends to pick up corners.
+
+704
+00:59:03,250 --> 00:59:11,440
+So in other words, it's taking the straight
+lines from the previous layer and combining
+
+705
+00:59:11,440 --> 00:59:13,760
+them to find corners.
+
+706
+00:59:13,760 --> 00:59:20,099
+There's another one which is learning to find
+circles, and another one learning to find
+
+707
+00:59:20,099 --> 00:59:21,099
+curves.
+
+708
+00:59:21,099 --> 00:59:28,829
+And so you can see, here are 9 examples from
+actual pictures on ImageNet which actually
+
+709
+00:59:28,829 --> 00:59:33,309
+did get heavily activated by this corner filter.
+
+710
+00:59:33,309 --> 00:59:39,109
+And here are some which got activated by this
+circle filter.
+
+711
+00:59:39,109 --> 00:59:45,910
+The third layer then can take these filters
+and combine them (remember this is 16 out
+
+712
+00:59:45,910 --> 00:59:49,460
+of 100) in the ImageNet architecture.
+
+713
+00:59:49,460 --> 00:59:55,400
+In Layer 3, we can combine all of those to
+create even more sophisticated filters.
+
+714
+00:59:55,400 --> 01:00:01,309
+And so in Layer 3, there's a filter which
+can find repeating gemetrical patterns.
+
+715
+01:00:01,309 --> 01:00:03,029
+[Time: 1 hour mark]
+
+716
+01:00:03,029 --> 01:00:05,390
+Here's a filter, what is it finding?
+
+717
+01:00:05,390 --> 01:00:07,510
+Let's go look at the examples.
+
+718
+01:00:07,510 --> 01:00:08,580
+Well, that's interesting.
+
+719
+01:00:08,580 --> 01:00:12,200
+It's finding pieces of text.
+
+720
+01:00:12,200 --> 01:00:20,740
+And here's something which is finding edges
+of natural things, like fur and plants.
+
+721
+01:00:20,740 --> 01:00:32,560
+Layer 4 is finding certain kind of dog face,
+Layer 5 is finding the eyeballs of birds and
+
+722
+01:00:32,560 --> 01:00:35,569
+reptiles, and so forth.
+
+723
+01:00:35,569 --> 01:00:41,859
+So there are 16 layers in our VGG network.
+
+724
+01:00:41,859 --> 01:00:53,200
+What we do when we fine-tune is we say, let's
+keep all of these learnt filters and use them
+
+725
+01:00:53,200 --> 01:01:05,130
+and just learn how to combine the most complex,
+subtle nuanced filters to find Cats vs Dogs
+
+726
+01:01:05,130 --> 01:01:10,450
+rather than combine them to learn 1000 categories
+of ImageNet.
+
+727
+01:01:10,450 --> 01:01:14,660
+This is why we do fine-tuning.
+
+728
+01:01:14,660 --> 01:01:21,619
+So when I answered Annette's earlier question
+does this work for CT scans and lung cancer
+
+729
+01:01:21,619 --> 01:01:29,830
+and the answer was yes, these kinds of filters
+that find dog faces are not very helpful for
+
+730
+01:01:29,830 --> 01:01:33,010
+looking at a CT scan and looking for cancer.
+
+731
+01:01:33,010 --> 01:01:39,490
+But these earlier ones that can recognize
+repeating images, or corners, or curves, certainly
+
+732
+01:01:39,490 --> 01:01:41,030
+are.
+
+733
+01:01:41,030 --> 01:01:47,610
+So really regardless of what computer vision
+work you're doing, starting with some kind
+
+734
+01:01:47,610 --> 01:01:50,150
+of pre-trained network is almost certainly
+a good idea.
+
+735
+01:01:50,150 --> 01:01:54,609
+Because at some level that pre-trained network
+has learned to find some kinds of features
+
+736
+01:01:54,609 --> 01:01:56,760
+that are going to be useful for you.
+
+737
+01:01:56,760 --> 01:02:01,299
+And so if you start from scratch, you have
+to learn them from scratch.
+
+738
+01:02:01,299 --> 01:02:04,690
+In Cats vs Dogs, we only had 25,000 pictures.
+
+739
+01:02:04,690 --> 01:02:11,010
+And so from 25,000 pictures to learn this
+whole hierarchy of geometric and semantic
+
+740
+01:02:11,010 --> 01:02:13,809
+structures would have been very difficult.
+
+741
+01:02:13,809 --> 01:02:18,039
+So let's not learn it, let's use one that's
+already been learnt on ImageNet, which is
+
+742
+01:02:18,039 --> 01:02:20,590
+1.5 million images.
+
+743
+01:02:20,590 --> 01:02:25,860
+So that's the short answer to the question
+why do fine-tuning.
+
+744
+01:02:25,860 --> 01:02:31,519
+The longer answer really requires answering
+the question, what exactly is fine-tuning?
+
+745
+01:02:31,519 --> 01:02:35,619
+And to answer the question what exactly is
+fine-tuning, we have to answer the question
+
+746
+01:02:35,619 --> 01:02:50,420
+what exactly is a neural network.
+
+747
+01:02:50,420 --> 01:03:02,279
+Question: Which layer should you fine-tune
+from?
+
+748
+01:03:02,279 --> 01:03:08,960
+Answer: We'll learn more about this shortly,
+but the short answer is if you're not sure,
+
+749
+01:03:08,960 --> 01:03:10,690
+try all of them.
+
+750
+01:03:10,690 --> 01:03:16,160
+Generally speaking, if you're doing something
+with natural images, the second-to-the-last
+
+751
+01:03:16,160 --> 01:03:18,190
+layer is very likely to be the best.
+
+752
+01:03:18,190 --> 01:03:20,849
+But I just tend to try a few things.
+
+753
+01:03:20,849 --> 01:03:26,660
+And we're going to see, today or next week,
+ways that we can actually experiment with
+
+754
+01:03:26,660 --> 01:03:28,589
+it.
+
+755
+01:03:28,589 --> 01:03:34,430
+So as per usual, in order to learn about something
+we will use Excel.
+
+756
+01:03:34,430 --> 01:03:40,190
+And here is a deep neural network in Excel.
+
+757
+01:03:40,190 --> 01:03:45,740
+Rather than having a picture with a bunch
+of pixels, I just have 3 inputs.
+
+758
+01:03:45,740 --> 01:03:52,720
+A single row with 3 inputs, x1, x2, x3, and
+the numbers are 2, 3, 1.
+
+759
+01:03:52,720 --> 01:03:56,940
+Rather than trying to pick out whether it's
+a dog or a cat, we're going to assume there
+
+760
+01:03:56,940 --> 01:03:58,390
+are 2 outputs, 5 and 6.
+
+761
+01:03:58,390 --> 01:04:06,210
+So here's a single row that we're feeding
+into a deep neural network.
+
+762
+01:04:06,210 --> 01:04:07,539
+So what is a deep neural network?
+
+763
+01:04:07,539 --> 01:04:14,349
+A deep neural network basically is a bunch
+of matrix products.
+
+764
+01:04:14,349 --> 01:04:19,539
+So what I've done here is I've created a bunch
+of random numbers.
+
+765
+01:04:19,539 --> 01:04:24,950
+They are normally distributed random numbers,
+and this is the standard deviation that I'm
+
+766
+01:04:24,950 --> 01:04:28,950
+using for my normal distribution, and I'm
+using 0 as the mean.
+
+767
+01:04:28,950 --> 01:04:33,270
+So here's a bunch of random numbers.
+
+768
+01:04:33,270 --> 01:04:42,741
+What if I then take my input vector and matrix
+multiply them by my random weights, and here
+
+769
+01:04:42,741 --> 01:04:43,859
+it is.
+
+770
+01:04:43,859 --> 01:04:48,770
+Matrix multiply that by that, and here is
+the answer I get.
+
+771
+01:04:48,770 --> 01:05:00,049
+So for example, 24.03=2*11.07 + 3*(-2.81)
++ 1*10.31, and so forth.
+
+772
+01:05:00,049 --> 01:05:03,690
+[Time: 1.05 hour mark]
+
+773
+01:05:03,690 --> 01:05:11,380
+Any of you who are either not familiar with
+or are a little shakey on your matrix vector
+
+774
+01:05:11,380 --> 01:05:20,039
+products, tomorrow please go to the Kahn Academy
+website and look for linear algebra and watch
+
+775
+01:05:20,039 --> 01:05:22,319
+the videos about matrix vector products.
+
+776
+01:05:22,319 --> 01:05:29,630
+They are very, very simple, but you also need
+to understand them very, very intuitively,
+
+777
+01:05:29,630 --> 01:05:31,510
+comfortably.
+
+778
+01:05:31,510 --> 01:05:36,339
+Just like you understand plus and times in
+regular algebra; I really want you to get
+
+779
+01:05:36,339 --> 01:05:42,000
+to that level of comfort with linear algebra
+because this is the basic operation we're
+
+780
+01:05:42,000 --> 01:05:43,170
+doing again and again.
+
+781
+01:05:43,170 --> 01:05:49,230
+Question: Can you increase the font size of
+the formula?
+
+782
+01:05:49,230 --> 01:05:51,789
+Answer: I don't think I can.
+
+783
+01:05:51,789 --> 01:06:07,269
+But instead what I will do is I will select
+it Matrix multiply and the blue thing is find
+
+784
+01:06:07,269 --> 01:06:08,730
+derivatives.
+
+785
+01:06:08,730 --> 01:06:11,390
+So that is a single layer.
+
+786
+01:06:11,390 --> 01:06:14,039
+How do we turn that into multi-layers?
+
+787
+01:06:14,039 --> 01:06:18,430
+Not surprisingly, we create another bunch
+of weights.
+
+788
+01:06:18,430 --> 01:06:27,580
+And now we take the new bunch of weights times
+the previous activations with our matrix multiply,
+
+789
+01:06:27,580 --> 01:06:30,599
+and get a new set of activations.
+
+790
+01:06:30,599 --> 01:06:32,079
+And then we do it again.
+
+791
+01:06:32,079 --> 01:06:38,760
+We create another bunch of weights and multiply
+them by our previous activations to get another
+
+792
+01:06:38,760 --> 01:06:40,530
+set of activations.
+
+793
+01:06:40,530 --> 01:06:47,420
+Note that the number of columns in your weight
+matrix, you can make it as big or as small
+
+794
+01:06:47,420 --> 01:06:53,230
+as you like, as long as the last one has the
+same number of columns as your output.
+
+795
+01:06:53,230 --> 01:07:00,100
+We had two outputs, 5 and 6, so our final
+weight matrix had to have two columns so that
+
+796
+01:07:00,100 --> 01:07:03,309
+our final activations has two things.
+
+797
+01:07:03,309 --> 01:07:11,079
+With our random numbers, our activations are
+not very close to what we hoped they would
+
+798
+01:07:11,079 --> 01:07:13,660
+be, not surprisingly.
+
+799
+01:07:13,660 --> 01:07:18,920
+So the basic idea here is that we now have
+to use some kind of optimization algorithm
+
+800
+01:07:18,920 --> 01:07:23,010
+to make the weights a little bit better, and
+a little bit better.
+
+801
+01:07:23,010 --> 01:07:24,920
+We'll see how to do that in a moment.
+
+802
+01:07:24,920 --> 01:07:30,180
+But for now, hopfully you are all familiar
+that there is such a thing as an optimization
+
+803
+01:07:30,180 --> 01:07:31,369
+algorithm.
+
+804
+01:07:31,369 --> 01:07:35,820
+An optimization algorithm is something that
+takes some kind of output to some kind of
+
+805
+01:07:35,820 --> 01:07:40,830
+mathematical function and finds the inputs
+to that function that makes the outputs as
+
+806
+01:07:40,830 --> 01:07:41,830
+low as possible.
+
+807
+01:07:41,830 --> 01:07:47,059
+In this case, the thing we would like to make
+as small as possible would be like the sum-of-squares
+
+808
+01:07:47,059 --> 01:07:51,240
+errors between the activations and the outputs.
+
+809
+01:07:51,240 --> 01:07:58,720
+I want to point out something here, which
+is that when we stuck in these random numbers;
+
+810
+01:07:58,720 --> 01:08:03,569
+the activations that came out, not only are
+they wrong, they're not even in the same general
+
+811
+01:08:03,569 --> 01:08:08,760
+scale as the activations that we want.
+
+812
+01:08:08,760 --> 01:08:11,089
+So that's a bad problem.
+
+813
+01:08:11,089 --> 01:08:15,990
+The reason it's a bad problem is that they're
+so much bigger than the scale that we were
+
+814
+01:08:15,990 --> 01:08:17,290
+looking for.
+
+815
+01:08:17,290 --> 01:08:21,810
+As we change these weights just a little bit,
+it's going to change the activations by a
+
+816
+01:08:21,810 --> 01:08:25,689
+lot, and this makes it very hard to train.
+
+817
+01:08:25,689 --> 01:08:35,419
+In general, you want your neural network (even
+with random weights) to start off with activations
+
+818
+01:08:35,420 --> 01:08:39,948
+which are all of similar scale to each other,
+and the output activations would be of similar
+
+819
+01:08:39,948 --> 01:08:43,539
+scale to the output.
+
+820
+01:08:43,540 --> 01:08:47,250
+For a very long time, nobody really knew how
+to do this.
+
+821
+01:08:47,250 --> 01:08:53,170
+So for a very long time, people could not
+really train deep neural networks.
+
+822
+01:08:53,170 --> 01:08:59,000
+It turns out that it was incredibly easy to
+do, and there is a whole body of work talking
+
+823
+01:08:59,000 --> 01:09:03,149
+about neural network initializations.
+
+824
+01:09:03,149 --> 01:09:08,019
+It turns out that a really simple and really
+effective neural network initialization is
+
+825
+01:09:08,020 --> 01:09:16,448
+called Xavier Initialization (named after
+it's founder, Xavier Gloret) and it is 2 divided
+
+826
+01:09:16,448 --> 01:09:19,169
+by (in+out).
+
+827
+01:09:19,170 --> 01:09:26,069
+Like many things in deep-learning, you will
+find this complex looking thing, Xavier Weight
+
+828
+01:09:26,069 --> 01:09:31,859
+Initialization Scheme, and when you look into
+it you will find it is something about this
+
+829
+01:09:31,859 --> 01:09:32,859
+easy.
+
+830
+01:09:32,859 --> 01:09:35,529
+This is about as complex as deep learning
+gets.
+
+831
+01:09:35,529 --> 01:09:40,049
+So I am now going to go ahead and implement
+Xavier Deep Learning Weight Initialization
+
+832
+01:09:40,049 --> 01:09:42,109
+Schemes in Excel.
+
+833
+01:09:42,109 --> 01:09:59,320
+So I'm going to go up here and in this cell
+put in equals 2 divided by (3 in + 4 out),
+
+834
+01:09:59,320 --> 01:10:00,320
+and press enter.
+
+835
+01:10:00,320 --> 01:10:04,990
+So now my first set of weights have that as
+its standard deviation.
+
+836
+01:10:04,990 --> 01:10:05,990
+[Time: 1.10 hour mark]
+
+837
+01:10:05,990 --> 01:10:10,650
+My second set of weights I also have pointing
+to the same place because they also have 4
+
+838
+01:10:10,650 --> 01:10:12,610
+in and 3 out.
+
+839
+01:10:12,610 --> 01:10:20,820
+And then my third, equals 2 dividided by (3
+in + 2 out).
+
+840
+01:10:20,820 --> 01:10:21,820
+Done.
+
+841
+01:10:21,820 --> 01:10:25,730
+So I have now implemented it in Excel.
+
+842
+01:10:25,730 --> 01:10:30,920
+You can see that my activations are indeed
+of the right general scale.
+
+843
+01:10:30,920 --> 01:10:37,400
+Generally speaking, you would normalize your
+inputs and outputs to be mean 0 and standard
+
+844
+01:10:37,400 --> 01:10:49,940
+deviation 1.
+
+845
+01:10:49,940 --> 01:10:53,330
+We want them to be of the same kind of scale.
+
+846
+01:10:53,330 --> 01:10:57,730
+Obviously they're not going to be in 5 and
+6 because we haven't done any optimization
+
+847
+01:10:57,730 --> 01:10:59,940
+yet, but we don't want them to be 100,000.
+
+848
+01:10:59,940 --> 01:11:16,060
+We want them to be somewhere around 5 and
+6.
+
+849
+01:11:16,060 --> 01:11:22,050
+If we start off with them really, really high
+or really, really low, an optimization is
+
+850
+01:11:22,050 --> 01:11:24,140
+going to be really hard to do.
+
+851
+01:11:24,140 --> 01:11:32,040
+For decades, when people tried to train deep-learning
+networks, the training took forever or was
+
+852
+01:11:32,040 --> 01:11:35,930
+so incredibly unresiliant that it was useless.
+
+853
+01:11:35,930 --> 01:11:41,370
+This one thing, a better weight initialization
+was a huge step.
+
+854
+01:11:41,370 --> 01:11:46,610
+It was like 3 years ago that this was invented.
+
+855
+01:11:46,610 --> 01:11:50,570
+It's not like we're going back a long time,
+this is relatively recent.
+
+856
+01:11:50,570 --> 01:11:59,840
+Now the good news is Keras (and pretty much
+any decent neural network library) will handle
+
+857
+01:11:59,840 --> 01:12:01,840
+your initialization for you.
+
+858
+01:12:01,840 --> 01:12:05,690
+Until recently, they pretty much all used
+this.
+
+859
+01:12:05,690 --> 01:12:10,690
+There are some even more recent, slightly
+better approaches, but they'll give you a
+
+860
+01:12:10,690 --> 01:12:15,250
+set of weights where your outputs will generally
+have a reasonable scale.
+
+861
+01:12:15,250 --> 01:12:30,639
+Question: Is it arbitrary what dimensions
+we're using here?
+
+862
+01:12:30,639 --> 01:12:37,510
+Answer: So what's not arbitrary is you are
+given your input dimensionalities.
+
+863
+01:12:37,510 --> 01:12:43,910
+In our case, for example, it would be 224x224
+pixels, 3 things.
+
+864
+01:12:43,910 --> 01:12:49,760
+You are given your output dimensionality,
+in our case, for example, for Cats vs Dogs
+
+865
+01:12:49,760 --> 01:12:54,080
+it's 2.
+
+866
+01:12:54,080 --> 01:12:59,820
+The thing in the middle about how many columns
+does each of your weight matrices have is
+
+867
+01:12:59,820 --> 01:13:01,440
+entirely up to you.
+
+868
+01:13:01,440 --> 01:13:06,820
+The more columns you add, the more complex
+your model, and we're going to learn a lot
+
+869
+01:13:06,820 --> 01:13:07,820
+about that.
+
+870
+01:13:07,820 --> 01:13:10,490
+As Rachel said, this is all about your choice
+of architecture.
+
+871
+01:13:10,490 --> 01:13:14,790
+So in my first one here I had 4 columns, and
+therefore I had 4 outputs.
+
+872
+01:13:14,790 --> 01:13:19,120
+In my next one, I had 3 columns, and therefore
+I had 3 outputs.
+
+873
+01:13:19,120 --> 01:13:25,469
+In my final one I had 2 columns and therefore
+I had 2 outputs, and that is the number of
+
+874
+01:13:25,469 --> 01:13:27,070
+outputs that I want.
+
+875
+01:13:27,070 --> 01:13:31,030
+This thing of how many columns do you have
+in your weight matrix is where you get to
+
+876
+01:13:31,030 --> 01:13:36,440
+decide how complex your model is, so we're
+going to see that.
+
+877
+01:13:36,440 --> 01:13:47,350
+So let's go ahead and create a linear model.
+
+878
+01:13:47,350 --> 01:14:09,889
+So 
+
+879
+01:14:09,889 --> 01:14:13,600
+we're going to learn how to create a linear
+model.
+
+880
+01:14:13,600 --> 01:14:20,500
+Let's first of all learn how to create a linear
+model from scratch (and this is something
+
+881
+01:14:20,500 --> 01:14:29,360
+that we did in that original USF Data Institute
+launch video).
+
+882
+01:14:29,360 --> 01:14:36,710
+Without using Keras at all, I can define a
+line as being a*x+b, I can then create some
+
+883
+01:14:36,710 --> 01:14:45,770
+synthetic data, I can assume a=3 and b=8,
+create some random x's, and my y will be a*x+b.
+
+884
+01:14:45,770 --> 01:14:52,280
+So here's some x's and some y's, and not surprisingly
+the scatterplot looks like so.
+
+885
+01:14:52,280 --> 01:14:54,370
+[Time: 1.15 hour mark]
+
+886
+01:14:54,370 --> 01:15:00,290
+The job of somebody creating a linear model
+is to say I don't know what a and b is, how
+
+887
+01:15:00,290 --> 01:15:01,489
+can we calculate it.
+
+888
+01:15:01,489 --> 01:15:07,630
+Forget that we know they're 3 and 8, let's
+guess that they are -1 and 1.
+
+889
+01:15:07,630 --> 01:15:10,810
+How can we make our guess better?
+
+890
+01:15:10,810 --> 01:15:14,260
+To make our guess better, we need a loss function.
+
+891
+01:15:14,260 --> 01:15:20,969
+A loss function is a mathematical function
+that will be high if your guess is bad, and
+
+892
+01:15:20,969 --> 01:15:22,420
+it's low if it's good.
+
+893
+01:15:22,420 --> 01:15:27,650
+The loss function I'm using here is just sum-of-square
+errors, which is my actual minus my prediction
+
+894
+01:15:27,650 --> 01:15:32,080
+squared, and add them up.
+
+895
+01:15:32,080 --> 01:15:39,889
+So if I define my loss function like that
+and I say my guess is -1 and 1, I can calculate
+
+896
+01:15:39,889 --> 01:15:42,389
+my average loss and it is 9.
+
+897
+01:15:42,389 --> 01:15:47,300
+So my average loss with my random guesses
+is not very good.
+
+898
+01:15:47,300 --> 01:15:53,690
+In order to create an optimizer, I need something
+that can make my weights a little bit better.
+
+899
+01:15:53,690 --> 01:15:57,860
+If I have something that can make my weights
+better, I can just call it again and again
+
+900
+01:15:57,860 --> 01:15:59,140
+and again.
+
+901
+01:15:59,140 --> 01:16:00,900
+That's actually very easy to do.
+
+902
+01:16:00,900 --> 01:16:08,171
+If you know the derivative of your loss function
+with respect to your weights, then all you
+
+903
+01:16:08,171 --> 01:16:12,280
+need to do is update your weights by the opposite
+of that.
+
+904
+01:16:12,280 --> 01:16:21,010
+So remember, the derivative is the thing that
+says as your weight changes, your output changes
+
+905
+01:16:21,010 --> 01:16:22,150
+by this amount.
+
+906
+01:16:22,150 --> 01:16:24,290
+That's what the derivative is.
+
+907
+01:16:24,290 --> 01:16:34,420
+Question: So you start with something random
+and by iterating you're going to get something
+
+908
+01:16:34,420 --> 01:16:35,420
+that works?
+
+909
+01:16:35,420 --> 01:16:36,989
+Answer: Yes.
+
+910
+01:16:36,989 --> 01:16:38,300
+Let's try it.
+
+911
+01:16:38,300 --> 01:16:46,820
+In this case we y=a+b and we have our loss
+function is actual - predicted, squared and
+
+912
+01:16:46,820 --> 01:16:47,989
+add it up.
+
+913
+01:16:47,989 --> 01:16:54,719
+We're now going to create a function update
+(upd), which is going to take our "a" guess
+
+914
+01:16:54,719 --> 01:16:56,989
+and our "b" guess and make them a little bit
+better.
+
+915
+01:16:56,989 --> 01:17:02,360
+And to make them a little bit better, we calculate
+the derivative of our loss function with respect
+
+916
+01:17:02,360 --> 01:17:06,600
+to "b" and the derivative of our loss function
+with respect to "a".
+
+917
+01:17:06,600 --> 01:17:08,950
+How do we calculate those?
+
+918
+01:17:08,950 --> 01:17:15,360
+We go to Wolfram Alpha and we enter in "d"
+along with our formula and the thing we want
+
+919
+01:17:15,360 --> 01:17:17,950
+to get the derivative of, and it tells us
+the anwer.
+
+920
+01:17:17,950 --> 01:17:19,110
+So that's all I did.
+
+921
+01:17:19,110 --> 01:17:26,860
+I went to Wolfram Alpha, found the correct
+derivative, pasted them in here.
+
+922
+01:17:26,860 --> 01:17:34,590
+What this means then is that this formula
+here tells me as I increase "b" by 1, my sum-of-square
+
+923
+01:17:34,590 --> 01:17:38,380
+errors will change by this amount (dydb).
+
+924
+01:17:38,380 --> 01:17:43,500
+And this says that as I change "a" by 1, my
+sum-of-square error will change by this amount
+
+925
+01:17:43,500 --> 01:17:44,500
+(dyda).
+
+926
+01:17:44,500 --> 01:17:54,630
+So if I know that dyda=3, if I know that my
+loss function gets higher by 3 if I increase
+
+927
+01:17:54,630 --> 01:17:59,239
+"a" by 1, then clearly I need to make "a"
+a little bit smaller.
+
+928
+01:17:59,239 --> 01:18:04,639
+If I make it a little bit smaller, my loss
+function will go down.
+
+929
+01:18:04,639 --> 01:18:14,380
+So that's why our final step is to say take
+our guess and subtract from it our derivative
+
+930
+01:18:14,380 --> 01:18:15,950
+times a little bit.
+
+931
+01:18:15,950 --> 01:18:18,270
+"lr" stands for learning rate.
+
+932
+01:18:18,270 --> 01:18:21,980
+As you can see, I'm setting it to .01.
+
+933
+01:18:21,980 --> 01:18:26,840
+How much is a little bit is something that
+people spend a lot of time thinking about
+
+934
+01:18:26,840 --> 01:18:29,670
+and studying and we will spend time talking
+about.
+
+935
+01:18:29,670 --> 01:18:34,530
+But you can always trial-and-error to find
+a good learning rate.
+
+936
+01:18:34,530 --> 01:18:38,370
+When you use Keras, you will always need to
+tell it what learning rate to use.
+
+937
+01:18:38,370 --> 01:18:43,690
+That's something that you want the highest
+number you can get away with; you'll see more
+
+938
+01:18:43,690 --> 01:18:45,120
+of this next week.
+
+939
+01:18:45,120 --> 01:18:52,100
+The important thing to realize here is if
+we update our guess minus-equals our derivative,
+
+940
+01:18:52,100 --> 01:19:00,199
+our guess is going to be a little bit better
+because we know going in the opposite direction
+
+941
+01:19:00,199 --> 01:19:03,070
+makes the loss function a little bit lower.
+
+942
+01:19:03,070 --> 01:19:04,500
+So let's run those two things.
+
+943
+01:19:04,500 --> 01:19:09,290
+We've now got a function called update (upd)
+which every time you run it makes our predictions
+
+944
+01:19:09,290 --> 01:19:15,590
+a little bit better . Finally now I'm basically
+doing a little animation here that says every
+
+945
+01:19:15,590 --> 01:19:22,980
+time you calculate an animation, call my animate
+function which 10 times will call my update
+
+946
+01:19:22,980 --> 01:19:24,310
+function.
+
+947
+01:19:24,310 --> 01:19:27,360
+So let's see what happens when I animate that.
+
+948
+01:19:27,360 --> 01:19:30,660
+There it is.
+
+949
+01:19:30,660 --> 01:19:40,850
+So it starts with a really bad line (my -1,1)
+and it gets better and better.
+
+950
+01:19:40,850 --> 01:19:46,430
+So this is how stochastic gradient descent
+works.
+
+951
+01:19:46,430 --> 01:19:51,050
+Stochastic gradient descent is the most important
+algorithm in deep learning.
+
+952
+01:19:51,050 --> 01:19:57,139
+Stochastic gradient descent is the thing that
+starts with random weights (like this) and
+
+953
+01:19:57,139 --> 01:20:03,540
+ends with weights that do what you want to
+do.
+
+954
+01:20:03,540 --> 01:20:06,600
+[Time: 1.20 hour mark]
+
+955
+01:20:06,600 --> 01:20:13,440
+As you can see, stochastic gradient descent
+is incredibly simple and yet incredibly powerful
+
+956
+01:20:13,440 --> 01:20:18,761
+because it can take any function and find
+the set of parameters that does exactly what
+
+957
+01:20:18,761 --> 01:20:21,250
+we want to do with that function.
+
+958
+01:20:21,250 --> 01:20:35,250
+And when that function is a big learning neural
+network, that becomes particularly powerful.
+
+959
+01:20:35,250 --> 01:20:51,389
+Just to remind ourselves about the setup for
+this, we started out by saying this spreadsheet
+
+960
+01:20:51,389 --> 01:20:57,000
+is showing up a deep neural network with a
+bunch of random parameters.
+
+961
+01:20:57,000 --> 01:21:03,200
+Can we come up with a way to replace the random
+parameters with parameters that actually give
+
+962
+01:21:03,200 --> 01:21:05,270
+us the right answer.
+
+963
+01:21:05,270 --> 01:21:09,440
+So we need to come up with a way to do mathematical
+optimization.
+
+964
+01:21:09,440 --> 01:21:15,310
+So rather than showing how to do that wit
+a deep neural network, let's see how to do
+
+965
+01:21:15,310 --> 01:21:17,460
+it with a line.
+
+966
+01:21:17,460 --> 01:21:26,040
+So we start out by saying let's have a line,
+a*x+b, where a=3 and b=8.
+
+967
+01:21:26,040 --> 01:21:30,540
+Pretend we didn't know that "a" is 3 and "b"
+is 8.
+
+968
+01:21:30,540 --> 01:21:34,190
+Make a wild guess as to what "a" and "b" might
+be.
+
+969
+01:21:34,190 --> 01:21:38,219
+Come up with an update function where every
+time we call it, it makes "a" and "b" a little
+
+970
+01:21:38,219 --> 01:21:40,260
+bit better.
+
+971
+01:21:40,260 --> 01:21:46,920
+Call that update function lots of times and
+confirm that eventually our line fits our
+
+972
+01:21:46,920 --> 01:21:47,989
+data.
+
+973
+01:21:47,989 --> 01:21:54,580
+Conceptually take that exact same idea and
+apply it to these weight matrices.
+
+974
+01:21:54,580 --> 01:22:05,500
+Question: Shouldn't there be a random element
+to avoid local minimums?
+
+975
+01:22:05,500 --> 01:22:13,920
+Answer: The question is there a problem here
+that as we run this update function, might
+
+976
+01:22:13,920 --> 01:22:35,860
+be get to a point where our function looks
+like this.
+
+977
+01:22:35,860 --> 01:22:42,469
+Currently we're trying to optimize the sum-of-square
+errors and the sum-of-square errors looks
+
+978
+01:22:42,469 --> 01:22:43,780
+like this.
+
+979
+01:22:43,780 --> 01:22:55,760
+A more 
+
+980
+01:22:55,760 --> 01:23:01,310
+complex function would kind of look like this.
+
+981
+01:23:01,310 --> 01:23:06,900
+So if we started here and gradually tried
+to make it better and better, we might get
+
+982
+01:23:06,900 --> 01:23:11,489
+to a point where the derivative is 0, and
+we then can't get any better, this would be
+
+983
+01:23:11,489 --> 01:23:17,440
+called a local minimum.
+
+984
+01:23:17,440 --> 01:23:21,000
+The question was suggesting a particula approach
+to avoiding that.
+
+985
+01:23:21,000 --> 01:23:26,930
+Here's the good news, in deep-learning you
+don't have local mimimum.
+
+986
+01:23:26,930 --> 01:23:28,920
+Why not?
+
+987
+01:23:28,920 --> 01:23:34,350
+The reason is that in an actual deep-learning
+network, you don't hae one or two parameters,
+
+988
+01:23:34,350 --> 01:23:37,420
+you have hundreds of millions of parameters.
+
+989
+01:23:37,420 --> 01:23:47,590
+So rather than looking like this, over even
+like a 3D version, it's a 600 million dimensional
+
+990
+01:23:47,590 --> 01:23:48,590
+space.
+
+991
+01:23:48,590 --> 01:23:53,699
+And for something to be a local minimum, it
+means that the stochastic gradient descent
+
+992
+01:23:53,699 --> 01:23:59,530
+has wandered around and got to a point where
+in every one of those 600 million directions
+
+993
+01:23:59,530 --> 01:24:01,010
+it can't get any better.
+
+994
+01:24:01,010 --> 01:24:06,190
+And the probability of that happening is 2
+to the poer of 600 million.
+
+995
+01:24:06,190 --> 01:24:12,460
+So for actual deep-learning in practice, there's
+always enough parameters that it's basically
+
+996
+01:24:12,460 --> 01:24:17,640
+unheard of to get to a point where there's
+no direction to go to get better.
+
+997
+01:24:17,640 --> 01:24:19,970
+So the answer is, no.
+
+998
+01:24:19,970 --> 01:24:28,870
+For deep-learning, stochastic gradient descent
+is just as simple as this, it's exactly as
+
+999
+01:24:28,870 --> 01:24:30,350
+simple as this.
+
+1000
+01:24:30,350 --> 01:24:37,750
+We will learn some tweaks to allow us to get
+faster, but this basic approach works just
+
+1001
+01:24:37,750 --> 01:24:44,050
+fine.
+
+1002
+01:24:44,050 --> 01:24:51,850
+Question: So what if you don't know the derivative?
+
+1003
+01:24:51,850 --> 01:24:52,850
+[Time: 1.25 hour mark]
+
+1004
+01:24:52,850 --> 01:24:54,230
+Answer: That's a great question.
+
+1005
+01:24:54,230 --> 01:24:58,480
+For a long time, this was a royal GD pain.
+
+1006
+01:24:58,480 --> 01:25:02,680
+Anybody who wanted to create stochastic gradient
+descent in a neural network had to go through
+
+1007
+01:25:02,680 --> 01:25:05,290
+and calculate all the derivatives.
+
+1008
+01:25:05,290 --> 01:25:11,150
+And if you've got 600 million parameters,
+that's a lot of trips to Wolfram Alpha.
+
+1009
+01:25:11,150 --> 01:25:17,530
+So nowadays we don't have to worry about that
+because all the modern neural network libraries
+
+1010
+01:25:17,530 --> 01:25:18,780
+do symbolic differentiation.
+
+1011
+01:25:18,780 --> 01:25:23,300
+In other words, it's like they have their
+own little copy of Wolfram Alpha inside them
+
+1012
+01:25:23,300 --> 01:25:25,719
+and they calculate the derivatives for you.
+
+1013
+01:25:25,719 --> 01:25:29,420
+So you're never going to be the situation
+where you don't know the derivatives.
+
+1014
+01:25:29,420 --> 01:25:34,800
+You just tell it your architecture and it
+will automatically calculate the derivatives.
+
+1015
+01:25:34,800 --> 01:25:36,380
+So let's take a look.
+
+1016
+01:25:36,380 --> 01:25:44,370
+Let's take this linear example and see what
+it looks like in Keras.
+
+1017
+01:25:44,370 --> 01:25:49,719
+In Keras, we can do exactly the same thing.
+
+1018
+01:25:49,719 --> 01:25:54,650
+So let's start by creating some random numbers,
+but this time let's make it a bit more complex,
+
+1019
+01:25:54,650 --> 01:25:57,760
+we're going to have a random matrix with 2
+columns.
+
+1020
+01:25:57,760 --> 01:26:03,530
+And so to craft out our y values, we'll do
+a little matrix multiply with our x, vit a
+
+1021
+01:26:03,530 --> 01:26:10,380
+vector of [2,3] and then we'll add in a constant
+of 1.
+
+1022
+01:26:10,380 --> 01:26:22,130
+Here's our x's, and here's the first few y's.
+
+1023
+01:26:22,130 --> 01:26:29,590
+So here 3.2 = (.56 * 2) + (.37 * 3) + 1.
+
+1024
+01:26:29,590 --> 01:26:37,170
+Hopefully this looks very familiar, because
+it's exactly what we did in Excel.
+
+1025
+01:26:37,170 --> 01:26:38,921
+How do we create a linear model in Keras?
+
+1026
+01:26:38,921 --> 01:26:49,040
+Keras calls a linear model Dense, it's also
+known in our other libraries as fully_connected.
+
+1027
+01:26:49,040 --> 01:26:57,690
+So when we go Dense with an input of 2 columns
+and an output of 1 column, we have defined
+
+1028
+01:26:57,690 --> 01:27:08,190
+a linear model that can go from this 2 column
+array to this 1 column output.
+
+1029
+01:27:08,190 --> 01:27:13,800
+The second thing we have in Keras is we have
+some way to build multiple layer networks,
+
+1030
+01:27:13,800 --> 01:27:16,290
+and Keras calls this Sequential.
+
+1031
+01:27:16,290 --> 01:27:21,820
+Sequential takes an array that contains all
+of the layers that you have in your neural
+
+1032
+01:27:21,820 --> 01:27:22,820
+network.
+
+1033
+01:27:22,820 --> 01:27:27,920
+So for example, in Excel here, I would have
+had 3 layers.
+
+1034
+01:27:27,920 --> 01:27:30,780
+In a linear model, we have just 1 layer.
+
+1035
+01:27:30,780 --> 01:27:36,900
+So to create a linear model in Keras, you
+say Sequential, pass in an array with a single
+
+1036
+01:27:36,900 --> 01:27:39,580
+layer, that is a dense layer.
+
+1037
+01:27:39,580 --> 01:27:42,719
+A dense layer is just a simple linear layer.
+
+1038
+01:27:42,719 --> 01:27:49,530
+We tell it that there are two inputs and one
+output.
+
+1039
+01:27:49,530 --> 01:27:55,560
+This will automatically initialize the weights
+in a sensible way, it will automatically calculate
+
+1040
+01:27:55,560 --> 01:27:59,810
+the derivatives, so all we have to tell it
+is how do we want to optimize the weights.
+
+1041
+01:27:59,810 --> 01:28:05,940
+And we will say, please use stochastic gradient
+descent with a learning rate of .1, and we're
+
+1042
+01:28:05,940 --> 01:28:09,739
+attempting to minimize our loss of a mean-square-error.
+
+1043
+01:28:09,739 --> 01:28:19,290
+So if I do that, that does everything except
+the last solving step that we saw in the previous
+
+1044
+01:28:19,290 --> 01:28:20,290
+notebook.
+
+1045
+01:28:20,290 --> 01:28:29,639
+To do the solving, we just type fit (lm.fit).
+
+1046
+01:28:29,639 --> 01:28:34,800
+Before we start, we can say evaluate (lm.evaluate)
+to find out our loss function with random
+
+1047
+01:28:34,800 --> 01:28:37,540
+weights, which is pretty krappy.
+
+1048
+01:28:37,540 --> 01:28:43,010
+And then we run 5 epochs and the loss function
+gets better and better and better using the
+
+1049
+01:28:43,010 --> 01:28:45,340
+stochastic gradient descent update rule we
+just learned.
+
+1050
+01:28:45,340 --> 01:28:50,110
+So at the end, we can evaulate and it's better.
+
+1051
+01:28:50,110 --> 01:28:51,770
+And then let's take a look at the weights.
+
+1052
+01:28:51,770 --> 01:28:58,409
+They should be (2, 3, 1) and they're actually
+(1.8, 2.7, 1.2).
+
+1053
+01:28:58,409 --> 01:28:59,560
+That's not bad.
+
+1054
+01:28:59,560 --> 01:29:04,420
+So why don't we run another 5 epochs.
+
+1055
+01:29:04,420 --> 01:29:05,699
+Loss function keeps getting better.
+
+1056
+01:29:05,699 --> 01:29:12,870
+We evaluate it now and it's better, and the
+weights are now closer again to (2, 3, 1).
+
+1057
+01:29:12,870 --> 01:29:18,610
+So we now know everything that Keras is doing
+behind the scenes, exactly.
+
+1058
+01:29:18,610 --> 01:29:22,739
+Not like hand-waving over details, that is
+it.
+
+1059
+01:29:22,739 --> 01:29:24,130
+We now know what it's doing.
+
+1060
+01:29:24,130 --> 01:29:32,570
+So if we now say to Keras, don't just create
+a single layer, but create multiple layers
+
+1061
+01:29:32,570 --> 01:29:38,929
+by passing multiple layers to the sequential,
+we can start to build and optimize deep neural
+
+1062
+01:29:38,929 --> 01:29:40,239
+networks.
+
+1063
+01:29:40,239 --> 01:29:48,650
+But before we do that, we can actually use
+this to create a pretty decent entry to our
+
+1064
+01:29:48,650 --> 01:29:52,560
+Cats vs Dogs competition.
+
+1065
+01:29:52,560 --> 01:29:57,820
+So forget all the fine-tuning stuff because
+I haven't told you how fine-tuning works yet.
+
+1066
+01:29:57,820 --> 01:30:03,030
+How do we take the output of an ImageNet network
+and as simply as possible create an entry
+
+1067
+01:30:03,030 --> 01:30:04,760
+to our Cats vs Dogs competetion:
+
+1068
+01:30:04,760 --> 01:30:05,770
+[Time: 1.30 hour mark]
+
+1069
+01:30:05,770 --> 01:30:13,710
+So the basic problem here is that our current
+ImageNet network returns 1000 probabilities
+
+1070
+01:30:13,710 --> 01:30:16,170
+in a lot of detail.
+
+1071
+01:30:16,170 --> 01:30:32,230
+It returns not just cat vs dog, but it returns
+Animals->DomesticAnimals.
+
+1072
+01:30:32,230 --> 01:30:41,010
+Ideally, it would be Cat and Dog here, but
+it's not.
+
+1073
+01:30:41,010 --> 01:30:44,929
+It keeps going - Egyptian cat, Persian cat,
+and so forth.
+
+1074
+01:30:44,929 --> 01:30:51,889
+So one thing we could do is we could write
+code to take this hierarchy and roll it up
+
+1075
+01:30:51,889 --> 01:30:53,830
+into cats vs dogs.
+
+1076
+01:30:53,830 --> 01:30:58,810
+I've got a couple of ideas here as to how
+we could do that.
+
+1077
+01:30:58,810 --> 01:31:04,180
+For instance, we could find the largest probability
+that's either a cat or a dog (from the 1000)
+
+1078
+01:31:04,180 --> 01:31:09,110
+and use that, or we could average all of the
+cat categories and all of the dog categories
+
+1079
+01:31:09,110 --> 01:31:10,110
+and use that.
+
+1080
+01:31:10,110 --> 01:31:15,560
+But the downsides here is that would require
+manual coding for something we should be learning
+
+1081
+01:31:15,560 --> 01:31:19,670
+from data, and more importantly, it's ignoring
+information.
+
+1082
+01:31:19,670 --> 01:31:26,260
+So let's say out of those 1000 categories,
+the category for a bone was very high.
+
+1083
+01:31:26,260 --> 01:31:29,320
+It's more likely a dog is with a bone than
+a cat is with a bone.
+
+1084
+01:31:29,320 --> 01:31:34,900
+So therefore, it out to take advantage, it
+should learn to recognize environments that
+
+1085
+01:31:34,900 --> 01:31:37,429
+cats are in versus environments that dogs
+are in.
+
+1086
+01:31:37,429 --> 01:31:41,890
+Or even recognize things that look like cats
+from things that look like dogs.
+
+1087
+01:31:41,890 --> 01:31:48,850
+So what we could do is learn a linear model
+that takes the output of the ImageNet model,
+
+1088
+01:31:48,850 --> 01:31:56,909
+the 1000 predictions and uses that as the
+input, and uses the dog-cat label as the target.
+
+1089
+01:31:56,909 --> 01:31:59,869
+And that linear model would solve our problem.
+
+1090
+01:31:59,869 --> 01:32:04,690
+We have everything we need to know to create
+this model now.
+
+1091
+01:32:04,690 --> 01:32:10,580
+So let me show you how that works.
+
+1092
+01:32:10,580 --> 01:32:18,020
+Let's again import our VGG model, and we're
+going to try to do 3 things.
+
+1093
+01:32:18,020 --> 01:32:22,090
+1) For every image, we'll get the True labels,
+isCat or isDog.
+
+1094
+01:32:22,090 --> 01:32:28,810
+2) We going to get the 1000 ImageNet category
+predictions, so that will be 1000 floats for
+
+1095
+01:32:28,810 --> 01:32:29,810
+every image.
+
+1096
+01:32:29,810 --> 01:32:34,659
+Then we're going to use the output of 2) as
+the input of our linear model and we're going
+
+1097
+01:32:34,659 --> 01:32:39,480
+to use the output of 1) as the target for
+our linear model, and create this linear model
+
+1098
+01:32:39,480 --> 01:32:41,840
+and build some predictions.
+
+1099
+01:32:41,840 --> 01:32:50,210
+So as per usual, we start by creating our
+validation batches and our batches, just like
+
+1100
+01:32:50,210 --> 01:32:51,210
+before.
+
+1101
+01:32:51,210 --> 01:32:53,010
+I'll show you a trick.
+
+1102
+01:32:53,010 --> 01:32:57,840
+Because one of the steps here is get the 1000
+ImageNet category predictions for every image,
+
+1103
+01:32:57,840 --> 01:33:00,320
+that takes a few minutes.
+
+1104
+01:33:00,320 --> 01:33:01,950
+There's no need to do that again and again.
+
+1105
+01:33:01,950 --> 01:33:05,199
+Once we've done it once, let's save the result.
+
+1106
+01:33:05,199 --> 01:33:08,610
+Let me show you how you can save Numpy arrays.
+
+1107
+01:33:08,610 --> 01:33:14,100
+Unfortunately most of the stuff you'll find
+online about saving Numpy arrays takes a very,
+
+1108
+01:33:14,100 --> 01:33:17,780
+very long time to run and it takes a shitload
+of space.
+
+1109
+01:33:17,780 --> 01:33:23,000
+There's a really cool library called bcolz
+that almost nobody knows about that can save
+
+1110
+01:33:23,000 --> 01:33:27,469
+Numpy arrays very, very quickly and in very
+little space.
+
+1111
+01:33:27,469 --> 01:33:31,920
+So I've created these two little things here
+called save_array and load_array, which you
+
+1112
+01:33:31,920 --> 01:33:33,949
+should definitely add to your toolbox.
+
+1113
+01:33:33,949 --> 01:33:37,670
+They're actually in the utils.py, so you can
+use them in the future.
+
+1114
+01:33:37,670 --> 01:33:47,210
+And once you grab the predictions, you can
+use these to just save the predictions and
+
+1115
+01:33:47,210 --> 01:33:51,940
+load them back later, rather than recalculating
+them each time.
+
+1116
+01:33:51,940 --> 01:33:53,710
+I'll show you something else we've got.
+
+1117
+01:33:53,710 --> 01:33:58,870
+Before we even worry about calculating the
+predictions, we just need to load up the images.
+
+1118
+01:33:58,870 --> 01:34:03,580
+When we load the images, there's a few things
+we have to do, we have to decode the jpg images
+
+1119
+01:34:03,580 --> 01:34:10,100
+and we have to convert them to 224x224 pixel
+images (because that's what VGG expects).
+
+1120
+01:34:10,100 --> 01:34:12,260
+That's kind of slow too.
+
+1121
+01:34:12,260 --> 01:34:15,530
+So let's also save the result of that.
+
+1122
+01:34:15,530 --> 01:34:22,449
+So I've created this little function called
+get_data, which basically grabs all of the
+
+1123
+01:34:22,449 --> 01:34:28,969
+validation images and all of the training
+images and sticks them in a Numpy array.
+
+1124
+01:34:28,969 --> 01:34:31,330
+Here's a cool trick.
+
+1125
+01:34:31,330 --> 01:34:38,850
+In iPython notebook, if you put "??" before
+something, it shows you the source of it.
+
+1126
+01:34:38,850 --> 01:34:45,030
+So if you want to know what is get_data doing,
+go "??get_data" and you can see exactly what
+
+1127
+01:34:45,030 --> 01:34:52,650
+it's doing, it's concatenating all of the
+different batches together.
+
+1128
+01:34:52,650 --> 01:34:56,130
+Anytime you're using one of my little convenience
+functions, I strongly suggest you look at
+
+1129
+01:34:56,130 --> 01:34:58,620
+the source code to see what it's doing.
+
+1130
+01:34:58,620 --> 01:35:01,250
+They are all super super small.
+
+1131
+01:35:01,250 --> 01:35:02,810
+[Time: 1.35 hour mark]
+
+1132
+01:35:02,810 --> 01:35:08,790
+So I can grab the data (the validation data,
+the training data) and then I can just save
+
+1133
+01:35:08,790 --> 01:35:29,610
+it so that in the future I can, rather than
+having to watch and wait for that to pre-process,
+
+1134
+01:35:29,610 --> 01:35:35,080
+I can just go load_array and that goes ahead
+and loads it off disk.
+
+1135
+01:35:35,080 --> 01:35:42,489
+It still takes a few seconds, but this will
+be way faster than having to calculate it
+
+1136
+01:35:42,489 --> 01:35:43,489
+directly.
+
+1137
+01:35:43,489 --> 01:35:49,719
+So what that does is it creates a numpy array
+with my 23,000 images, each of which has 3
+
+1138
+01:35:49,719 --> 01:35:56,150
+colors and is 224x224 in size.
+
+1139
+01:35:56,150 --> 01:36:06,199
+If you remember (from Lesson 1) the labels
+that Keras expects are in a very particular
+
+1140
+01:36:06,199 --> 01:36:07,199
+format.
+
+1141
+01:36:07,199 --> 01:36:12,710
+Let's look at the format and see what it looks
+like.
+
+1142
+01:36:12,710 --> 01:36:25,140
+Here they are, the format of the labels is
+each one has two things - it has the probability
+
+1143
+01:36:25,140 --> 01:36:29,530
+that it's a cat and the probability that it's
+a dog, and it's always just 0's and 1's.
+
+1144
+01:36:29,530 --> 01:36:30,530
+So here is [0.
+
+1145
+01:36:30,530 --> 01:36:31,830
+1.] is a dog, [1.
+
+1146
+01:36:31,830 --> 01:36:33,550
+0.] is a cat, [1.
+
+1147
+01:36:33,550 --> 01:36:35,260
+0.] is a cat, [0.
+
+1148
+01:36:35,260 --> 01:36:36,639
+1.] is a dog.
+
+1149
+01:36:36,639 --> 01:36:42,159
+This approach where you have a vector where
+every element of it is a 0 except for a single
+
+1150
+01:36:42,159 --> 01:36:51,800
+1 for the class you want is called one-hot
+encoding and this is used for nearly all deep-learning.
+
+1151
+01:36:51,800 --> 01:36:58,010
+So that's why I created a little function
+called onehot that makes it very easy for
+
+1152
+01:36:58,010 --> 01:37:00,950
+you to one-hot encode your data.
+
+1153
+01:37:00,950 --> 01:37:11,340
+So for example if your data was just like
+0,1,2,1,0, one-hot encoding that would look
+
+1154
+01:37:11,340 --> 01:37:17,870
+like this (1,0,0), (0,1,0), (0,0,1), (0,1,0),
+(1,0,0).
+
+1155
+01:37:17,870 --> 01:37:26,679
+So that would be the kind of raw form, and
+that is the one-hot encoded form.
+
+1156
+01:37:26,679 --> 01:37:32,770
+The reason that we use one-hot encoding a
+lot is that if you take this and you do a
+
+1157
+01:37:32,770 --> 01:37:44,760
+matrix multiply by a bunch of weights, [w1,w2,w3],
+you can calculate a matrix multiply, these
+
+1158
+01:37:44,760 --> 01:37:46,880
+two are compatible.
+
+1159
+01:37:46,880 --> 01:37:56,510
+So this is what makes you do deep-learning
+easily with categorical variables.
+
+1160
+01:37:56,510 --> 01:38:01,300
+So the next thing I want to do is I want to
+grab my labels and I want to one-hot encode
+
+1161
+01:38:01,300 --> 01:38:06,119
+them by using this onehot function.
+
+1162
+01:38:06,119 --> 01:38:13,790
+And so you can take a look at that.
+
+1163
+01:38:13,790 --> 01:38:29,270
+You can see here that the first few classes
+look like so [array([[1.,0.],[1.,0.],[1.,0.],[1.,0.]]),
+
+1164
+01:38:29,270 --> 01:38:35,780
+but the first few labels are one-hot encoded
+like so [array([[1.,0.],[1.,0.],[1.,0.],[1.,0.]]).
+
+1165
+01:38:35,780 --> 01:38:40,739
+So we're now at a point where we can finally
+do Step #2.
+
+1166
+01:38:40,739 --> 01:38:48,780
+So to remind you, Step #2 was get the 1000
+ImageNet category predictions for every image.
+
+1167
+01:38:48,780 --> 01:38:52,010
+So Keras makes that really easy for us.
+
+1168
+01:38:52,010 --> 01:38:59,560
+We can just say model.predict and pass in
+our data.
+
+1169
+01:38:59,560 --> 01:39:05,380
+So model.predict with train data is going
+to give us the 1000 predictions from ImageNet
+
+1170
+01:39:05,380 --> 01:39:08,840
+for our train data, and this will give it
+for our validation data.
+
+1171
+01:39:08,840 --> 01:39:11,260
+And again, running this takes a few minutes.
+
+1172
+01:39:11,260 --> 01:39:17,080
+So I save it and then I will load it.
+
+1173
+01:39:17,080 --> 01:39:28,580
+So you can see we now have 
+the 23000x3x224x224, it is now 23000x1000.
+
+1174
+01:39:28,580 --> 01:39:30,820
+So for every image we have 1000 probabilities.
+
+1175
+01:39:30,820 --> 01:39:38,260
+So let's look at one of them (trn_features[0]).
+
+1176
+01:39:38,260 --> 01:39:43,239
+Not surprisingly if we look at just one of
+these, nearly all of them are 0.
+
+1177
+01:39:43,239 --> 01:39:48,840
+So for the 1000 categories, only one of these
+numbers should be big.
+
+1178
+01:39:48,840 --> 01:39:53,810
+It can't be lots of different things, it can't
+be a cat and a dog and a jet airplane.
+
+1179
+01:39:53,810 --> 01:39:59,239
+Not surprisingly nearly all of these things
+are very close to 0, hopefully just one of
+
+1180
+01:39:59,239 --> 01:40:01,880
+them is very close to 1.
+
+1181
+01:40:01,880 --> 01:40:03,969
+So that's exactly what we expect.
+
+1182
+01:40:03,969 --> 01:40:05,060
+[Time: 1.40 hour mark]
+
+1183
+01:40:05,060 --> 01:40:11,260
+So now that we've got our 1000 features for
+each of our training images and for each of
+
+1184
+01:40:11,260 --> 01:40:14,850
+our validation images, we can go ahead and
+create a linear model.
+
+1185
+01:40:14,850 --> 01:40:18,150
+So here it is, here's our linear model.
+
+1186
+01:40:18,150 --> 01:40:23,530
+The input is 1000 columns, every one of those
+ImageNet predictions.
+
+1187
+01:40:23,530 --> 01:40:28,810
+The output is two columns, it's a dog or it's
+a cat.
+
+1188
+01:40:28,810 --> 01:40:35,130
+We will optimize it with, I'm actually not
+going to use SGD, I'm going to use a slightly
+
+1189
+01:40:35,130 --> 01:40:38,659
+better thing called RMSprop which I will teach
+you about next week.
+
+1190
+01:40:38,659 --> 01:40:42,489
+It's a very minor tweak on SGD that tends
+to be a lot faster.
+
+1191
+01:40:42,489 --> 01:40:49,150
+So I suggest in practice we use RMSprop, not
+SGD, it's almost the same thing.
+
+1192
+01:40:49,150 --> 01:40:57,369
+Now that we know how to fit a model once it's
+defined, we can just go model.fit and it runs
+
+1193
+01:40:57,369 --> 01:41:09,830
+basically instantly because all it has to
+do ... Let's take a look at our model [lm.summary()],
+
+1194
+01:41:09,830 --> 01:41:14,500
+it's just one layer with 2000 weights.
+
+1195
+01:41:14,500 --> 01:41:21,770
+So running 3 epochs took 0 seconds and we
+got an accuracy of .9735.
+
+1196
+01:41:21,770 --> 01:41:30,170
+After another 3 epochs an accuracy of .9770,
+even better.
+
+1197
+01:41:30,170 --> 01:41:34,010
+So you can see this is like the simplest possible
+model.
+
+1198
+01:41:34,010 --> 01:41:35,619
+I haven't done any fine-tuning.
+
+1199
+01:41:35,619 --> 01:41:42,820
+All I've done is I've taken the ImageNet predictions
+for every image and built a linear model that
+
+1200
+01:41:42,820 --> 01:41:47,440
+maps from those predictions to Cat or Dog.
+
+1201
+01:41:47,440 --> 01:41:56,770
+A lot of the amateur deep-learning papers
+that you see, one was classifying leaves by
+
+1202
+01:41:56,770 --> 01:42:03,520
+whether they're sick, one was classifying
+skin lesions by type of lesion.
+
+1203
+01:42:03,520 --> 01:42:10,610
+Often this is all people do, they take a pre-trained
+model, they grab the outputs and they stick
+
+1204
+01:42:10,610 --> 01:42:13,210
+it into a linear model and then they use it.
+
+1205
+01:42:13,210 --> 01:42:17,940
+As you can see, it actually works often pretty
+well.
+
+1206
+01:42:17,940 --> 01:42:25,020
+So I just wanted to point out here that in
+getting this .9770 result, we have not used
+
+1207
+01:42:25,020 --> 01:42:34,810
+any magic libraries at all.
+
+1208
+01:42:34,810 --> 01:42:38,480
+It's more code than it looks like because
+we're saving stuff as we go.
+
+1209
+01:42:38,480 --> 01:42:42,760
+We grabbed our batches, we grabbed the data.
+
+1210
+01:42:42,760 --> 01:42:50,680
+We turned our images into a Numpy array.
+
+1211
+01:42:50,680 --> 01:42:59,370
+We took the Numpy array and ran model.predict
+on them.
+
+1212
+01:42:59,370 --> 01:43:06,750
+We grabbed our labels and we one-hot encoded
+them.
+
+1213
+01:43:06,750 --> 01:43:13,429
+And then finally, we took the one-hot encoded
+labels and the 1000 probabilities and we fed
+
+1214
+01:43:13,429 --> 01:43:23,300
+them to a linear model with 1000 inputs and
+2 outputs.
+
+1215
+01:43:23,300 --> 01:43:29,510
+And then we trained it and we ended up with
+a validation accuracy of .9770.
+
+1216
+01:43:29,510 --> 01:43:34,441
+So what we're doing is we're digging right
+deep into the details.
+
+1217
+01:43:34,441 --> 01:43:41,110
+We know exactly how SGD works, we know exactly
+how the layers are being calculated.
+
+1218
+01:43:41,110 --> 01:43:44,230
+And we know exactly therefore what Keras is
+doing behind the scenes.
+
+1219
+01:43:44,230 --> 01:43:49,219
+So we started way up high with something that
+was totally obscure as to what was going on
+
+1220
+01:43:49,219 --> 01:43:52,699
+(we were just using it like you might use
+Excel) and we've gone all the way down to
+
+1221
+01:43:52,699 --> 01:43:56,900
+see exactly what's going on and we've got
+a pretty good result.
+
+1222
+01:43:56,900 --> 01:44:07,070
+So the last thing we're going to do is take
+this and turn it into a fine-tuning model
+
+1223
+01:44:07,070 --> 01:44:09,070
+to get a slightly better result.
+
+1224
+01:44:09,070 --> 01:44:10,659
+What is fine-tuning?
+
+1225
+01:44:10,659 --> 01:44:14,179
+In order to understand fine-tuning, we're
+going to have to understand one more piece
+
+1226
+01:44:14,179 --> 01:44:18,320
+of a deep-learning model, and this is activation
+functions.
+
+1227
+01:44:18,320 --> 01:44:19,739
+This is our last major piece.
+
+1228
+01:44:19,739 --> 01:44:24,330
+I want to point something out to you.
+
+1229
+01:44:24,330 --> 01:44:34,349
+In this view of the deep-learning model we
+went matrix multiply, matrix multiply, matrix
+
+1230
+01:44:34,349 --> 01:44:35,590
+multiply.
+
+1231
+01:44:35,590 --> 01:44:42,650
+Who wants to tell me how can you simplify
+a matrix multiply on top of a matrix multipy
+
+1232
+01:44:42,650 --> 01:44:44,530
+on top of a matrix multiply?
+
+1233
+01:44:44,530 --> 01:44:47,360
+What's that actually doing?
+
+1234
+01:44:47,360 --> 01:44:53,090
+A linear model on a linear model on a linear
+model is itself a linear model.
+
+1235
+01:44:53,090 --> 01:44:58,930
+So in fact, this whole thing could be turned
+into a single matrix multiply because it's
+
+1236
+01:44:58,930 --> 01:45:01,510
+just doing linear on top of linear on top
+of linear.
+
+1237
+01:45:01,510 --> 01:45:02,510
+[Time: 1.45 hour mark]
+
+1238
+01:45:02,510 --> 01:45:07,429
+So this clearly cannot be what deep-learning
+is really doing, because deep-learning is
+
+1239
+01:45:07,429 --> 01:45:10,150
+doing a lot more than a linear model.
+
+1240
+01:45:10,150 --> 01:45:12,430
+So what is deep-learning actually doing?
+
+1241
+01:45:12,430 --> 01:45:18,020
+What deep-learning is actually doing is at
+every one of these points where it says activations,
+
+1242
+01:45:18,020 --> 01:45:23,489
+with deep-learning we do one more thing, which
+is we put each of these activations through
+
+1243
+01:45:23,489 --> 01:45:27,650
+a non-linearity of some sort.
+
+1244
+01:45:27,650 --> 01:45:30,110
+There are various things we can use.
+
+1245
+01:45:30,110 --> 01:45:36,270
+Sometimes we'll use tanh, sometimes people
+use sigmoid, but most commonly these days
+
+1246
+01:45:36,270 --> 01:45:43,980
+people use max(0,x), which is called ReLU,
+or Rectified Linear.
+
+1247
+01:45:43,980 --> 01:45:52,850
+So when you see rectified linear activation
+function, people actually mean max(0,x).
+
+1248
+01:45:52,850 --> 01:46:25,500
+So if we took is Excel spreadsheet and added
+max(0,x) and we 
+
+1249
+01:46:25,500 --> 01:46:33,480
+replaced the activation with this for each
+layer, we now have a genuine modern deep-learning
+
+1250
+01:46:33,480 --> 01:46:36,600
+network.
+
+1251
+01:46:36,600 --> 01:46:43,270
+Interestingly it turns out that this kind
+of neural network is capable of approximating
+
+1252
+01:46:43,270 --> 01:46:48,310
+any given function.
+
+1253
+01:46:48,310 --> 01:46:54,119
+In the lesson, you'll see that there is a
+link to a fantastic tutorial by Michael Nielson
+
+1254
+01:46:54,119 --> 01:47:00,630
+on this topic.
+
+1255
+01:47:00,630 --> 01:47:05,580
+What he does is he shows you how, with exactly
+this kind of approach, where you put functions
+
+1256
+01:47:05,580 --> 01:47:13,250
+on top of functions, he actually let's you
+drag them up and down to see how you can change
+
+1257
+01:47:13,250 --> 01:47:15,550
+the parameters and see what they do.
+
+1258
+01:47:15,550 --> 01:47:21,190
+He gradually builds up so that once you have
+a function of a function of a function of
+
+1259
+01:47:21,190 --> 01:47:27,860
+this type, he shows you how you can create
+arbitrarily complex shapes.
+
+1260
+01:47:27,860 --> 01:47:34,210
+So using this incredibly simple approach where
+you have a matrix multiplication followed
+
+1261
+01:47:34,210 --> 01:47:40,720
+by a rectified linear (like max(0,x)) and
+stick that on top of each other on top of
+
+1262
+01:47:40,720 --> 01:47:45,920
+each other, that's actually what's going on
+in a deep learning neural network.
+
+1263
+01:47:45,920 --> 01:47:53,590
+And you will see in all of the deep neural
+networks we have created so far, we have always
+
+1264
+01:47:53,590 --> 01:48:00,849
+had this extra parameter "activation=" and
+generally you'll see "activation='relu'".
+
+1265
+01:48:00,849 --> 01:48:10,469
+That's what it's doing, it's saying after
+you do the matrix product, do a max(0,x).
+
+1266
+01:48:10,469 --> 01:48:18,260
+So what we need to do is we need to take our
+final layer, which has both a matrix multiplication
+
+1267
+01:48:18,260 --> 01:48:25,170
+and an activation function, and what we're
+going to do is we are going to remove it.
+
+1268
+01:48:25,170 --> 01:48:28,739
+And I'll show you why.
+
+1269
+01:48:28,739 --> 01:48:48,409
+If we look at our model, our VGG model, let's
+take a look at 
+
+1270
+01:48:48,409 --> 01:48:53,139
+it (vgg.model.summary()).
+
+1271
+01:48:53,139 --> 01:48:55,520
+What does the input look like?
+
+1272
+01:48:55,520 --> 01:49:02,290
+The very last layer is a dense layer, the
+very last layer is a linear layer.
+
+1273
+01:49:02,290 --> 01:49:09,560
+It seems weird therefore that in that previous
+section where we added an extra dense layer.
+
+1274
+01:49:09,560 --> 01:49:15,130
+Why would we add a dense layer on top of a
+dense layer, given that this dense layer has
+
+1275
+01:49:15,130 --> 01:49:18,489
+been tuned to find the 1000 ImageNet categories.
+
+1276
+01:49:18,489 --> 01:49:22,860
+Why you would you want to take that and add
+on top of it something that has been fine-tuned
+
+1277
+01:49:22,860 --> 01:49:23,900
+to find cats and dogs?
+
+1278
+01:49:23,900 --> 01:49:34,670
+How about we remove this and instead use the
+previous dense layer with its 4096 activations
+
+1279
+01:49:34,670 --> 01:49:38,989
+and use that to find our cats and dogs?
+
+1280
+01:49:38,989 --> 01:49:47,260
+So to do that, it's as simple as saying model.pop
+(that will remove the very last layer), and
+
+1281
+01:49:47,260 --> 01:49:56,090
+then we can go model.add and add in our new
+linear layer with 2 outputs, cat and dog.
+
+1282
+01:49:56,090 --> 01:49:58,050
+[Time 1.50 minute mark]
+
+1283
+01:49:58,050 --> 01:50:21,070
+So when we said "??vgg.finetune" earlier,
+here is the sourcecode - model.pop, model.add
+
+1284
+01:50:21,070 --> 01:50:28,510
+a dense layer with the correct number of classes.
+
+1285
+01:50:28,510 --> 01:50:44,659
+So it's basically doing a model.pop and model.add(Dense,..).
+
+1286
+01:50:44,659 --> 01:50:52,139
+So once we've done that we will now have a
+new model which is designed to calculate Cats
+
+1287
+01:50:52,139 --> 01:50:58,130
+vs Dogs, rather than designed to calculate
+ImageNet categories and then calculate Cats
+
+1288
+01:50:58,130 --> 01:50:59,330
+vs Dogs.
+
+1289
+01:50:59,330 --> 01:51:05,340
+So when we use that approach, everything else
+is exactly the same.
+
+1290
+01:51:05,340 --> 01:51:10,850
+We then compile it, giving it an optimizer.
+
+1291
+01:51:10,850 --> 01:51:13,150
+And then we can call model.fit.
+
+1292
+01:51:13,150 --> 01:51:20,720
+Anything where we want to use batches by the
+way we have to use something underscore generator.
+
+1293
+01:51:20,720 --> 01:51:27,570
+So model.fit_generator and we pass it in batches,
+and if we run it for 2 epochs, you can see
+
+1294
+01:51:27,570 --> 01:51:31,630
+we get 97.35.
+
+1295
+01:51:31,630 --> 01:51:36,100
+If we run it for a little bit longer, eventually
+we will get something quite a bit better than
+
+1296
+01:51:36,100 --> 01:51:39,909
+our previous linear model on top of ImageNet
+approach.
+
+1297
+01:51:39,909 --> 01:51:41,940
+In fact, we know we can.
+
+1298
+01:51:41,940 --> 01:51:46,460
+We got 98.3 with fine-tuning earlier.
+
+1299
+01:51:46,460 --> 01:51:53,040
+So that's the only difference between fine-tuning
+and adding an additional linear layer; we
+
+1300
+01:51:53,040 --> 01:51:57,060
+just do a pop first before we add.
+
+1301
+01:51:57,060 --> 01:52:03,850
+Once we calculate it, I would then go ahead
+and save the weights and then we can use that
+
+1302
+01:52:03,850 --> 01:52:05,770
+again in the future.
+
+1303
+01:52:05,770 --> 01:52:10,290
+So from here on in, you'll often find that
+after I get my fine-tuned model I will often
+
+1304
+01:52:10,290 --> 01:52:15,929
+go model.load_weights with 'finetune1.h5'
+because this is now something that we can
+
+1305
+01:52:15,929 --> 01:52:23,590
+use as a pretty good starting point for all
+of our future Dogs and Cats models.
+
+1306
+01:52:23,590 --> 01:52:28,050
+Okay, I think that's about everything that
+I wanted to show you for now.
+
+1307
+01:52:28,050 --> 01:52:32,119
+For anybody who is interested in going futher
+during the week there is one more section
+
+1308
+01:52:32,119 --> 01:52:36,449
+here in this lesson showing you how you can
+train more than just the last layer.
+
+1309
+01:52:36,449 --> 01:52:39,420
+But we'll look at that next week as well.
+
+1310
+01:52:39,420 --> 01:52:45,739
+So during this week, the assignment is very
+similar to last week's assignment, but just
+
+1311
+01:52:45,739 --> 01:52:46,739
+take it further.
+
+1312
+01:52:46,739 --> 01:52:52,260
+Now that you actually know what's going on
+with fine-tuning and with linear layers, there's
+
+1313
+01:52:52,260 --> 01:52:53,389
+a couple things you can do.
+
+1314
+01:52:53,389 --> 01:52:58,500
+One is, for those of you who have not yet
+entered the Cats vs Dogs competition, get
+
+1315
+01:52:58,500 --> 01:53:00,010
+your entry in.
+
+1316
+01:53:00,010 --> 01:53:05,719
+And then have a think about everything you
+know about the evaluation function, the categorical
+
+1317
+01:53:05,719 --> 01:53:12,219
+cross-entropy loss function, fine-tuning and
+see if you can find ways to make your model
+
+1318
+01:53:12,219 --> 01:53:13,219
+better.
+
+1319
+01:53:13,219 --> 01:53:16,300
+And see how high up the leaderboard you can
+get using this information.
+
+1320
+01:53:16,300 --> 01:53:21,330
+Maybe you can push yourself a little further,
+read some of the other forum threads on Kaggle,
+
+1321
+01:53:21,330 --> 01:53:28,239
+on our forums and see if you can get the best
+result you can.
+
+1322
+01:53:28,239 --> 01:53:31,760
+If you really want to push yourself then,
+see if you can do the same thing by writing
+
+1323
+01:53:31,760 --> 01:53:39,600
+all of the code yourself, don't use our fine-tune
+at all, don't use our notebooks at all.
+
+1324
+01:53:39,600 --> 01:53:45,099
+See if you can build it from scratch so that
+you really understand how it works.
+
+1325
+01:53:45,099 --> 01:53:50,600
+And then, of course, if you want to go further,
+see if you can enter not just the Dogs vs
+
+1326
+01:53:50,600 --> 01:53:54,360
+Cats competition but see if you can enter
+one of the other competitions we talk about
+
+1327
+01:53:54,360 --> 01:54:10,969
+on our website, such as Galaxy Zoo, or The
+Plankton competition, or the State Farm Distracted
+
+1328
+01:54:10,969 --> 00:00:00,000
+Driver competition.
+

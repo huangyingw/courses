@@ -1,0 +1,1568 @@
+1
+00:00:00,060 --> 00:00:07,980
+Hi and welcome To Lesson [one] of this Deep Learning MOOC. Thanks for Joining Us I'm Jeremy Howard and I'm Rachel Thomas
+
+2
+00:00:09,490 --> 00:00:14,670
+We're The People who put This together you'll be Seeing my face in Front of the Camera Most of the Time?
+
+3
+00:00:15,219 --> 00:00:17,219
+You'll Be Hearing Rachel's Voice However
+
+4
+00:00:17,440 --> 00:00:23,009
+[I'll] be asking Questions that are Coming Through a, slack Channel asked by students in the In-Person Version of this Course
+
+5
+00:00:23,890 --> 00:00:26,549
+So we thought before We Started We Should Tell you a little bit About?
+
+6
+00:00:26,550 --> 00:00:29,250
+What to Expect and Maybe you get to know Us a [little] bit
+
+7
+00:00:29,769 --> 00:00:31,769
+My Background is Really in
+
+8
+00:00:33,190 --> 00:00:39,000
+Coding and Data I spent 10 Years of Management Consulting and 10 Years Running Startups
+
+9
+00:00:39,399 --> 00:00:43,859
+Throughout That [Time] I've Been using Data and Machine [Learning] to try to solve Problems
+
+10
+00:00:44,440 --> 00:00:50,160
+My Backgrounds A lot more Academic and Theoretical I have a Phd in Math and Then I worked as a quant
+
+11
+00:00:50,530 --> 00:00:53,699
+Later as A software [Engineer] and Data scientist [-] at Uber
+
+12
+00:00:54,940 --> 00:00:58,320
+[One] of the Most fun exciting Parts of my [life]
+
+13
+00:00:58,320 --> 00:01:02,099
+Was when [I] spent some Time Really Competing Heavily in Capital Competitions [I]?
+
+14
+00:01:02,320 --> 00:01:06,659
+Was Really Pleased to win some of Those Competitions and Get to the Top of the leaderboard and
+
+15
+00:01:06,760 --> 00:01:11,699
+I'm hoping to show you guys during this Course some of the techniques that I used to do that
+
+16
+00:01:11,880 --> 00:01:17,159
+I think the techniques that allowed When [Cackled] Competitions are The Same as the techniques that allow you to create
+
+17
+00:01:17,290 --> 00:01:20,639
+Great Results on your own Models in Solving your own Problems?
+
+18
+00:01:23,619 --> 00:01:28,529
+We also both love Teaching and so type Calculus 1 [&] 2
+
+19
+00:01:28,530 --> 00:01:30,400
+When I was in Graduate [School] and?
+
+20
+00:01:30,400 --> 00:01:33,329
+Then I later Left my job as a software Engineer to teach
+
+21
+00:01:33,400 --> 00:01:39,269
+Full-Stack Software Development Women at hack rate Academy for a year and a half I think that's Really cool Rachel
+
+22
+00:01:39,270 --> 00:01:43,920
+was a quant and then she Worked with Both the Data scientist and a source tech Engineer uber
+
+23
+00:01:44,530 --> 00:01:50,909
+But She realized that one of the highest Leverage Things you can do is to teach and it's great Fun - I
+
+24
+00:01:51,189 --> 00:01:55,258
+Feel the Same Way even When I was Running Startups I was Creating?
+
+25
+00:01:56,380 --> 00:02:04,380
+Course Content online for Example on the Left here is an AngularJS tutorial that I originally created from my colleagues at Kaggle
+
+26
+00:02:04,630 --> 00:02:08,220
+But I recorded it and put it online and it's Had over 200,000 views
+
+27
+00:02:09,098 --> 00:02:12,179
+Makes you Feel Really good to [know] that People are Learning
+
+28
+00:02:12,880 --> 00:02:16,029
+From Some of the Things That I found Really Helpful Myself
+
+29
+00:02:19,040 --> 00:02:22,749
+so this is a Quote from paul lockhart who, was A and
+
+30
+00:02:23,720 --> 00:02:26,740
+He was Actually working as a primary School math teacher got
+
+31
+00:02:26,740 --> 00:02:32,079
+His Phd in Math at Columbia and Became A math Professor at Brown and then Left to go back to teaching Primary School
+
+32
+00:02:32,150 --> 00:02:33,220
+And he's written A
+
+33
+00:02:33,220 --> 00:02:41,050
+Wonderful Asset Called A mathematicians will meant on everything that's Horrible About how Mathematics Is Taught in The United States Yeah I think that that
+
+34
+00:02:41,360 --> 00:02:43,960
+Essay has Been Really Influential to Both Rachel and I
+
+35
+00:02:44,480 --> 00:02:47,139
+Although Rachel Stuck With her Math Education for
+
+36
+00:02:47,660 --> 00:02:54,279
+Decades Longer Than I did We Both Definitely Felt like modern Mathematics education is not done well
+
+37
+00:02:54,980 --> 00:02:59,529
+Paul Lockhart Uses a Wonderful Analogy about Imagine if With Music
+
+38
+00:02:59,660 --> 00:03:04,900
+We didn't Allow Children To sing or play Instruments until they had spent
+
+39
+00:03:05,360 --> 00:03:12,820
+Years and Even Decades Studying Set Theory and Music Notation and Could transcribe Scales and Only then Once They
+
+40
+00:03:12,820 --> 00:03:18,609
+Were in Their 20s, We would let them create Music he Says that's Exactly what, we're Doing Is Mathematics but They?
+
+41
+00:03:18,610 --> 00:03:20,300
+Don't We Should Let People kind of
+
+42
+00:03:20,300 --> 00:03:26,439
+Play and Create and Build Patterns With It and Something [very] Similar happens with Deep Learning and how its Taught
+
+43
+00:03:27,410 --> 00:03:32,049
+In fact One of my heroes is a guy Called David Perkins who at
+
+44
+00:03:32,120 --> 00:03:34,300
+Harvard Has Created some Really
+
+45
+00:03:34,700 --> 00:03:41,409
+Interesting Research About effective Educational Techniques and he Is very Similar Analogy to lockhart that he [Talks] About
+
+46
+00:03:42,050 --> 00:03:45,339
+Baseball Imagine if the way you like Baseball
+
+47
+00:03:45,340 --> 00:03:47,340
+Was that You Never saw A game of Baseball?
+
+48
+00:03:47,360 --> 00:03:52,929
+But Instead you learned About how to SKetch your baseball and you [learnt] the physics [a] Parabola and you learn Every Aspect
+
+49
+00:03:53,120 --> 00:03:59,410
+of Baseball and Then After 20 Years of Study Should be Considered Good Enough to go and Actually Watch your first Game
+
+50
+00:04:00,020 --> 00:04:06,549
+[We] tend to think that This Is Ralph as A way that most mathematics Perhaps Particularly Including Deep Learning is Really Taught
+
+51
+00:04:08,090 --> 00:04:09,980
+so, we
+
+52
+00:04:09,980 --> 00:04:13,480
+Decided When, we set up a, research lab that Say I that the first Thing
+
+53
+00:04:13,480 --> 00:04:20,259
+We would do Would be to try and Fill this need and Particularly We Decided to Focus on Deep Learning because?
+
+54
+00:04:20,260 --> 00:04:22,260
+We both Think That Deep Learning is the?
+
+55
+00:04:22,700 --> 00:04:26,109
+Most exciting Technology that, We have ever Seen?
+
+56
+00:04:26,410 --> 00:04:32,860
+We think it's going to be more transformative Than Even Than the Internet and so the more People who Can Participate the Better
+
+57
+00:04:33,530 --> 00:04:39,010
+Entering has Called it the new Electricity so kind of to Say that it's going to have the Impact on society That Electricity has
+
+58
+00:04:40,760 --> 00:04:41,870
+so
+
+59
+00:04:41,870 --> 00:04:48,190
+Some of The Kinds of Problems we've Seen With Technical change like These and I just want to say we're Introducing that to tell you?
+
+60
+00:04:48,190 --> 00:04:50,589
+That This Course Is Taught in A very Different Style and so
+
+61
+00:04:50,590 --> 00:04:55,750
+We want to Kind of set your Expectations Ahead of Time and motivate why? It's so different how, We teach it Here?
+
+62
+00:04:56,720 --> 00:04:58,030
+And One is that a lot
+
+63
+00:04:58,030 --> 00:05:05,619
+[of] them Existing Deep Learning Materials are very Math Centric and even as a mathematician and someone who loves Math I found them to be
+
+64
+00:05:06,110 --> 00:05:07,940
+Pretty Unhelpful for
+
+65
+00:05:07,940 --> 00:05:15,520
+Actually Building and Creating Practical Applications in Fact Every Time I see Somebody Ask on A forum or on Hacker News Whatever
+
+66
+00:05:16,130 --> 00:05:20,619
+What do I [need] in Order to get Into Deep Learning a, whole Bunch of People Replied by Saying
+
+67
+00:05:20,620 --> 00:05:26,860
+Well First you need Five Years of Real Analysis and Vector Analysis and then you need to study Probability and Statistics
+
+68
+00:05:27,170 --> 00:05:34,929
+And bla bla bla bla bla and it Really Comes across to me [as] something Which is all About being exclusive Rather than
+
+69
+00:05:35,360 --> 00:05:37,749
+Inclusive so that's why, We have This Little?
+
+70
+00:05:39,050 --> 00:05:40,220
+Thing
+
+71
+00:05:40,220 --> 00:05:45,190
+Making Neural Nets and cool again it's kind of out Yeah I slogan yes [Ai] Slogan
+
+72
+00:05:45,620 --> 00:05:52,570
+We're all About not being exclusive but About making Things as Simple as [Possible] but Never About
+
+73
+00:05:53,150 --> 00:05:54,410
+Dumbing it Down
+
+74
+00:05:54,410 --> 00:05:56,150
+Right
+
+75
+00:05:56,150 --> 00:05:58,150
+Another Way that Kind of
+
+76
+00:05:58,490 --> 00:06:06,160
+Technical Education Fails Is what David Perkins and the Harvard Professor Jeremy Mentioned a moment Ago called Element itis
+
+77
+00:06:06,650 --> 00:06:09,339
+And that's that often Masked Us
+
+78
+00:06:09,340 --> 00:06:10,250
+[of] so much
+
+79
+00:06:10,250 --> 00:06:11,870
+It teaches Kind of each
+
+80
+00:06:11,870 --> 00:06:17,739
+separate Element and it's only at the end when you've learned all the Elements Needed that you Can put them Together and See the whole
+
+81
+00:06:17,740 --> 00:06:21,730
+Thing and That's Kind of what was going on in That Baseball Analogy and that happens in A lot
+
+82
+00:06:21,730 --> 00:06:22,900
+Of Deep Learning it's like you know
+
+83
+00:06:22,900 --> 00:06:27,999
+We need to teach you Probability Theory and We need to teach you Information Theory and Only Way Later
+
+84
+00:06:28,000 --> 00:06:32,260
+On we're Going to Let you put it together you can think of it as being depth first rather than
+
+85
+00:06:32,480 --> 00:06:38,080
+breadth-first. If you like so the traditional depth-first approach, means that you as a student have to trust that at
+
+86
+00:06:38,080 --> 00:06:43,979
+some point all these things are going to come together and turn into something that's genuinely useful. I
+
+87
+00:06:44,469 --> 00:06:51,509
+think with this breadth-first approach you Still have to trust this Different kind of trust which Is that it's okay [that]
+
+88
+00:06:51,909 --> 00:06:59,489
+When, We first Show you an End-To-end Process that you don't Deeply Understand Every Part but [that] you are able to actually
+
+89
+00:06:59,490 --> 00:07:00,669
+do Useful Things
+
+90
+00:07:00,669 --> 00:07:06,179
+From The very first Lesson and [that] as the Lessons go Along you're Going to get More and More in Depth Understanding
+
+91
+00:07:06,279 --> 00:07:10,709
+Of each Piece and Two ways that the Element Titus or the Depth-First?
+
+92
+00:07:11,169 --> 00:07:15,568
+Approach Fails Are One is Motivation A lot of Students Kind, of Give Up because they
+
+93
+00:07:15,569 --> 00:07:18,148
+Don't have the Motivation of Seeing how are These going to fit Together
+
+94
+00:07:18,300 --> 00:07:24,359
+And then Secondly it's Harder to get the like you, don't have the Contacts when, you're Learning all These discrete Elements and you
+
+95
+00:07:25,180 --> 00:07:27,809
+Can't Learn How They're Going to fit Into the Process until Later
+
+96
+00:07:28,240 --> 00:07:32,939
+Right and in Fact This goes together With the idea of using A code Centric
+
+97
+00:07:33,129 --> 00:07:38,998
+Approach Instead of A math Centric Approach with A code Centric Approach and Looking at the whole Game that Is an End-To-end
+
+98
+00:07:39,369 --> 00:07:44,159
+Machine Learning Process From The very start it means that you can do Experiments you can
+
+99
+00:07:44,159 --> 00:07:49,708
+[Actually] Run Experiments and See what Goes in and out of each Part of the System and Build Up that Intuition
+
+100
+00:07:50,259 --> 00:07:54,718
+And if This whole Game Analogy I'm intrigued to David Perkins has a book Called Making Learning
+
+101
+00:07:54,719 --> 00:07:58,289
+Holes Where he goes Into A lot more Detail About it I love That Book
+
+102
+00:07:59,080 --> 00:08:01,979
+So then not not only are We going to be Showing you?
+
+103
+00:08:02,379 --> 00:08:08,879
+End-To-end Processes From This very First Lesson but These Processes are Going to not going to Just end up with good enough results
+
+104
+00:08:09,219 --> 00:08:15,539
+Nearly all of the Deep Learning educational Materials I've Seen so far get you to a point Where
+
+105
+00:08:16,029 --> 00:08:20,159
+You Can Kind of get an okay, ish result now the whole Point of Deep Learning
+
+106
+00:08:20,199 --> 00:08:25,288
+Is that you can get State-Of-The-Art results and so in the very first Piece of Code, we're going to run
+
+107
+00:08:25,289 --> 00:08:28,528
+We're Going to run a piece of code Which gives you a State-Of-The-Art Result
+
+108
+00:08:29,080 --> 00:08:35,580
+We know something is A state of [the] [Art] result If It is Better than other Approaches That People have Tried
+
+109
+00:08:35,799 --> 00:08:40,259
+The Best way to know that is to try [Things] on a [Kaggle] Competition Having
+
+110
+00:08:40,260 --> 00:08:44,620
+Been The President and Chief scientist of [Kaggle] I saw again and again That Every [Kaggle]
+
+111
+00:08:44,740 --> 00:08:50,760
+Competition Beat All Previous Academic States State of the Art results so very often in This Course
+
+112
+00:08:50,800 --> 00:08:54,719
+We're Actually going to use [kaggle] benchmarks and See if We Can Beat Because
+
+113
+00:08:54,720 --> 00:08:57,480
+We know if We Can then that's truly A, well best?
+
+114
+00:09:01,540 --> 00:09:04,589
+So this is from Actually A very Good Book
+
+115
+00:09:04,899 --> 00:09:08,189
+It's the Young good Fellow [Yoshi] of ngo Deep Learning Book
+
+116
+00:09:08,260 --> 00:09:15,179
+But it's A very Good math Book which teaches you the math of Deep Learning and so in This Book when they Say?
+
+117
+00:09:15,640 --> 00:09:22,049
+Here is how We gain some Intuition in how to back Propagation Through Time Works this is how They Develop Intuition?
+
+118
+00:09:22,839 --> 00:09:26,159
+Rachel as a math Phd did you find this Helped your Intuition
+
+119
+00:09:27,550 --> 00:09:32,310
+will Have A very Different Approach to Intuition so this is a good book if you're Interested in Math and
+
+120
+00:09:32,470 --> 00:09:35,130
+TheoreMs in This Course, We're Really Going to be Focused on Code
+
+121
+00:09:36,160 --> 00:09:40,110
+[in] fact This is what [Rachel] and I put together When
+
+122
+00:09:40,110 --> 00:09:47,190
+We were Trying to explain Back Prop and Specifically Stochastic Gradient descent and the Use of Back Prop There, was We created a Spreadsheet?
+
+123
+00:09:48,160 --> 00:09:53,190
+And we Found each Time that We Taught our Students in The In-Person Course Through A?
+
+124
+00:09:53,190 --> 00:09:59,579
+Spreadsheet They Could See Every Single Piece of what was going on every single Intermediate result it [was] very
+
+125
+00:09:59,579 --> 00:10:06,689
+Easy for Them to Experiment With and so one of the unusual things, We do Is that you'll See That Nearly Every Major
+
+126
+00:10:07,959 --> 00:10:13,379
+Idea is presented at some Point using a spreadsheet, We present it in Many Different Ways but Spreadsheets?
+
+127
+00:10:14,050 --> 00:10:17,789
+Diagrams and Code Three of the key Ways that We present These ideas?
+
+128
+00:10:18,010 --> 00:10:22,020
+We believe This is The first Deep Learning Course in The World to implement A?
+
+129
+00:10:22,420 --> 00:10:29,070
+Convolutional Neural Network in an Excel Spreadsheet [and] [also] as you See from this Page not Just to [guess] The Gradient descent but A
+
+130
+00:10:29,320 --> 00:10:34,229
+Degrade RMSprop [Adam] and Even [Eve] Which just Came out A few Weeks ago
+
+131
+00:10:34,750 --> 00:10:36,750
+Or modern examples of
+
+132
+00:10:38,529 --> 00:10:40,529
+Accelerated Sgd Approaches
+
+133
+00:10:42,130 --> 00:10:47,849
+so I think everything you Really need to know about the Course Comes in This very first Piece of Code [that] you See
+
+134
+00:10:48,550 --> 00:10:53,250
+And This very First Piece of Code [that] you see you can see that there's a number of Things Going on?
+
+135
+00:10:53,820 --> 00:11:00,359
+The First Is that this Piece of Code Shows not Just how to complete a project but
+
+136
+00:11:00,360 --> 00:11:05,849
+How to get a State-Of-The-Art Result on a project this Particular Piece [of] Code Gives you
+
+137
+00:11:06,220 --> 00:11:09,100
+97% Accuracy in Terminating Cats Versus Dogs
+
+138
+00:11:09,950 --> 00:11:17,559
+As Recently as about Five Years Ago [see] State of the Art for this Particular Problem, was About [80%] Accuracy
+
+139
+00:11:19,130 --> 00:11:22,180
+It's also an Example of Showing why
+
+140
+00:11:22,520 --> 00:11:27,970
+Working With Code Is so interesting rather than Showing Math
+
+141
+00:11:28,760 --> 00:11:33,580
+What we're Showing here Is Some working Code and I'll give you an example of what that means you Can?
+
+142
+00:11:33,580 --> 00:11:35,800
+Do so the Code Environment that
+
+143
+00:11:35,800 --> 00:11:42,279
+We're Working in Is something called Jupiter Notebook and you'll be using This in Every Single Lesson Throughout the Course and
+
+144
+00:11:42,680 --> 00:11:45,909
+Enjoy the Notebook as you can See, we Provide you with?
+
+145
+00:11:47,390 --> 00:11:52,990
+[Prose] and Information About What's Going on and Redraw Pictures and at any [Point] in Time
+
+146
+00:11:53,360 --> 00:11:57,339
+You Can Take a look at, one of These results and you can
+
+147
+00:12:00,740 --> 00:12:01,900
+You Can Take a look at
+
+148
+00:12:01,900 --> 00:12:06,759
+One of These results and you Can Look to see what's going on Behind the Scenes [so] for example in this case
+
+149
+00:12:06,760 --> 00:12:08,480
+We're Running something Called
+
+150
+00:12:08,480 --> 00:12:12,759
+[Ggg] Predict and we're Getting back some Probabilities and you might Wonder
+
+151
+00:12:12,760 --> 00:12:19,450
+Well what's [VGG] That Predicts Actually Doing so at any Time you Can Take Anything and put Two Question Marks on The front and
+
+152
+00:12:20,240 --> 00:12:23,770
+Run that Piece of Code and it will actually Show you the
+
+153
+00:12:24,350 --> 00:12:31,869
+Full Documentation and Source Code of what You just ran Now in this case it's Actually running a Function that We wrote for you?
+
+154
+00:12:32,690 --> 00:12:36,760
+One of the other Different Things About this Course Is that we're Not [Just] Showing you how
+
+155
+00:12:36,980 --> 00:12:44,619
+Existing Libraries Work But Every Time, We Found that using somebody Else's library Takes more than four or five lines of Code?
+
+156
+00:12:45,260 --> 00:12:49,030
+We would Make Sure We Found a way to do it Easier so Generally Speaking?
+
+157
+00:12:49,070 --> 00:12:54,640
+We show you how to do Things in One line of Code and then you Can Look Behind the Scenes and See what the lines
+
+158
+00:12:54,640 --> 00:12:57,699
+of Code Are Actually Doing so for example in this Case
+
+159
+00:12:58,190 --> 00:13:03,610
+The Predict Method is Running some other Predict Method Called Model Dot Predict and
+
+160
+00:13:04,250 --> 00:13:11,590
+So then what I always Encourage [People] to do is to do some Experiments so what does Model dot Predict Actually, do
+
+161
+00:13:12,380 --> 00:13:18,249
+One Thing that you can do in Chip your Notebook at any Time is to press Shift Tab a couple of Times
+
+162
+00:13:19,180 --> 00:13:23,380
+When you Press Shift Tab first Time it Pops Up it tells you what
+
+163
+00:13:24,020 --> 00:13:28,719
+Parameters you need to Pass This Method and it, also tells you what the Method Actually Does
+
+164
+00:13:30,830 --> 00:13:32,270
+If
+
+165
+00:13:32,270 --> 00:13:34,839
+You Press it Three Times it then Gives you
+
+166
+00:13:34,840 --> 00:13:39,460
+Additional Information About What each of Those arguments Are and What they're Expecting and what it returns
+
+167
+00:13:40,250 --> 00:13:41,870
+So it's really, Nice That
+
+168
+00:13:41,870 --> 00:13:47,979
+Using This Method you Can find out Exactly what's going on Behind the Scenes [and] do some Experiments and
+
+169
+00:13:48,110 --> 00:13:50,560
+So then [if] Example you could find out okay?
+
+170
+00:13:50,560 --> 00:13:55,089
+Well what is the Shape what Is the Size and Shape of the Array [that] This Thing returns?
+
+171
+00:13:56,180 --> 00:14:00,310
+[What] are The first Four Elements the Classes that are in This
+
+172
+00:14:01,760 --> 00:14:05,229
+Object and so Forth and This is really the way to
+
+173
+00:14:06,650 --> 00:14:08,650
+Use This Style of Teaching
+
+174
+00:14:08,930 --> 00:14:13,089
+Effectively it's to have the Code in Front of you all the Time and in
+
+175
+00:14:13,220 --> 00:14:18,130
+Every Line Look and See what's being Cuffed in What's Coming out what Else Could?
+
+176
+00:14:18,130 --> 00:14:24,399
+We do with [that] and then even Look at the Documentation so VGG Model is Apparently a
+
+177
+00:14:24,860 --> 00:14:29,110
+[Keras] Model Dot sequential so if We Would Just Copy that Into
+
+178
+00:14:30,650 --> 00:14:32,650
+[Google]
+
+179
+00:14:36,410 --> 00:14:42,670
+Then, We Can click on the first item and Find out Exactly what's going on what Is being Used here what are the other Methods
+
+180
+00:14:42,670 --> 00:14:46,400
+That This Could Take and then, We Can try Calling some of These other Methods
+
+181
+00:14:46,400 --> 00:14:48,300
+and See what kind of Results We get
+
+182
+00:14:48,300 --> 00:14:52,210
+so Really what We're Trying to do Is in the two hours of each Lesson
+
+183
+00:14:52,370 --> 00:14:56,649
+We're Trying to give you enough Information to get you Started With your own
+
+184
+00:14:57,200 --> 00:15:03,549
+Experiments, We're Not Trying to teach you everything and we're Certainly not Assuming that the Lesson Can stand alone
+
+185
+00:15:04,220 --> 00:15:09,070
+And we'll Talk more About this in A moment but The Videos are Just a small part of the Course but the Ipython
+
+186
+00:15:09,200 --> 00:15:13,989
+Notebooks and The [Coder] Huge Resource and We'll Talk About some of the other Resources that, We have Available for you?
+
+187
+00:15:14,690 --> 00:15:18,219
+But the important Thing to realize With These six lines of Code
+
+188
+00:15:18,220 --> 00:15:23,800
+Is that you Can run this for Anything not Just A dog versus Cat but These first six lines of Code you learn
+
+189
+00:15:23,870 --> 00:15:26,560
+Well Actually as it Says here Work for any Image Recognition
+
+190
+00:15:26,720 --> 00:15:31,210
+[Task] With Any Number of Categories so if you can get This far [in] Today's Lesson
+
+191
+00:15:31,430 --> 00:15:32,740
+Then You fly to, do
+
+192
+00:15:32,740 --> 00:15:39,669
+One of the most important Types of Computer Vision Which is image Classification or any Number of Categories for any Type of images
+
+193
+00:15:42,650 --> 00:15:45,490
+As Rachel Said we've Actually run this Course Already?
+
+194
+00:15:46,460 --> 00:15:50,499
+Specifically what you're Going to be Seeing are The recorded Lessons from an Interesting Course
+
+195
+00:15:50,900 --> 00:15:53,740
+And we thought it'd be Helpful for you to see what some of our?
+
+196
+00:15:53,810 --> 00:15:59,289
+Students Said About That [Impacts] and Cost Because it might Help you, should be A more effective Learner
+
+197
+00:16:00,950 --> 00:16:05,950
+And I do want to say I'm again because this Course Is Taught in Such a Different Way that
+
+198
+00:16:06,470 --> 00:16:13,899
+It Takes some face Kind of that this new Technique and is Worth Trying and Kind of sticking With but you can See that
+
+199
+00:16:14,810 --> 00:16:20,739
+Almost all the students Said that this, was that the Homework assignments Were very Helpful or?
+
+200
+00:16:21,980 --> 00:16:24,370
+Extremely Helpful in Understanding the Material
+
+201
+00:16:24,950 --> 00:16:29,200
+and the class resources Which includes the Wiki the scripts that
+
+202
+00:16:29,200 --> 00:16:31,450
+We give you [our] Forums our Slack Channel?
+
+203
+00:16:31,820 --> 00:16:36,610
+We're very Helpful or extremely Helpful and I want to [moshe] [Andrey] and We wanted to Mention that because
+
+204
+00:16:36,860 --> 00:16:41,409
+Rachel and I [are] Both being Kind of Coursera Addicts in the Past and Udacity [Addicts] and
+
+205
+00:16:42,170 --> 00:16:47,889
+Generally Speaking, We all often Watch a video at, [One-And-A-Half] [Speed] or two Speed and Just dip Through them
+
+206
+00:16:48,830 --> 00:16:55,449
+This Is not Designed to be Possible to do that this Way this is designed that you need to use the Homework
+
+207
+00:16:55,520 --> 00:16:59,829
+Assignments and The Class Resources so as you can [See] from the people who Have Already Been Through this Class
+
+208
+00:17:00,200 --> 00:17:03,670
+They Are Actually Finding These are Really Important Parts of the Overall Course
+
+209
+00:17:03,860 --> 00:17:08,050
+If each Video is giving you you're Kind of Seeing an end to end Process of
+
+210
+00:17:08,270 --> 00:17:13,239
+Solving A real Problem with Deep Learning and that means that There's not Though A separate Video on
+
+211
+00:17:13,369 --> 00:17:19,449
+Reddit This is Everything you need [to] know About AWs in your environment and This is everything you need to know about
+
+212
+00:17:19,670 --> 00:17:25,210
+This Piece of Code but Rather You're Kind of Seeing The end end Process but You'll See it again and again
+
+213
+00:17:25,520 --> 00:17:30,820
+Throughout The Lessons Now it's [okay] if you're Coming, Into this Course With either A very large
+
+214
+00:17:30,820 --> 00:17:34,269
+Amount Or A very Small Amount of Data science Background
+
+215
+00:17:35,000 --> 00:17:39,609
+Everybody in The [In-Person] Course Simply Had to have had at least a year [of] Coding [Experience]
+
+216
+00:17:40,520 --> 00:17:43,209
+[Even] With [A] very wide Variety in Background
+
+217
+00:17:44,000 --> 00:17:50,440
+[Nearly] Everybody Said They Found the Pace About right for Them and the Reason [for] that I think Is that we really?
+
+218
+00:17:50,440 --> 00:17:54,100
+Give People the Ability to pick up as much as little as they want
+
+219
+00:17:54,440 --> 00:17:58,419
+Through The Forums if You want to dig very very Deep Into
+
+220
+00:17:58,460 --> 00:18:03,009
+Advanced Topics you can Or if Absolutely everything is new to you
+
+221
+00:18:03,380 --> 00:18:08,710
+[Then] [That's] Fine Too there'll Be More than enough to do Just to get Through the basic Parts of your assignments and
+
+222
+00:18:09,050 --> 00:18:15,310
+Of Course on the Forums Would be very Happy to help you with all [of] your Questions There and if You are more Advanced
+
+223
+00:18:15,310 --> 00:18:21,190
+We really Appreciate your Help in Adding new Material to the Wiki answering others Questions on the Forums?
+
+224
+00:18:21,590 --> 00:18:26,980
+People Started Their Own Threads on the Forums Around Kind of Outside Related topics that they, were interested in
+
+225
+00:18:27,740 --> 00:18:30,070
+There are A Lot of Different Ways to be involved [so]
+
+226
+00:18:30,380 --> 00:18:34,960
+[Here's] A couple of Quotes We got from People after they completed the in Percent Clause and
+
+227
+00:18:35,300 --> 00:18:36,400
+This Is One That
+
+228
+00:18:36,400 --> 00:18:43,540
+We heard Again [and] Again so for example This Person Says I personally Fell Into the Habit of Watching the lectures too much and
+
+229
+00:18:43,940 --> 00:18:48,070
+Googling Definitions and Concepts and so Forth Too much Without Running the Code
+
+230
+00:18:48,320 --> 00:18:53,860
+At first I thought that I should Read the Code Quickly and then Spend Time Researching the Theory Behind it
+
+231
+00:18:54,320 --> 00:19:01,239
+in Retrospect I should have spent the Majority of my Time on the actual Code in the Notebooks Instead in Terms of Running It and
+
+232
+00:19:01,250 --> 00:19:06,610
+Seeing what goes Into It and Seeing what Comes out of it and [Actually] I know You've Seen similar things in your past
+
+233
+00:19:06,890 --> 00:19:13,300
+Teaching Error That I'Ve Seen This that in Teaching Called [Back] Software development and Students and I also know that I've Been Guilty of
+
+234
+00:19:13,580 --> 00:19:14,630
+It Myself
+
+235
+00:19:14,630 --> 00:19:15,650
+Sometimes
+
+236
+00:19:15,650 --> 00:19:21,190
+And that was that Students Would Sometimes Kind of Rather Than start Their Project they Would Keep Doing more and more Research
+
+237
+00:19:21,560 --> 00:19:26,590
+Reading More and More Tutorials and Feeling Like There's More and More They need to learn before They Can Start Coding
+
+238
+00:19:27,140 --> 00:19:29,090
+and two problems With that are
+
+239
+00:19:29,090 --> 00:19:33,610
+One and i mean [you] want to [have] some Background before you Begin but There's a point Where you [just] need to start Coding
+
+240
+00:19:34,160 --> 00:19:37,300
+Because you Can't know Exactly what you're Going to need until you start
+
+241
+00:19:37,400 --> 00:19:41,710
+Coding and Building and Seeing What Errors you get and what things you don't know how to do
+
+242
+00:19:42,530 --> 00:19:47,710
+and then Secondly the Test of Whether you understand something is whether you Can build with It [and]
+
+243
+00:19:47,860 --> 00:19:54,000
+So kind of Reading Tutorials it's very Possible to think, "Oh, I understand all this" -- but it's not Till you're writing Code Yourself
+
+244
+00:19:55,280 --> 00:19:57,760
+Kind of Seeing what your error rates Are and What
+
+245
+00:19:57,840 --> 00:20:01,340
+what's Working and what's not that you Know Whether or not to Really Understand Something
+
+246
+00:20:01,340 --> 00:20:05,940
+yeah so when I saw Students at the study Sessions during the week at
+
+247
+00:20:06,340 --> 00:20:11,970
+Usf I would Keep Going and the Same Thing again and again Just don't stop and Wait Till you Feel Ready to Code
+
+248
+00:20:12,250 --> 00:20:13,690
+Start Coding Now
+
+249
+00:20:13,690 --> 00:20:15,310
+And it's Through [that] Coding
+
+250
+00:20:15,310 --> 00:20:20,039
+[Experience] that you're Actually going to Figure out what you don't know and what you do know and Joey has developed the
+
+251
+00:20:20,200 --> 00:20:22,200
+Intuition By Running Lots of Experiments
+
+252
+00:20:23,470 --> 00:20:25,470
+[This] is Another Interesting Quote
+
+253
+00:20:25,930 --> 00:20:27,930
+From Somebody Talking About
+
+254
+00:20:28,060 --> 00:20:33,839
+This Learning Style He Said it's Been very Interesting Learning from Somebody who IS an Entrepreneur that
+
+255
+00:20:33,840 --> 00:20:39,660
+We make A very No-Nonsense Approach to getting Things Done very Hands-on very Smart and driven
+
+256
+00:20:39,910 --> 00:20:46,019
+Your usual Career Instructor is Quite the Opposite so it's Been Refreshing and Even Somewhat Shocking
+
+257
+00:20:46,540 --> 00:20:52,199
+This is Possibly understating things A bit it can be that We heard from quite A few People [at] the start it was
+
+258
+00:20:52,480 --> 00:20:59,430
+Somewhat Shocking To find so Many Things Taught so Quickly and it Kind of
+
+259
+00:21:00,160 --> 00:21:06,749
+Can Seem like Such a high level but of Course by the end of the seven Weeks and Assuming that each Time you're Putting 10
+
+260
+00:21:07,210 --> 00:21:09,660
+Hours Into Those Weeks you've Actually got
+
+261
+00:21:10,600 --> 00:21:18,180
+Many Many Full End-To-end Processes under your belt so by the end of it you're Actually going to Develop A very Deep and complete Understanding
+
+262
+00:21:19,420 --> 00:21:23,219
+Yeah I know after the first Lesson I heard a number of Students Kind of Say Things like
+
+263
+00:21:23,220 --> 00:21:28,470
+Oh I i didn't really get the Details from that Lesson and you know I feel like I need to Spend all [this] Time Understand
+
+264
+00:21:28,750 --> 00:21:30,160
+Studying The Details
+
+265
+00:21:30,160 --> 00:21:32,910
+and We hadn't Talked The Details in The first Lesson and
+
+266
+00:21:33,070 --> 00:21:36,539
+The idea Is that kind of We went More and More in Depth each Time
+
+267
+00:21:37,180 --> 00:21:38,500
+You're Seeing This End-To-end
+
+268
+00:21:38,500 --> 00:21:44,940
+Process and Then Kind of as Time Goes on digging Into it more but even After The first Lesson you Can apply it you can
+
+269
+00:21:44,940 --> 00:21:46,270
+Actually Create
+
+270
+00:21:46,270 --> 00:21:50,520
+World-Class Image Recognition [Models] and so you can go back to your Organization
+
+271
+00:21:50,710 --> 00:21:57,420
+and start Trying [Things] This is something Else We encourage People to do try things With your Own Data and your own Problems from the
+
+272
+00:21:57,420 --> 00:21:59,420
+very first Lesson
+
+273
+00:21:59,830 --> 00:22:01,450
+So it's been A
+
+274
+00:22:01,450 --> 00:22:03,750
+Interesting Experience in Every Way even the way
+
+275
+00:22:03,750 --> 00:22:05,740
+We built This Course is unusual?
+
+276
+00:22:05,740 --> 00:22:12,450
+for Example I actually wrote Most of the material real While Traveling from the Northern Tip to the southern Tip of
+
+277
+00:22:12,640 --> 00:22:14,530
+Japan I
+
+278
+00:22:14,530 --> 00:22:19,259
+Coded and wrote in Every possible place Six [imagined]
+
+279
+00:22:20,050 --> 00:22:26,490
+[and] this was a really an Experiment for me Because I studied Human Learning Theory A lot and I know that it is very
+
+280
+00:22:26,890 --> 00:22:32,070
+Human Creativity Is meant to be Better when you have a wider Variety of Contexts
+
+281
+00:22:32,410 --> 00:22:40,350
+Interestingly I Actually Found I was more Productive in That Month [Than] I feel I ever Have Been [Before] and You'll See Actually in the
+
+282
+00:22:40,570 --> 00:22:44,129
+Material That you learn We Show a lot of?
+
+283
+00:22:44,770 --> 00:22:49,860
+New Techniques Or Different techniques or Different Ways of Thinking about things and I think This kind of
+
+284
+00:22:50,260 --> 00:22:55,920
+Different Way of Building the Course Perhaps, was Really Helpful and Coming up with this kind of more creative Approach
+
+285
+00:22:59,320 --> 00:23:01,710
+so not everybody in the Course
+
+286
+00:23:03,460 --> 00:23:10,049
+In the In-Person Course were able [to] put in the at least eight Hours A, week but the vast Majority were
+
+287
+00:23:11,200 --> 00:23:13,200
+And Those who Didn't
+
+288
+00:23:14,410 --> 00:23:20,340
+Still Completed The Course They Just Found They Didn't Necessarily pick everything up the way that they hoped
+
+289
+00:23:20,340 --> 00:23:23,939
+They Would but of Course the nice Thing is you Can, always come back to it later [so]
+
+290
+00:23:24,820 --> 00:23:29,999
+[our] suggestion Would be now that it's a mooc now that you don't have to do it every Single Week
+
+291
+00:23:30,700 --> 00:23:36,450
+Ideally you will put in the ten Hours A week did you, want to talk about those [turn] out a little bit Rachel yeah
+
+292
+00:23:36,450 --> 00:23:40,019
+We wanted To give You some Suggestions on how how to use that Time?
+
+293
+00:23:40,210 --> 00:23:43,980
+and so the Videos are between Two and Two and a half Hours Long
+
+294
+00:23:44,950 --> 00:23:46,950
+and so
+
+295
+00:23:47,290 --> 00:23:49,290
+With Those Videos
+
+296
+00:23:49,390 --> 00:23:51,660
+You May find it Helpful as you
+
+297
+00:23:51,660 --> 00:23:56,999
+Review Them to use These notes A service Is coming from our Wiki Wiki say I?
+
+298
+00:23:57,340 --> 00:23:59,909
+There's A Page for each Lesson that has
+
+299
+00:24:00,520 --> 00:24:01,750
+Notes
+
+300
+00:24:01,750 --> 00:24:08,820
+Kind of About the Lesson it, also has links to other other Resources that May be useful to you
+
+301
+00:24:09,370 --> 00:24:15,359
+These Notes Are Pretty complete They're not [Designed] to be Read Entirely Independently from the Video Lesson
+
+302
+00:24:15,610 --> 00:24:17,610
+But They Are something Which you can
+
+303
+00:24:17,980 --> 00:24:20,639
+Read on your way to Work Maybe when you don't have
+
+304
+00:24:21,550 --> 00:24:24,009
+It's not Convenient to Actually Watch the Lesson
+
+305
+00:24:25,370 --> 00:24:26,350
+So I was going to Say
+
+306
+00:24:26,350 --> 00:24:28,990
+We're Expecting that you'll Watch the Lessons more Than Once
+
+307
+00:24:29,060 --> 00:24:31,810
+You know so the first Time Through [you're] Kind of Watching to get
+
+308
+00:24:31,810 --> 00:24:36,190
+Maybe A lot of the high Level Ideas then you'll Probably want to Read the Wiki
+
+309
+00:24:36,710 --> 00:24:41,020
+Try out The Notebooks and then then go back and Watch the Lesson again and
+
+310
+00:24:41,330 --> 00:24:46,929
+Kind of Maybe to get more Details yeah I don't think Any of our Students in the In-Person Course Just Watch the Lessons Once
+
+311
+00:24:47,030 --> 00:24:50,080
+They saw Them live of Course but then, we, also they?
+
+312
+00:24:50,080 --> 00:24:55,389
+Also had the recording from the next day and I think Everybody has spoken to Watch them at least Twice and
+
+313
+00:24:55,880 --> 00:24:59,800
+Then of Course The other Thing you've got [is] the notebooks the Notebooks as you
+
+314
+00:24:59,800 --> 00:25:01,959
+See, has Quite A lot of Pros in Them as well
+
+315
+00:25:03,080 --> 00:25:10,569
+[They've] Got Quite A Lot [of] Additional Detail that, We don't Necessarily get Into in the Video Lesson but Most Importantly as
+
+316
+00:25:10,570 --> 00:25:13,509
+We described They Give you an Environment in Which you Can Experiment?
+
+317
+00:25:14,510 --> 00:25:16,160
+in
+
+318
+00:25:16,160 --> 00:25:22,060
+Fact not only do We suggest that you Experiment We have A very Specific suggestion about how to use These Notebooks?
+
+319
+00:25:22,670 --> 00:25:28,209
+yeah so we recommend that you Read Through the Notebook and then and This is after you've Watched the Video
+
+320
+00:25:28,490 --> 00:25:33,280
+At least Once and Everything Makes sense [put] it Aside and Try Creating A
+
+321
+00:25:33,280 --> 00:25:39,849
+New a new Notebook where you go Through [that] Process Yourself [and] so this is from scratch right This is like Creating your Own
+
+322
+00:25:40,190 --> 00:25:43,450
+Notebook to Test that you Can Actually Build it Yourself [yeah]
+
+323
+00:25:43,450 --> 00:25:49,359
+We do not want you to just hit Shift enter Shift Center and run Through the Existing Notebook Because again the test of Whether
+
+324
+00:25:49,760 --> 00:25:53,200
+Whether you know something is Can you Can you build and Code With it Yourself
+
+325
+00:25:54,020 --> 00:25:55,930
+So if You get Stuck you can
+
+326
+00:25:55,930 --> 00:26:00,279
+Always Then go back in [Or] third of the Class Notebook and then rather Than Copying and Pasting it
+
+327
+00:26:00,680 --> 00:26:04,060
+Make Sure you do Understand what it's Saying Maybe Look up some
+
+328
+00:26:04,340 --> 00:26:11,050
+Documentation About That Concept and Then put That Notebook Aside and See if you Can now do it Yourself so in A sense you're
+
+329
+00:26:11,420 --> 00:26:15,430
+Plagiarizing A lot from the Notebook but you're plagiarizing in A good way you know
+
+330
+00:26:15,430 --> 00:26:22,450
+you're plagiarizing not by Copying and Pasting but by plagiarizing the Concepts and Making sure that you Can recreate them Yourself
+
+331
+00:26:23,720 --> 00:26:29,589
+And then if You have that have Questions Please ask Them and the Forums are The first place you Should go to
+
+332
+00:26:29,810 --> 00:26:33,489
+And first search to See if Someone's Already Asked your Question as
+
+333
+00:26:33,490 --> 00:26:37,329
+We said [Earlier] There's separate Thread for each Lesson that are Already [a.m.]
+
+334
+00:26:37,639 --> 00:26:43,748
+Tons of Helpful Questions and Answers From the Students That Took our In-Person Course in Fact There's a great Quote Which
+
+335
+00:26:43,749 --> 00:26:49,899
+We talked [About] in One of the Lessons From the head of Google Brain who Says that the rule of Google Brain Is that if
+
+336
+00:26:49,899 --> 00:26:53,649
+You have a problem you first of all try to Fix it Yourself for half an Hour
+
+337
+00:26:54,769 --> 00:27:01,689
+[and] if After Half an Hour you Can't Fix it Yourself you then have to ask Somebody so that ensures that you
+
+338
+00:27:02,149 --> 00:27:06,909
+Always Give it A go Yourself and Hopefully Learn from the Experience but you
+
+339
+00:27:06,909 --> 00:27:11,679
+Never waste too much Time on [something] Which somebody Else Can Help you with yes This created Ways
+
+340
+00:27:13,879 --> 00:27:20,708
+So if Rachel Said the Forums are Really Helpful Resource and when you go to the Forums you'll find that There's A lot of Existing
+
+341
+00:27:20,929 --> 00:27:26,048
+Discussions There's A separate Discussion for Every Lesson for Example and each of Those
+
+342
+00:27:26,209 --> 00:27:30,578
+Discussions You'll See That There's a summary of the Existing Discussion at the start so you
+
+343
+00:27:30,579 --> 00:27:32,389
+May find that what you need Is
+
+344
+00:27:32,389 --> 00:27:35,108
+Already in The Question and answers There
+
+345
+00:27:35,329 --> 00:27:36,649
+If it's not of Course
+
+346
+00:27:36,649 --> 00:27:42,758
+Feel free to Add your Question and you'll Generally Found it's responded to Within a small Number of Hours
+
+347
+00:27:42,829 --> 00:27:46,119
+Maybe by Rachel or I or maybe by, one at the other Students
+
+348
+00:27:48,259 --> 00:27:54,189
+The Other Thing you May find helpful Is that each Lesson has a timeline on the Wiki and Those Hyperlinks are Actually
+
+349
+00:27:54,319 --> 00:28:00,099
+Hyperlinks Directly to the Part of the Video Which Discusses That Topic so if you're Trying to remember how
+
+350
+00:28:00,199 --> 00:28:04,989
+Momentum Works you Can Just Click on that Link and you'll Jump straight to me Telling you about Momentum
+
+351
+00:28:07,909 --> 00:28:11,498
+As Rachel Said There's, also a number of resources Available to Help you
+
+352
+00:28:12,319 --> 00:28:18,189
+So this Is Taken from the front Page of our Wiki there's a whole Section of tools With links Where you Can Learn About
+
+353
+00:28:18,409 --> 00:28:21,818
+Learn more About each of the pieces that We use in The development Environment?
+
+354
+00:28:22,339 --> 00:28:28,059
+[and] so our goal here [Is] not to be a single source of Truth if Somebody Else has Already done A great Job of Teaching
+
+355
+00:28:28,059 --> 00:28:31,148
+One of These tools we'll leave it to them so?
+
+356
+00:28:31,149 --> 00:28:36,338
+We don't attempt to give you a great Bosch Reference Or a great Umpire Reference Because
+
+357
+00:28:36,619 --> 00:28:40,059
+People Have Already Done that yeah so if you want to learn more About one of These things
+
+358
+00:28:40,399 --> 00:28:46,419
+Jump on to the Wiki Click Through Here and You'll find some curated resources that We think are Really Helpful?
+
+359
+00:28:47,980 --> 00:28:49,980
+so this Lesson
+
+360
+00:28:50,389 --> 00:28:51,549
+You're Going to Cover a lot
+
+361
+00:28:51,549 --> 00:28:54,249
+Of Stuff But These are the four things to Keep in mind
+
+362
+00:28:54,649 --> 00:28:58,539
+By the end of the Lesson [you] want to Make sure that you Can create an Aws Instance
+
+363
+00:28:59,059 --> 00:29:00,470
+That you Can connect To [it] with
+
+364
+00:29:00,470 --> 00:29:08,439
+Ssh so you Can run a Cupidon Notebook Image and you Can run Those That State-Of-The-Art Custom Model Code that we showed you Earlier?
+
+365
+00:29:08,990 --> 00:29:10,450
+So first Three things
+
+366
+00:29:10,450 --> 00:29:16,960
+You're Going to be Doing every single Project in Every Single Lesson so you're going to want to be Really Comfortable at doing that [and]
+
+367
+00:29:17,090 --> 00:29:21,939
+For Those of You who doesn't haven't done That before it might Take you a little while to get the Hang of it and Maybe
+
+368
+00:29:21,940 --> 00:29:23,419
+A few
+
+369
+00:29:23,419 --> 00:29:25,419
+Unsuccessful Attempts First
+
+370
+00:29:25,669 --> 00:29:31,719
+So this first Lesson is unusual in that it's A lot more About kind of getting your development environment set Up and
+
+371
+00:29:31,880 --> 00:29:33,880
+Not as much About People Learning
+
+372
+00:29:34,669 --> 00:29:36,788
+so indeed if You've got a Background in
+
+373
+00:29:36,860 --> 00:29:39,699
+Python and AWs and Os and Linux you
+
+374
+00:29:39,700 --> 00:29:44,470
+May find This Lesson on the Easy Site in Which case you Can zip Through it Pretty fast if you
+
+375
+00:29:44,470 --> 00:29:51,159
+Don't have a background in These tools Today's Class May Seem Really Overwhelming and [We] don't don't want you to be Discouraged by
+
+376
+00:29:51,159 --> 00:29:57,009
+That Because This Is very Different from the future Lessons but it's Necessary to get your environment Set up so that you can be Coding
+
+377
+00:29:57,139 --> 00:30:02,709
+Throughout The Course Yeah i mean the folks who Didn't Have That Background in the In-Person [Course] Once They
+
+378
+00:30:02,710 --> 00:30:06,159
+Actually Got Through This and often it, was A lot of Work and it
+
+379
+00:30:06,159 --> 00:30:11,648
+Was pretty Tough at The end They Finally Got The point and They Could Say okay I've Set up a gpu Instance in the Cloud
+
+380
+00:30:12,110 --> 00:30:13,639
+I've Set up my development
+
+381
+00:30:13,639 --> 00:30:19,239
+Environment and I Have trained from Scratch a model That Can Recognize Dogs from Cats and it was very very
+
+382
+00:30:19,340 --> 00:30:22,240
+Exciting so if This is hard Work for you
+
+383
+00:30:23,000 --> 00:30:26,679
+Just know that when You get Through the other end of it [it's] going to be Really exciting
+
+384
+00:30:27,110 --> 00:30:30,819
+so I ask That Everyone who is trying to Decide if This Courses for them and
+
+385
+00:30:31,490 --> 00:30:36,039
+Try at Least The first Few Lessons Since The first Lesson is so much about Setup
+
+386
+00:30:36,649 --> 00:30:38,649
+Yeah These Lessons [Become]
+
+387
+00:30:38,779 --> 00:30:42,819
+Obviously We build More and more on the techniques we've learned and so?
+
+388
+00:30:42,820 --> 00:30:46,960
+We're Going to be using this Infrastructure in Every Lesson by the time, We get to Lesson [seven]
+
+389
+00:30:47,059 --> 00:30:54,879
+We're Going to be Looking at some pretty Sophisticated and Custom Neural Network Architectures, we're Going to cover Every Different type of
+
+390
+00:30:55,399 --> 00:31:02,119
+Sgd Optimization, We're Going to be Covering Convolutional Neural Networks and recurrent Neural Networks [too] be A lot of exciting stuff
+
+391
+00:31:02,700 --> 00:31:06,590
+and yeah, We really Look Forward to Seeing [you] on the Forums [and]
+
+392
+00:31:07,409 --> 00:00:00,000
+Good luck With Learning About tech Learning
+

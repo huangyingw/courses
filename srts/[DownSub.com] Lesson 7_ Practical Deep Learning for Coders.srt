@@ -1,0 +1,5244 @@
+1
+00:00:00,719 --> 00:00:21,699
+Today I'm going to show you what you can do
+with the little set of tools we've learned
+
+2
+00:00:21,699 --> 00:00:33,560
+already. Part 1 of this lecture is a whirlwind
+tour of a bunch of different architectures.
+
+3
+00:00:33,560 --> 00:00:45,430
+Different architectures -- not just because
+some of them will be better at doing what
+
+4
+00:00:45,430 --> 00:00:59,750
+we're doing and some of them will be doing
+different things.
+
+5
+00:00:59,750 --> 00:01:15,320
+I want to set your expectations and say that
+looking at an architecture and understanding
+
+6
+00:01:15,320 --> 00:01:22,580
+why it does what is does is something that
+took me quite a few weeks to get an intuitive
+
+7
+00:01:22,580 --> 00:01:30,740
+feel for. Don't feel bad because it's like
+un-programming. We're going to describe something
+
+8
+00:01:30,740 --> 00:01:38,430
+that would be great if the model you had would
+do it, and we'll say "Hit" and suddently the
+
+9
+00:01:38,430 --> 00:01:46,330
+model will do it, then we'll look inside of
+it and wonder how it did that.
+
+10
+00:01:46,330 --> 00:01:50,240
+Having said that, everything we're about to
+see uses only the things we've done in the
+
+11
+00:01:50,240 --> 00:01:51,700
+first half. We're only going to use CNNs.
+There's going to be no cropping of images,
+
+12
+00:01:51,700 --> 00:01:59,060
+there's going to be no filtering, nothing
+is going to be hand-tuned. It's just going
+
+13
+00:01:59,060 --> 00:02:07,430
+to be a bunch of convolutional dense layers
+with activation functions. But we're going
+
+14
+00:02:07,430 --> 00:02:11,700
+to put them together in some interesting ways.
+
+15
+00:02:11,700 --> 00:02:19,990
+Let me start with one of the most important
+developments over the last year or two, which
+
+16
+00:02:19,990 --> 00:02:28,480
+is ResNet. ResNet won the 2015 ImageNet competition.
+I was delighted that ResNet won it because
+
+17
+00:02:28,480 --> 00:02:32,260
+it is an incredibly simple, intuitively understandable
+concept and it's very simple to implement.
+
+18
+00:02:32,260 --> 00:02:45,790
+Let me describe as best as I can how ResNet
+works. In fact, before I describe how it works,
+
+19
+00:02:45,790 --> 00:03:01,890
+I will show you why you should care. Let's
+for now just agree that there's another architecture,
+
+20
+00:03:01,890 --> 00:03:11,780
+called ResNet and it's a lot like VGG. It's
+used for image classification and other CNN-type
+
+21
+00:03:11,780 --> 00:03:18,910
+things. ResNet is actually broader than just
+image classification. We use ResNet just the
+
+22
+00:03:18,910 --> 00:03:26,220
+same way we use the vgg16 class we're familiar
+with.
+
+23
+00:03:26,220 --> 00:03:28,819
+We can just say create something in ResNet
+[rn0=Resnet50(include_top=False).model]. There's
+
+24
+00:03:28,819 --> 00:03:31,610
+different sized ResNets; I'm going to use
+50 because it's the smallest one and it works
+
+25
+00:03:31,610 --> 00:03:32,610
+super well.
+
+26
+00:03:32,610 --> 00:03:38,459
+I've started to use a parameter to my versions
+of these networks; I've included it in the
+
+27
+00:03:38,459 --> 00:03:44,330
+new vgg16 as well. It's called "include_top".
+It's actually the same as the Keras author
+
+28
+00:03:44,330 --> 00:03:49,040
+has started doing with his models. Basically
+the idea is if you say "include_top=False",
+
+29
+00:03:49,040 --> 00:03:57,430
+you don't have to do a model.pop afterward
+to remove the layers that you want to fine-tune.
+
+30
+00:03:57,430 --> 00:04:07,720
+include_top=False means only include the convolutional
+layers and I'm going to stick my own final
+
+31
+00:04:07,720 --> 00:04:14,190
+classification layers on top of that. When
+I do this, it's not going to give me the last
+
+32
+00:04:14,190 --> 00:04:15,190
+few layers.
+
+33
+00:04:15,190 --> 00:04:25,530
+Maybe the best way to explain that is to show
+you. When I create this network, I've got
+
+34
+00:04:25,530 --> 00:04:34,050
+this thing at the end that says if include_top,
+then we add the last few layers. If include_top
+
+35
+00:04:34,050 --> 00:04:38,680
+is False, then don't add the last additional
+layers.
+
+36
+00:04:38,680 --> 00:04:47,870
+This just means you can load in a model which
+is specifically designed for fine-tuning.
+
+37
+00:04:47,870 --> 00:04:52,070
+A short-cut. As you'll see shortly, it has
+some really helpful properties.
+
+38
+00:04:52,070 --> 00:04:53,800
+[Time: 5 minute mark]
+
+39
+00:04:53,800 --> 00:05:04,350
+The winner of the cats and dogs competition
+had an accuracy of .985 on the public leader-board.
+
+40
+00:05:04,350 --> 00:05:12,460
+We use this ResNet model the same way as usual
+-- we grab our batches, we can pre-compute
+
+41
+00:05:12,460 --> 00:05:18,940
+some features. In every single CNN model I'm
+going to show you, we're always going to pre-compute
+
+42
+00:05:18,940 --> 00:05:20,270
+the convolutional features.
+
+43
+00:05:20,270 --> 00:05:27,190
+Everything we see today will be things you
+can do without pre-training any of the convolutional
+
+44
+00:05:27,190 --> 00:05:32,100
+layers. Pretty much everything I train will
+train in a small number of steps.
+
+45
+00:05:32,100 --> 00:05:36,690
+That's because in my experience, when you're
+working with photos it's almost never helpful
+
+46
+00:05:36,690 --> 00:05:43,463
+to retrain the convolutional layers. So we
+can stick something on top of our ResNet in
+
+47
+00:05:43,463 --> 00:05:56,080
+the usual way. We can go ahead and compile
+and fit it and in 48 seconds it has created
+
+48
+00:05:56,080 --> 00:06:11,430
+a model with .986 accuracy, which is way on
+the top of the leaderboard, so that's pretty
+
+49
+00:06:11,430 --> 00:06:12,430
+impressive.
+
+50
+00:06:12,430 --> 00:06:18,690
+ResNet is designed to not be used with a standard
+bunch of dense layers but is designed to be
+
+51
+00:06:18,690 --> 00:06:24,700
+used as an input to a glbal average pooling
+layer. Let me show you what happens, if instead
+
+52
+00:06:24,700 --> 00:06:31,940
+of the previous model, instead I use this
+model(get_ap_layers) which has 3 layers, compile
+
+53
+00:06:31,940 --> 00:06:45,160
+it and fit it, I get .9875 in 3 seconds. In
+fact, I can even tell it that I don't want
+
+54
+00:06:45,160 --> 00:06:56,850
+to use 224x224 images, but I want to use 400x400
+images. If I do that and create the features,
+
+55
+00:06:56,850 --> 00:07:02,250
+compile and fit, I get 99.3.
+
+56
+00:07:02,250 --> 00:07:09,930
+So this is kind of like off-the-charts to
+go from somewhere like 98.5 to 99.3 -- we're
+
+57
+00:07:09,930 --> 00:07:17,340
+reducing the amount of error by somewhere
+around 1/3 to 1/2. So this is why you should
+
+58
+00:07:17,340 --> 00:07:28,009
+be interested in ResNet; it's incredibly accurate.
+We're using it for the thing it's best at
+
+59
+00:07:28,009 --> 00:07:32,770
+since originally ResNet was trained on ImageNet.
+And the dogs-and-cats competition looks a
+
+60
+00:07:32,770 --> 00:07:37,419
+lot like ImageNet images -- they're single
+pictures of a single thing that's reasonably
+
+61
+00:07:37,419 --> 00:07:47,700
+large in the picture. So this is something
+which the ResNet approach is particularly
+
+62
+00:07:47,700 --> 00:07:49,740
+good for.
+
+63
+00:07:49,740 --> 00:08:01,900
+I do want to show you how it works, because
+I think it's fascinating and awesome. I'm
+
+64
+00:08:01,900 --> 00:08:07,979
+going to stick to the same approach that we've
+used so far when we've talked about architectures,
+
+65
+00:08:07,979 --> 00:08:16,319
+which is any shape represents a matrix of
+activations and any arrow represents a layer
+
+66
+00:08:16,319 --> 00:08:25,319
+operation, so there's a convolution, or dense
+layer, with an activation function.
+
+67
+00:08:25,319 --> 00:08:34,899
+ResNet looks a lot like VGG. So imagine there's
+some part of the model down here that we're
+
+68
+00:08:34,899 --> 00:08:38,289
+not going to worry about too much. We're kind
+of like halfway through the model and there's
+
+69
+00:08:38,289 --> 00:08:52,470
+some hidden activation layer. With VGG, the
+approach is basically a 3x3 CONV, some activations,
+
+70
+00:08:52,470 --> 00:09:06,820
+another 3x3 CONV, some activations, another
+3x3 CONV, some activations, and from time-to-time
+
+71
+00:09:06,820 --> 00:09:12,129
+a maxPooling.
+
+72
+00:09:12,129 --> 00:09:20,670
+ResNet looks a lot like this. It has exactly
+that path, which is a bunch of convolutions
+
+73
+00:09:20,670 --> 00:09:28,639
+and ReLu's on top of each other. But it does
+something else.
+
+74
+00:09:28,639 --> 00:09:38,480
+There's this bit that comes out ... and remember
+when we have two arrows coming in to a shape
+
+75
+00:09:38,480 --> 00:09:48,769
+that means we're adding things. You'll notice
+here that there's no shapes on the way here;
+
+76
+00:09:48,769 --> 00:09:54,089
+this arrow does not represent a convolution,
+it does not represent a dense layer - it actually
+
+77
+00:09:54,089 --> 00:09:58,559
+represents Identity, in other words we do
+nothing at all.
+
+78
+00:09:58,559 --> 00:10:00,319
+[Time: 10 minute mark]
+
+79
+00:10:00,319 --> 00:10:12,309
+This whole thing here is called a ResNet Block.
+If we represent a ResNet block as a square,
+
+80
+00:10:12,309 --> 00:10:19,329
+ResNet is just a whole bunch of these blocks
+stacked on top of each other. And then the
+
+81
+00:10:19,329 --> 00:10:23,989
+input (which is the input data) and then the
+output.
+
+82
+00:10:23,989 --> 00:10:39,209
+Another way to look at this is to just look
+at the code. I think the code is nice and
+
+83
+00:10:39,209 --> 00:10:45,519
+intuitive to understand. Let's have a look
+at this thing they call and Indentity Block.
+
+84
+00:10:45,519 --> 00:10:51,470
+So here's the code for what I just described.
+You might notice that everything I selected
+
+85
+00:10:51,470 --> 00:10:58,379
+here looks like a totally standard VGG block.
+I've got a Conv-2D a Batch Normalization and
+
+86
+00:10:58,379 --> 00:11:06,089
+an Activation Function -- looks like our improved
+VGG. Another Convolution, another Batch Norm,
+
+87
+00:11:06,089 --> 00:11:13,449
+another Activation, another Conv2D, another
+Batch Norm ... but then this is the magic
+
+88
+00:11:13,449 --> 00:11:16,350
+that makes it ResNet -- this single line of
+code.x = (merge [x,input_tensor], mode=sum).
+
+89
+00:11:16,350 --> 00:11:23,510
+It does something incredibly simple, it takes
+the result of those 3 convolutions and it
+
+90
+00:11:23,510 --> 00:11:31,819
+adds it to our original input.
+
+91
+00:11:31,819 --> 00:11:48,360
+So, normally we have the output of some 
+block is equal to convolutions of convolutions
+
+92
+00:11:48,360 --> 00:11:53,709
+of convolutions to the inputs to that block
+-- y = c(c(c(x))). But we're doing something
+
+93
+00:11:53,709 --> 00:12:05,860
+different, we're say the output to 
+the block at time t+1 is equal to the convolutions
+
+94
+00:12:05,860 --> 00:12:16,589
+of convolutions of convolutions of the hidden
+state at time-t plus the hidden state at time-t
+
+95
+00:12:16,589 --> 00:12:19,899
+... that is the magic of ResNet.
+
+96
+00:12:19,899 --> 00:12:30,970
+So why is it that that can give us this huge
+improvement in the state-of-the-art in such
+
+97
+00:12:30,970 --> 00:12:36,019
+a short period of time. This is something
+that is somewhat controversial. The authors
+
+98
+00:12:36,019 --> 00:12:44,989
+of the ResNet paper described it in a number
+of ways. Basically there are two main reasons:
+
+99
+00:12:44,989 --> 00:12:53,049
+The first is they claim that you can create
+much deeper networks this way because when
+
+100
+00:12:53,049 --> 00:12:58,769
+you're back-propogating the weights, back-propogating
+through an identity is easy -- you're never
+
+101
+00:12:58,769 --> 00:13:08,970
+going to have an explosion of gradients, or
+an explosion of activations. The authors created
+
+102
+00:13:08,970 --> 00:13:10,230
+a ResNet with over 1000 layers.
+
+103
+00:13:10,230 --> 00:13:20,429
+But it also turned out to be a bit of a red-herring
+because a few months ago some other folks
+
+104
+00:13:20,429 --> 00:13:30,379
+created a ResNet which was not at all big
+(I think it had like 40 or 50 layers), but
+
+105
+00:13:30,379 --> 00:13:39,089
+instead it was very wide, it had a lot of
+activations ... and that did even better.
+
+106
+00:13:39,089 --> 00:13:45,910
+The second reason why it seems to have stood
+the test of time which is if we take this
+
+107
+00:13:45,910 --> 00:13:58,050
+equation and we rearrange it -- subtract h.t
+from both sides. That gives us the hidden
+
+108
+00:13:58,050 --> 00:14:01,859
+activations at the next time period minus
+the hidden activations at the previous time
+
+109
+00:14:01,859 --> 00:14:15,239
+period equals the ResNet block acting on the
+hidden layer at the previous time.
+
+110
+00:14:15,239 --> 00:14:30,299
+When you write it like that, it might make
+you realize something -- we're learing a lot
+
+111
+00:14:30,299 --> 00:14:40,029
+of weights which make our previous guess as
+to the predictions a little bit better -- let's
+
+112
+00:14:40,029 --> 00:14:47,060
+take the previous predictions we got and try
+to build a set of things which makes them
+
+113
+00:14:47,060 --> 00:14:48,420
+a little bit better.
+
+114
+00:14:48,420 --> 00:14:49,790
+[Time: 15 minute mark]
+
+115
+00:14:49,790 --> 00:14:53,649
+In statistics, this is called the residual.
+A residual is the difference between the thing
+
+116
+00:14:53,649 --> 00:15:02,199
+you are trying to predict and your actuals.
+So what they did here in ResNet is they designed
+
+117
+00:15:02,199 --> 00:15:09,600
+an architecture that learns how to model the
+residuals and learns how to build a bunch
+
+118
+00:15:09,600 --> 00:15:13,230
+of layers which continually slightly improve
+the answer.
+
+119
+00:15:13,230 --> 00:15:21,199
+For those of you that have a machine-learning
+background you would recognize this as essentially
+
+120
+00:15:21,199 --> 00:15:29,499
+being boosting. Boosting refers to the idea
+of having a bunch of models where each model
+
+121
+00:15:29,499 --> 00:15:37,620
+tries to predict the errors. If you have a
+whole chain of those, you can add them all
+
+122
+00:15:37,620 --> 00:15:44,729
+together and boosting is a way of getting
+a much improved ensemble.
+
+123
+00:15:44,729 --> 00:15:50,739
+ResNet is not manually doing boosting, it's
+not manually doing anything. It's just this
+
+124
+00:15:50,739 --> 00:15:56,519
+single one extra line of code. It's all in
+the architecture.
+
+125
+00:15:56,519 --> 00:16:04,860
+Question: I have a question about dimensionality.
+I would assume that by the time you're close
+
+126
+00:16:04,860 --> 00:16:10,009
+to output, the dimensions would be so different
+that element-wise addition wouldn't be possible
+
+127
+00:16:10,009 --> 00:16:12,329
+between the last layer and the first layer.
+
+128
+00:16:12,329 --> 00:16:19,839
+Answer: It's important to know that this imput
+tensor is the input tensor to the block. So
+
+129
+00:16:19,839 --> 00:16:26,379
+you'll see there's no MaxPooling inside here,
+there's no strides inside here -- so the dimensionality
+
+130
+00:16:26,379 --> 00:16:31,220
+remains constant throughout all these lines
+of code. So we can add them up. And then we
+
+131
+00:16:31,220 --> 00:16:36,499
+can do our Strides or MaxPooling and then
+we do another Identity Block. So we're essentially
+
+132
+00:16:36,499 --> 00:16:44,440
+adding it back to the input of the block,
+not the input of the original image. And that's
+
+133
+00:16:44,440 --> 00:16:51,100
+what we want -- we want to say the input to
+each block is our best prediction so far.
+
+134
+00:16:51,100 --> 00:16:55,470
+Question: Qualitatively, how does this compare
+to Drop Out?
+
+135
+00:16:55,470 --> 00:17:04,898
+Answer: In some ways, in most ways, it's unrelated
+to Drop Out. Indeed, you can add Drop Out
+
+136
+00:17:04,898 --> 00:17:10,469
+to the end of a ResNet block after this merge,
+you can add Drop Out. ResNet is not a regularization
+
+137
+00:17:10,470 --> 00:17:12,760
+technique, per se. Having said that, it does
+seem to have excellent generalization characteristics.
+
+138
+00:17:12,760 --> 00:17:20,059
+I just searched the ImageNet codebase and
+ImageNet did not use any Drop Out, they didn't
+
+139
+00:17:20,059 --> 00:17:33,980
+find it necessary. But this is very problem-dependent.
+If you have only a small amount of data, you
+
+140
+00:17:33,980 --> 00:17:39,010
+may need Drop Out.
+
+141
+00:17:39,010 --> 00:17:51,830
+Another reason you don't need Drop Out ... Remember
+what I did here at the end was I created a
+
+142
+00:17:51,830 --> 00:18:01,000
+model which had a special kind of layer called
+a GlobalAveragePolling layer. This is the
+
+143
+00:18:01,000 --> 00:18:10,200
+next key thing I want to teach you about.
+It's a really important concept and it's going
+
+144
+00:18:10,200 --> 00:18:14,500
+to come up a couple of times during today's
+class.
+
+145
+00:18:14,500 --> 00:18:24,230
+Let's describe what a Global Average Polling
+layer is. Here is the output of the pre-computed
+
+146
+00:18:24,230 --> 00:18:41,639
+ResNet on our 224x224, it's 13x13. The pre-computed
+convolutional residual blocks, 13x13 output
+
+147
+00:18:41,639 --> 00:18:43,029
+is 2048.
+
+148
+00:18:43,029 --> 00:18:58,380
+One way of thinking about this would be to
+say each of these 13x13 blocks could say how
+
+149
+00:18:58,380 --> 00:19:07,250
+cat-y or how dog-y each one of those 13 blocks.
+And so rather than MaxPooling, which is taking
+
+150
+00:19:07,250 --> 00:19:14,120
+the maximum of the grid, we could take average
+pooling. Which is to say across those 13x13
+
+151
+00:19:14,120 --> 00:19:20,190
+areas, what is the average amount of dog-iness
+in each one, what is the average amount of
+
+152
+00:19:20,190 --> 00:19:27,940
+cat-iness in each one. And that's what Global
+Average Pooling does -- whatever the input
+
+153
+00:19:27,940 --> 00:19:56,440
+to Global Average Pooling is, it will take
+all of the x-components and all of the y-components
+
+154
+00:19:56,440 --> 00:20:02,130
+and take the average for every one of these
+2048 filters.
+
+155
+00:20:02,130 --> 00:20:07,370
+[Time: 20 minute mark]
+
+156
+00:20:07,370 --> 00:20:23,039
+What this is doing taking an input of 13x13
+matrix and return a single output vector of
+
+157
+00:20:23,039 --> 00:20:32,169
+2048. That vector is on average how much does
+this whole image have each of those 2048 features.
+
+158
+00:20:32,169 --> 00:20:53,900
+ResNet was originally trained with Global
+Average Polling 2D (you can see that in the
+
+159
+00:20:53,900 --> 00:21:02,960
+ResNet code). This was actually written before
+Global Average Polling 2D layer existed, so
+
+160
+00:21:02,960 --> 00:21:16,409
+they just did it manually. Because ResNet
+was trained originally with this layer, that
+
+161
+00:21:16,409 --> 00:21:23,809
+means it was trained such that the last identity
+block was creating features that were designed
+
+162
+00:21:23,809 --> 00:21:31,929
+to be averaged together. That means that when
+we used this kind of architecture, we got
+
+163
+00:21:31,929 --> 00:21:37,710
+the best results because that was how ResNet
+was originally designed to be used.
+
+164
+00:21:37,710 --> 00:21:42,559
+Question: If you had a wider network without
+the input fed forward to the output activation,
+
+165
+00:21:42,559 --> 00:21:48,240
+couldn't you get the same result? The extra
+activations in the wider network pass the
+
+166
+00:21:48,240 --> 00:21:57,350
+input all the way through all the layers.
+Answer: Well, you can in theory have convolutional
+
+167
+00:21:57,350 --> 00:22:07,870
+filters that don't do anything. But the point
+is having to learn that is learning lots and
+
+168
+00:22:07,870 --> 00:22:08,970
+lots of filter design.
+
+169
+00:22:08,970 --> 00:22:18,240
+Maybe the best way to describe this is everything
+I'm telling you about architectures is in
+
+170
+00:22:18,240 --> 00:22:27,610
+some ways irrelevant. You can create nothing
+but dense layers at every level of your model.
+
+171
+00:22:27,610 --> 00:22:31,559
+Dense layers have every input connected to
+every output so every architecture I'm telling
+
+172
+00:22:31,559 --> 00:22:41,259
+you about is just a simplified version of
+that. But it's really helpful to do that.
+
+173
+00:22:41,259 --> 00:22:48,700
+It's really helpful to help our SGD optimizer
+by making it so that the default thing it
+
+174
+00:22:48,700 --> 00:22:58,200
+can do is the thing we want. So, yes, in theory,
+a CONV net or a connected net could learn
+
+175
+00:22:58,200 --> 00:23:05,929
+to do the same thing that ResNet does. In
+practice, it would take a lot of parameters
+
+176
+00:23:05,929 --> 00:23:13,070
+for it to do so, and time to do so. This is
+why we care about architectures. In practice,
+
+177
+00:23:13,070 --> 00:23:20,039
+having a good architecture makes a huge difference.
+That's a good question.
+
+178
+00:23:20,039 --> 00:23:27,539
+Question: Would it be fair to say that if
+VGG were trained with Average Pooling it would
+
+179
+00:23:27,539 --> 00:23:38,279
+yield better results?
+Answer: I'm not sure. One of the reasons,
+
+180
+00:23:38,279 --> 00:23:42,999
+maybe the main reason that ResNet doesn't
+need Drop Out is because we're using Global
+
+181
+00:23:42,999 --> 00:23:49,200
+Average Pooling. Because we're using Global
+Average Pooling, there's a lot less parameters
+
+182
+00:23:49,200 --> 00:23:53,621
+in the model. Remember the vast majority of
+the parameters in a model are in the dense
+
+183
+00:23:53,621 --> 00:24:01,249
+layer - because you have m inputs and n outputs,
+you have m x n connections.
+
+184
+00:24:01,249 --> 00:24:08,720
+So in VGG, that first dense layer had something
+like 300 million parameters because it had
+
+185
+00:24:08,720 --> 00:24:19,950
+every possible feature of the convolutional
+layer, by each of the 300 convolutional layers,
+
+186
+00:24:19,950 --> 00:24:25,580
+created a lot of features and made it easy
+to overfit.
+
+187
+00:24:25,580 --> 00:24:34,440
+With Global Average Pooling and not having
+any dense layers we have a lot less parameters,
+
+188
+00:24:34,440 --> 00:24:38,279
+so it can generalize better. It also generalizes
+better because we're treating each of those
+
+189
+00:24:38,279 --> 00:24:49,110
+7x7 or 13x13 areas in the same way. We're
+saying how dog-y or cat-y are each of these.
+
+190
+00:24:49,110 --> 00:24:56,700
+It turns out that these Global Average Pooling
+models do seem to generalize well.
+
+191
+00:24:56,700 --> 00:24:58,649
+[Time: 25 minute mark]
+
+192
+00:24:58,649 --> 00:25:03,059
+Question: Why do we use Global Average Pooling
+instead of Max Pooling?
+
+193
+00:25:03,059 --> 00:25:13,169
+Answer: It depends, you can try both. In this
+case, the images in the Dogs and Cats competition
+
+194
+00:25:13,169 --> 00:25:24,070
+are images where nearly the entire frame is
+a dog or a cat. So if you did Max Pooling
+
+195
+00:25:24,070 --> 00:25:32,419
+you would say which bit of that 7x7 or 13x13
+grid down-sampled has the most dog-iness or
+
+196
+00:25:32,419 --> 00:25:35,010
+cat-iness and I only care about that.
+
+197
+00:25:35,010 --> 00:25:40,049
+That's unlikely to give you as good a result
+as looking at every part of the image and
+
+198
+00:25:40,049 --> 00:25:47,710
+average them all together. On the other hand
+(and I haven't tried this), in the Fishieries
+
+199
+00:25:47,710 --> 00:25:53,350
+competion, the fish is generally a very small
+part of the image. So maybe in the Fishieries
+
+200
+00:25:53,350 --> 00:25:57,919
+competition we should use a Global Max Pooling
+layer. Give it a try and let us know how it
+
+201
+00:25:57,919 --> 00:26:04,789
+goes. Because in that case you actually don't
+care about all the of the other parts of the
+
+202
+00:26:04,789 --> 00:26:18,379
+image that have nothing to do with fish. Would
+be very interesting to try.
+
+203
+00:26:18,379 --> 00:26:26,399
+ResNet is very powerful but it has not been
+studied much at all for transfer learning.
+
+204
+00:26:26,399 --> 00:26:32,149
+This does not mean that it will not work well
+for transfer learning. I just literally haven't
+
+205
+00:26:32,149 --> 00:26:38,070
+found a single paper yet where someone has
+analyzed its effectiveness for transfer learning.
+
+206
+00:26:38,070 --> 00:26:43,290
+To me, 99.999% of what you will work on will
+be transfer learning. If you're not using
+
+207
+00:26:43,290 --> 00:26:46,919
+transfer learning, it means you're looking
+at a dataset that is a little different from
+
+208
+00:26:46,919 --> 00:26:53,019
+anything that anyone has looked at before,
+that none of the features in any model is
+
+209
+00:26:53,019 --> 00:26:57,070
+remotely applicable. That's going to be rare.
+
+210
+00:26:57,070 --> 00:27:07,820
+Nearly all of the work I've seen on transfer
+learning, both with Kaggle winners and in
+
+211
+00:27:07,820 --> 00:27:15,510
+terms of papers, uses VGG. I think one of
+the reasons for that (as we talked about in
+
+212
+00:27:15,510 --> 00:27:23,990
+Lesson 1/Lesson 2), the VGG architecture really
+is designed to create layers of gradually
+
+213
+00:27:23,990 --> 00:27:31,789
+increasing complexity. All the work I've seen
+on visualizing layers tends to use VGG or
+
+214
+00:27:31,789 --> 00:27:38,399
+something similar to that as well. Like that
+Max Zeiler stuff we saw, or those Jason Yosinski
+
+215
+00:27:38,399 --> 00:27:45,470
+videos we saw. So we've seen how VGG networks
+create gradually more complex representations.
+
+216
+00:27:45,470 --> 00:27:51,590
+Which is exactly what we want in transfer
+learning. We want to ask how different is
+
+217
+00:27:51,590 --> 00:28:00,139
+this new domain from the previous domain,
+and then we can pick a layer far enough back
+
+218
+00:28:00,139 --> 00:28:02,769
+that the features seem to work well.
+
+219
+00:28:02,769 --> 00:28:12,899
+For that reason, we're going to go back to
+looking at VGG now, and look at the Fishieries
+
+220
+00:28:12,899 --> 00:28:20,610
+competition. The Fishieries competition is
+actually very interesting. The pictures are
+
+221
+00:28:20,610 --> 00:28:30,019
+from about a dozen boats, and each one of
+these boats has a fixed camera, daytime and
+
+222
+00:28:30,019 --> 00:28:36,070
+nighttime shots. So every picture kind of
+has the same basic shape and structure for
+
+223
+00:28:36,070 --> 00:28:41,150
+each of the 12 boats with fixed cameras. Somewhere
+in there, there's one or more fish. Your job
+
+224
+00:28:41,150 --> 00:28:50,110
+is to say what kind of fish it is. The fish
+are pretty small.
+
+225
+00:28:50,110 --> 00:28:59,000
+One of the things that makes this interesting
+is that this is the somewhat wierd, kind of
+
+226
+00:28:59,000 --> 00:29:08,570
+complex different thing to ImageNet that is
+exactly the kind of thing you are going to
+
+227
+00:29:08,570 --> 00:29:14,330
+be dealing with every time you do a computer
+vision problem or any kind of CNN problem.
+
+228
+00:29:14,330 --> 00:29:16,160
+It's very likely that the thing you're doing
+won't be quite the same as what the academics
+
+229
+00:29:16,160 --> 00:29:17,460
+have been looking at. So trying to figure
+out how to do a great job on the Fishieries
+
+230
+00:29:17,460 --> 00:29:20,779
+competition is a great example.
+
+231
+00:29:20,779 --> 00:29:26,720
+When I started on the Fisheries competition,
+I just did the usual thing, which was create
+
+232
+00:29:26,720 --> 00:29:35,440
+a VGG model and fine-tuned it to have just
+8 outputs (because we have to differentiate
+
+233
+00:29:35,440 --> 00:29:43,629
+between 8 types of fish). As per usual, I
+pre-computed the VGG network, and then everything
+
+234
+00:29:43,629 --> 00:29:51,129
+after that I just used the pre-computed convolutional
+layers. As per usual, the first thing I did
+
+235
+00:29:51,129 --> 00:29:56,870
+was to stick a few dense layers on top and
+see how that goes.
+
+236
+00:29:56,870 --> 00:29:57,870
+[Time: 30 minute mark]
+
+237
+00:29:57,870 --> 00:29:59,830
+The nice thing about this is you can see each
+epoch takes less than a second to run. When
+
+238
+00:29:59,830 --> 00:30:08,960
+people talk about needing lots of data or
+lots of time, it's not really true because
+
+239
+00:30:08,960 --> 00:30:15,259
+for most stuff you're going to be doing in
+real life, you're going to be using pre-computed
+
+240
+00:30:15,259 --> 00:30:16,259
+convolutional features.
+
+241
+00:30:16,259 --> 00:30:24,159
+In our validation set, we get an accuracy
+of 96.2%, cross entropy loss of .18. That
+
+242
+00:30:24,159 --> 00:30:33,389
+seems pretty good, it seems to be classifying
+fish pretty well. Here's the problem, there's
+
+243
+00:30:33,389 --> 00:30:40,330
+all kinds of data leakage going on. This is
+one of the most important concepts to understand
+
+244
+00:30:40,330 --> 00:30:47,850
+when it comes to building any kind of model,
+or any kind of machine-learning project. Leakage.
+
+245
+00:30:47,850 --> 00:30:59,990
+Leakage. There was a paper (I thinik it actually
+won the KDD best paper award a couple of years
+
+246
+00:30:59,990 --> 00:31:09,399
+ago) which studied data leakage. Data leakage
+occurs when something about the target you're
+
+247
+00:31:09,399 --> 00:31:16,039
+trying to predict is encoded in the things
+you're predicting with, but that information
+
+248
+00:31:16,039 --> 00:31:21,570
+is either not going to be available or it
+won't be helpful in practice when you're going
+
+249
+00:31:21,570 --> 00:31:23,669
+to use the model.
+
+250
+00:31:23,669 --> 00:31:29,700
+For example, in the Fisheries competition,
+different boats fish in different parts of
+
+251
+00:31:29,700 --> 00:31:36,720
+the sea. Different parts of the sea have different
+fish in them. So in the Fisheries competition,
+
+252
+00:31:36,720 --> 00:31:48,429
+if you just use something representing which
+boat the image came from, you can get a pretty
+
+253
+00:31:48,429 --> 00:31:51,950
+good accurate validation set result.
+
+254
+00:31:51,950 --> 00:32:01,630
+What I mean by that ... this is a list of
+the size of each photo, along with how many
+
+255
+00:32:01,630 --> 00:32:16,630
+times that appeared. You can see that there's
+basically a small number of sizes that appear.
+
+256
+00:32:16,630 --> 00:32:26,500
+It turns out that if you create a simple linear
+model that says any image 1192x670 - what
+
+257
+00:32:26,500 --> 00:32:32,799
+kind of fish is that; any image that's 1280x720,
+what kind of fish is that - you get a pretty
+
+258
+00:32:32,799 --> 00:32:38,710
+accurate model. Because these are the different
+ships, the different ships have different
+
+259
+00:32:38,710 --> 00:32:40,559
+cameras, the different cameras have different
+resolutions.
+
+260
+00:32:40,559 --> 00:32:45,389
+This isn't helpful in practice because what
+the Fisheries people actually wanted to do
+
+261
+00:32:45,389 --> 00:32:51,610
+was to use this to find out when people are
+illegally or accidentally over-fishing or
+
+262
+00:32:51,610 --> 00:32:57,340
+fishing in the wrong way, bringing up dolphins,
+they want to know about it. So any model that
+
+263
+00:32:57,340 --> 00:33:10,379
+says I know what kind of boat this is is entirely
+useless. So this is an example of leakage.
+
+264
+00:33:10,379 --> 00:33:17,509
+In this particular paper I mentioned, the
+authors looked at machine-learning competitions
+
+265
+00:33:17,509 --> 00:33:22,140
+and discovered that over 50% of them had some
+kind of data leakage.
+
+266
+00:33:22,140 --> 00:33:29,720
+I spoke to Claudia after she presented that
+paper and I asked her if she thought that
+
+267
+00:33:29,720 --> 00:33:35,299
+regular machine learning projects inside companies
+would have more or less leakage than that.
+
+268
+00:33:35,299 --> 00:33:42,690
+She said a lot more. In compettions, people
+have tried hard to figure out leakage beforehand.
+
+269
+00:33:42,690 --> 00:33:53,070
+And if there is leakage, you're almost certain
+somebody's going to find it (because it's
+
+270
+00:33:53,070 --> 00:33:57,840
+a competition). Whereas if you have leakage
+in your dataset, it's very likely you won't
+
+271
+00:33:57,840 --> 00:34:03,279
+even know about it until you put the model
+in production and find out it doesn't work
+
+272
+00:34:03,279 --> 00:34:04,559
+as well as expected.
+
+273
+00:34:04,559 --> 00:34:11,389
+Rachel's Comment: I was going to add that
+it might not help you in the competition if
+
+274
+00:34:11,389 --> 00:34:15,808
+your test set is brand-new boats that weren't
+in your training set.
+
+275
+00:34:15,809 --> 00:34:22,560
+Response: Let's talk about that. Trying to
+win a Kaggle competition and trying to do
+
+276
+00:34:22,560 --> 00:34:32,889
+a good job are somewhat independent. When
+I'm working on a Kaggle competition, I'm trying
+
+277
+00:34:32,889 --> 00:34:40,489
+to win a Kaggle competition. I have a clear
+metric and I try to optimize the metric. Sometimes
+
+278
+00:34:40,489 --> 00:34:45,559
+that means finding leakage and taking advantage
+of it. In this case, Step #1 for me in the
+
+279
+00:34:45,560 --> 00:34:50,050
+Fisheries competion was to say can I take
+advantage of this leakage.
+
+280
+00:34:50,050 --> 00:34:55,080
+I want to be very clear. This is the exact
+opposite of what you would want to do if you
+
+281
+00:34:55,080 --> 00:34:58,700
+were trying to help the Fisheries people create
+a good model.
+
+282
+00:34:58,700 --> 00:35:04,470
+Having said that, there's $150,000 dollars
+at stake. I could donate that to the Fred
+
+283
+00:35:04,470 --> 00:35:06,880
+Hollows Foundation and get lots of people
+their sight back, so winning this would be
+
+284
+00:35:06,880 --> 00:35:07,880
+good.
+
+285
+00:35:07,880 --> 00:35:08,880
+[Time: 35 minute mark]
+
+286
+00:35:08,880 --> 00:35:15,820
+Let me show you how I tried to take advantage
+of this leakage (which is totally legal in
+
+287
+00:35:15,820 --> 00:35:20,859
+a Kaggle competition), and see what happens.
+Then I'll talk more about Rachel's comment
+
+288
+00:35:20,859 --> 00:35:22,299
+after that.
+
+289
+00:35:22,299 --> 00:35:27,840
+So the first thing I did was I made a list
+for every file of how big the image dimensions
+
+290
+00:35:27,840 --> 00:35:35,360
+were. I did that for the validation and training
+set. I normalized them by subtracting the
+
+291
+00:35:35,360 --> 00:35:37,545
+mean and dividing by the standard deviation.
+
+292
+00:35:37,545 --> 00:35:43,339
+And then I created an almost exact copy of
+the previous model I showed you. This time,
+
+293
+00:35:43,339 --> 00:35:47,470
+rather than using a sequential API, I used
+a functional API. Other than that, it's almost
+
+294
+00:35:47,470 --> 00:35:48,470
+identical.
+
+295
+00:35:48,470 --> 00:36:03,480
+The only difference is in this line, where
+what I've done is I've taken not just the
+
+296
+00:36:03,480 --> 00:36:09,580
+input which is the output of the last convolutional
+layer of my VGG model, but I have a second
+
+297
+00:36:09,580 --> 00:36:22,510
+input. And the second input is what size image
+is it.I should mention that I've one-hot encoded
+
+298
+00:36:22,510 --> 00:36:27,690
+the image sizes because they're treated like
+categories.
+
+299
+00:36:27,690 --> 00:36:37,569
+So I now have an additional input. One is
+the output of my convolutional model, one
+
+300
+00:36:37,569 --> 00:36:45,760
+is the image size. Then right at the very
+last step, I concatenate the two together.
+
+301
+00:36:45,760 --> 00:37:07,020
+So my model is basically a standard last two
+layers VGG model, so three dense layers, and
+
+302
+00:37:07,020 --> 00:37:17,010
+then I have my input and then I have another
+input, concatenated to create the output.
+
+303
+00:37:17,010 --> 00:37:23,240
+What this can do now is the last dense layer
+can learn to combine the image features along
+
+304
+00:37:23,240 --> 00:37:29,210
+with this meta-data. This is useful for all
+kinds of things (other than taking advantage
+
+305
+00:37:29,210 --> 00:37:32,010
+in a dastardly way of leakage).
+
+306
+00:37:32,010 --> 00:37:41,730
+For example, if you were doing a collaborative
+filtering model, you might have information
+
+307
+00:37:41,730 --> 00:37:50,799
+about the user. Such as their age, their gender,
+their favorite genres. This is how you incorporate
+
+308
+00:37:50,799 --> 00:37:57,470
+that kind of meta-data into a standard neural
+net.
+
+309
+00:37:57,470 --> 00:38:03,450
+So I merged the two together. Initially it's
+looking encouraging. If we go back and look
+
+310
+00:38:03,450 --> 00:38:16,150
+at the standard model, we have .84, .94, .95.
+This multi-input model is a little better,
+
+311
+00:38:16,150 --> 00:38:21,599
+.86, .95, .96. So that's encouraging.
+
+312
+00:38:21,599 --> 00:38:31,970
+But interestingly, the model without using
+leakage gets somewhere about 96.5, 97.5, 98
+
+313
+00:38:31,970 --> 00:38:40,740
+-- it's kind of all over the place, which
+isn't a great sign.
+
+314
+00:38:40,740 --> 00:38:49,280
+This multi-input model does not get better
+than that. It's best is also around 97.5.
+
+315
+00:38:49,280 --> 00:38:57,490
+Why is that? This is very very common when
+people try to utilze meta-data in deep-learning
+
+316
+00:38:57,490 --> 00:39:01,380
+models. It often turns out that the main thing
+you're looking at (in this case the image)
+
+317
+00:39:01,380 --> 00:39:02,380
+already encodes everything that your meta-data
+has anyway.
+
+318
+00:39:02,380 --> 00:39:04,070
+In this case, yes, the size of the image tells
+us which boat it comes from. But you can also
+
+319
+00:39:04,070 --> 00:39:08,170
+just look at the picture and see which boat
+it comes from.
+
+320
+00:39:08,170 --> 00:39:17,140
+So by the later epochs, the convolutional
+model has figured out already what boat it
+
+321
+00:39:17,140 --> 00:39:25,150
+came from, so the leakage actually turned
+out not to be helpful.
+
+322
+00:39:25,150 --> 00:39:31,060
+It's amazing how often people find meta-data
+and incorporate it into their model and how
+
+323
+00:39:31,060 --> 00:39:40,309
+often it turns out to be a waste of time because
+the raw, real data (the audio, the pictures,
+
+324
+00:39:40,309 --> 00:39:49,319
+the language) turns out to encode all that
+anyway.
+
+325
+00:39:49,319 --> 00:39:54,770
+Finally, I wanted to go back to what Rachel
+was talking about which is what would have
+
+326
+00:39:54,770 --> 00:40:01,580
+happened if this did work, if this gave us
+a much better validation result than the non-leakage
+
+327
+00:40:01,580 --> 00:40:02,580
+model.
+
+328
+00:40:02,580 --> 00:40:03,580
+[Time: 40 minute mark]
+
+329
+00:40:03,580 --> 00:40:11,120
+If I then submitted to Kaggle and my leaderboard
+result was great, that would mean that I had
+
+330
+00:40:11,120 --> 00:40:17,410
+found leakage that the Kaggle administrators
+didn't and I'm possibly on the way to winning
+
+331
+00:40:17,410 --> 00:40:24,440
+the competition. Having said that, the Kaggle
+competition administrators first and foremost
+
+332
+00:40:24,440 --> 00:40:27,531
+try to avoid leakage. Indeed if you do try
+and submit this to the leaderboard, you'll
+
+333
+00:40:27,531 --> 00:40:36,940
+find it doesn't do that great. I haven't looked
+into it as to why. I don't know how yet, but
+
+334
+00:40:36,940 --> 00:40:43,020
+somehow the competition administrators have
+made some attempt to address the leakage.
+
+335
+00:40:43,020 --> 00:40:52,940
+The kind of ways that we did that when I was
+at Kaggle would be to do things like stratified
+
+336
+00:40:52,940 --> 00:40:59,750
+sampling, enforce that every ship has to have
+the same number of fish and the same type
+
+337
+00:40:59,750 --> 00:41:04,330
+of fish, and limit leakage where you could.
+
+338
+00:41:04,330 --> 00:41:11,619
+Honestly it's a very difficult thing to do,
+and this impacts a lot more than machine-learning
+
+339
+00:41:11,619 --> 00:41:17,470
+competitions. Every one of your real-world
+projects, you're going to have to think long
+
+340
+00:41:17,470 --> 00:41:21,690
+and hard about how you can replicate real-word
+conditions without leakage.
+
+341
+00:41:21,690 --> 00:41:27,260
+Maybe the best example I can come up with
+is when you put your model into production
+
+342
+00:41:27,260 --> 00:41:34,059
+(it will probably be a few months after you've
+grabbed the data and trained it), how much
+
+343
+00:41:34,059 --> 00:41:39,630
+has the world changed? Wouldn't it be great
+instead if you could create a test set with
+
+344
+00:41:39,630 --> 00:41:47,099
+data from a few months later than your training
+set. Again, you're really trying to replicate
+
+345
+00:41:47,099 --> 00:41:53,680
+the situation that you actually have when
+you put your model into production.
+
+346
+00:41:53,680 --> 00:41:59,510
+Note from Rachel: They are releasing another
+test set later on in the Fishery competition.
+
+347
+00:41:59,510 --> 00:42:06,040
+Question: Did you do two classifications,
+one for the boats and one for the fish? Is
+
+348
+00:42:06,040 --> 00:42:13,020
+that a waste of time?
+Answer: I have two inputs, not two outputs.
+
+349
+00:42:13,020 --> 00:42:20,400
+So my input is the one-hot encoded size of
+the image, which I assumed is a proxy for
+
+350
+00:42:20,400 --> 00:42:39,030
+the boat category, and some discussion on
+the Kaggle forum that's a reasonable assumption.
+
+351
+00:42:39,030 --> 00:42:45,970
+Question: Can you find a good way of isolating
+the fish on the images and then do the classification
+
+352
+00:42:45,970 --> 00:42:46,970
+on that?
+Answer: Let's do that now, shall we?
+
+353
+00:42:46,970 --> 00:43:01,020
+Multi-Output. There's a lot of nice things
+about how competitions are structured. One
+
+354
+00:43:01,020 --> 00:43:10,930
+of the things I really like is in most of
+them you can create or combine your own data
+
+355
+00:43:10,930 --> 00:43:21,230
+sources, as long as you share it with the
+community. One of the people in the Fisheries
+
+356
+00:43:21,230 --> 00:43:29,670
+competition has gone through and by hand put
+a little square around every fish. That's
+
+357
+00:43:29,670 --> 00:43:32,950
+called annotating the dataset.
+
+358
+00:43:32,950 --> 00:43:35,520
+Specifically, this kind of annotation is called
+a bounding box. A bounding box is a box in
+
+359
+00:43:35,520 --> 00:43:41,329
+which your object fits. Because of the rules
+of Kaggle, he had to make it available to
+
+360
+00:43:41,329 --> 00:43:49,340
+everybody in the Kaggle community, and he
+provided a link on the Kaggle forum.
+
+361
+00:43:49,340 --> 00:43:53,680
+So I went ahead and downloaded those -- they're
+a bunch of JSON files that basically look
+
+362
+00:43:53,680 --> 00:43:54,680
+like this.
+
+363
+00:43:54,680 --> 00:43:56,770
+For each image, for each fish, it had the
+height and width in x and y.
+
+364
+00:43:56,770 --> 00:44:06,611
+The details in the code don't matter too much.
+I just went ahead and found the largest fish
+
+365
+00:44:06,611 --> 00:44:17,869
+in each image and created a list of them.
+So I've got now my training bounding boxes
+
+366
+00:44:17,869 --> 00:44:26,940
+and my validation bounding boxes. For things
+that didn't have a fish, I just had zero-zero-zero-zero
+
+367
+00:44:26,940 --> 00:44:28,500
+-- empty bounding boxes.
+
+368
+00:44:28,500 --> 00:44:36,480
+So, as always when I want to understand the
+data, the first thing to do is to look at
+
+369
+00:44:36,480 --> 00:44:41,200
+it. In computer vision problems, it's easy
+to look at data, so I went ahead and created
+
+370
+00:44:41,200 --> 00:44:50,320
+this little show bounding box (show_bb) thing.
+I'm going to try it on an image -- here's
+
+371
+00:44:50,320 --> 00:44:52,980
+the fish and here's the bounding box.
+
+372
+00:44:52,980 --> 00:44:54,559
+[Time: 45 minute mark]
+
+373
+00:44:54,559 --> 00:45:00,240
+Question: Adding meta-data, is that not useful
+for both CNNs and RNNs or just for CNNs?
+
+374
+00:45:00,240 --> 00:45:10,800
+Answer: It's got nothing to do with the architecture.
+It's entirely about the semantics of the data.
+
+375
+00:45:10,800 --> 00:45:20,290
+If your text, or audio, or other unstructured
+data in some way encodes the information in
+
+376
+00:45:20,290 --> 00:45:24,720
+the meta-data, the meta-data is unlikely to
+be helpful.
+
+377
+00:45:24,720 --> 00:45:35,650
+For example, in the NetFlix prize, in the
+early stages of competition, people found
+
+378
+00:45:35,650 --> 00:45:53,020
+that it was helpful to link to IMDb and bring
+in information about the movies. In later
+
+379
+00:45:53,020 --> 00:46:01,650
+stages, they found it wasn't. The reason why
+is that in later stages they had figured out
+
+380
+00:46:01,650 --> 00:46:04,966
+how to extrapolate from the ratings themselves,
+they basically contained all the information.
+
+381
+00:46:04,966 --> 00:46:05,966
+Question: VGG required images all the same
+size in training. In the Fisheries case, are
+
+382
+00:46:05,966 --> 00:46:10,859
+different size images being used for training?
+How do you train a model with different dimensions?
+
+383
+00:46:10,859 --> 00:46:17,670
+Answer: How do we deal with different size
+images? I'm about to show you some tricks,
+
+384
+00:46:17,670 --> 00:46:23,540
+but throughout this course, we have always
+resized everything to 224x224. Whenever you
+
+385
+00:46:23,540 --> 00:46:30,150
+use get_batches, I default to resizing images
+to 224x224 because that's what the Internet
+
+386
+00:46:30,150 --> 00:46:39,289
+did. With the exception that in my previous
+ResNet model, I showed you resizing to 400x400.
+
+387
+00:46:39,289 --> 00:46:49,690
+So far ... in fact in everything we're doing
+this year, we're going to resize everything
+
+388
+00:46:49,690 --> 00:46:54,349
+to be the same size.
+
+389
+00:46:54,349 --> 00:47:02,550
+Question: Is the 400x400 image resize in ResNet
+because there are two different ResNet models?
+
+390
+00:47:02,550 --> 00:47:11,770
+Answer: No, it's not. I'll show you how that
+happened in a moment, we're going to get to
+
+391
+00:47:11,770 --> 00:47:12,770
+that.
+
+392
+00:47:12,770 --> 00:47:17,170
+So, now we've got these bounding boxes, here
+is the complexity -- both the practical one
+
+393
+00:47:17,170 --> 00:47:23,240
+and the Kaggle one. The Kaggle complexity
+is the rules say that you're not allowed to
+
+394
+00:47:23,240 --> 00:47:30,520
+manually edit the test set -- we can't put
+bounding boxes in the test set. The practical
+
+395
+00:47:30,520 --> 00:47:44,559
+complexity is that they are trying to create
+an automatic warning system and they don't
+
+396
+00:47:44,559 --> 00:47:54,520
+want to have somebody drawing a box around
+the fish.
+
+397
+00:47:54,520 --> 00:47:59,279
+So what we're going to do is build a model
+that can find these bounding boxes automatically.
+
+398
+00:47:59,279 --> 00:48:01,400
+How do we do that?
+
+399
+00:48:01,400 --> 00:48:06,619
+It may surprize you to know that we're going
+to use exactly the same techniques we've always
+
+400
+00:48:06,619 --> 00:48:07,619
+used.
+
+401
+00:48:07,619 --> 00:48:13,430
+Here is the exact same model again. But this
+time instead of having something at the end
+
+402
+00:48:13,430 --> 00:48:23,720
+which has 8 softmax outputs, we also have
+4 linear outputs, i.e., 4 outputs with no
+
+403
+00:48:23,720 --> 00:48:25,680
+activation function.
+
+404
+00:48:25,680 --> 00:48:35,330
+When we train this model, we now have 2 outputs,
+and when we compile it, we're going to say
+
+405
+00:48:35,330 --> 00:48:39,490
+this model has 2 outputs -- one is the 4 outputs
+with no activation function, and the other
+
+406
+00:48:39,490 --> 00:48:40,490
+is the 8 softmax.
+
+407
+00:48:40,490 --> 00:48:48,569
+When I compile it, I want to optimize the
+mean square error for the first one, and for
+
+408
+00:48:48,569 --> 00:48:57,059
+the second one I want to optimized the entropy
+function. For the first, I want you to multiply
+
+409
+00:48:57,059 --> 00:49:04,170
+the loss by .001 because the mean square error
+of finding the location of the image is going
+
+410
+00:49:04,170 --> 00:49:12,140
+to be a lot bigger number than the categorical
+cross-entropy. And then when you train it,
+
+411
+00:49:12,140 --> 00:49:18,890
+I want you to use the bounding boxes as the
+labels for the first output, and the fish
+
+412
+00:49:18,890 --> 00:49:23,200
+types as the labels for the second output.
+
+413
+00:49:23,200 --> 00:49:27,720
+What this is going to have to do is figure
+out how to come up with a bunch of dense layers
+
+414
+00:49:27,720 --> 00:49:33,309
+capable of doing these two things simultaneously.
+
+415
+00:49:33,309 --> 00:49:54,050
+In other words, we now have something that
+looks like this -- two outputs, one input.
+
+416
+00:49:54,050 --> 00:49:59,260
+[Time: 50 minute mark]
+
+417
+00:49:59,260 --> 00:50:23,660
+Both of the two outputs have their own dense
+layer. It would be possible to do it like
+
+418
+00:50:23,660 --> 00:50:31,660
+this instead. That is to say each of the two
+outputs could have two dense layers of their
+
+419
+00:50:31,660 --> 00:50:32,660
+own.
+
+420
+00:50:32,660 --> 00:50:38,430
+In this case I'm going to talk about the pros
+and cons. In this case, both of my last layers
+
+421
+00:50:38,430 --> 00:50:44,839
+are both going to have to use the same set
+of features to generate both the bounding
+
+422
+00:50:44,839 --> 00:50:48,020
+boxes and the fish classes.
+
+423
+00:50:48,020 --> 00:50:55,180
+So let's see how this goes. We just go fit
+as usual but now that we have two outputs,
+
+424
+00:50:55,180 --> 00:51:01,579
+we get a lot more information. We get the
+bounding box loss, we get the fish classification
+
+425
+00:51:01,579 --> 00:51:06,210
+loss, we get the total loss (which is equal
+to .001 times the bounding box, which you
+
+426
+00:51:06,210 --> 00:51:15,609
+can see is over 1000 times bigger than this;
+you can see why we multiplied by .001), then
+
+427
+00:51:15,609 --> 00:51:22,170
+we get the validation loss, the total bounding
+box validation loss, and the validation classification
+
+428
+00:51:22,170 --> 00:51:23,569
+loss.
+
+429
+00:51:23,569 --> 00:51:26,160
+So here is something pretty interesting. The
+first thing I wanted to point out is after
+
+430
+00:51:26,160 --> 00:51:33,190
+I fit it a little bit, we actually get a much
+better accuracy.
+
+431
+00:51:33,190 --> 00:51:41,710
+Maybe this is counter-intuitive. We're now
+saying our model has exactly the same capacity
+
+432
+00:51:41,710 --> 00:51:47,319
+as before, our previous dense layer is of
+size 512. Before, that last layer only had
+
+433
+00:51:47,319 --> 00:51:50,970
+to do one thing, to tell us what kind of fish
+it was.
+
+434
+00:51:50,970 --> 00:51:55,200
+Now it has to do two things: it has to tell
+us where the fish is and what kind of fish
+
+435
+00:51:55,200 --> 00:52:01,559
+it is. Yet it's still done better. Why has
+it done better?
+
+436
+00:52:01,559 --> 00:52:07,569
+The reason it's done better is by telling
+it we want to use those features to figure
+
+437
+00:52:07,569 --> 00:52:15,640
+out where the fish is, we're giving it a hint
+about what to look for. We've given it more
+
+438
+00:52:15,640 --> 00:52:17,039
+information about what to work on.
+
+439
+00:52:17,039 --> 00:52:21,720
+Interestingly, even if we didn't use a bounding
+box for anything else and just threw it away,
+
+440
+00:52:21,720 --> 00:52:24,310
+we've already found a much better model.
+
+441
+00:52:24,310 --> 00:52:34,300
+You notice also the model is much more stable,
+before our loss was all over the place.
+
+442
+00:52:34,300 --> 00:52:40,910
+So by having multiple outputs, we've created
+a much more stable, resiliant, and accurate
+
+443
+00:52:40,910 --> 00:52:47,880
+classification model. And we also have bounding
+boxes.
+
+444
+00:52:47,880 --> 00:52:53,520
+The best way to look at how accurate bounding
+boxes are is to look at the feature.
+
+445
+00:52:53,520 --> 00:52:59,089
+So I do a prediction for the first 10 validation
+examples (it's important to use a validation
+
+446
+00:52:59,089 --> 00:53:04,020
+set any time we're looking at how good your
+model is).
+
+447
+00:53:04,020 --> 00:53:09,770
+This time I slightly increased the function
+to show the bounding boxes to now include
+
+448
+00:53:09,770 --> 00:53:17,490
+a yellow box for my prediction and a deep
+red box for my actual, and there it is.
+
+449
+00:53:17,490 --> 00:53:27,410
+So I want to make it very clear here -- we
+haven't done anything clever. We didn't do
+
+450
+00:53:27,410 --> 00:53:35,270
+anything to program this. We just said there
+is an output which will have 4 outputs. It
+
+451
+00:53:35,270 --> 00:53:39,059
+has no activation function, so it's linear.
+
+452
+00:53:39,059 --> 00:53:43,859
+I want you to use mean square error to find
+a set of weights that would optimize those
+
+453
+00:53:43,859 --> 00:53:49,859
+weights such that the bounding boxes and your
+predictions are as close as possible.
+
+454
+00:53:49,859 --> 00:54:00,940
+And somehow, it has done that. That is to
+say, very often if you're trying to get a
+
+455
+00:54:00,940 --> 00:54:06,240
+neural net to do something, your first step
+before you create some complex programming
+
+456
+00:54:06,240 --> 00:54:12,349
+heuristic thing, is just ask the neural net
+to do it. And very often it does.
+
+457
+00:54:12,349 --> 00:54:17,303
+Question: Why do both in the same fitting,
+instead of training the neural net to find
+
+458
+00:54:17,303 --> 00:54:20,800
+the boxes first and feeding that as imput
+to recognize fishes?
+
+459
+00:54:20,800 --> 00:54:26,600
+Answer: We can. The first thing I want to
+point out is getting it. Even then I would
+
+460
+00:54:26,600 --> 00:54:32,970
+still have the first stage do both at the
+same time because the more compatible tasks
+
+461
+00:54:32,970 --> 00:54:39,240
+we can give it (like where is the fish, and
+what kind of fish is it), the more it can
+
+462
+00:54:39,240 --> 00:54:43,359
+create an internal representation that is
+as appropriate as possible.
+
+463
+00:54:43,359 --> 00:54:51,310
+Now if we want to go away over the next couple
+of weeks and drop out these fish and create
+
+464
+00:54:51,310 --> 00:54:56,000
+a second model, I can almost guarantee you'll
+get into the top 10 of this competition.
+
+465
+00:54:56,000 --> 00:54:57,000
+[Time: 55 minute mark]
+
+466
+00:54:57,000 --> 00:55:05,431
+And the reason I can almost guarantee that
+is there was quite a similar competition on
+
+467
+00:55:05,431 --> 00:55:09,560
+Kaggle last year, or earlier this year, which
+was trying to identify particular whales by
+
+468
+00:55:09,560 --> 00:55:16,510
+literally saying which individual whale is
+it. All of the top 3 in that competition did
+
+469
+00:55:16,510 --> 00:55:26,039
+some kind of bounding box prediction or some
+kind of cropping and then modeled a second
+
+470
+00:55:26,039 --> 00:55:28,309
+layer on the cropped features.
+
+471
+00:55:28,309 --> 00:55:33,380
+Question: Are the four bounding box outputs
+the vertical and horizontal sides of the box
+
+472
+00:55:33,380 --> 00:55:43,559
+and the two coordinates of the center?
+Answer: It's whatever we were given, which
+
+473
+00:55:43,559 --> 00:55:49,900
+was not quite that. It was the height, width,
+x and y.
+
+474
+00:55:49,900 --> 00:55:56,690
+Question: So how many people in the Kaggle
+competition are using this sort of model?
+
+475
+00:55:56,690 --> 00:56:05,950
+If you came up with this with a bit of tinkering,
+do you think that you would stay in the top
+
+476
+00:56:05,950 --> 00:56:13,609
+10? Or would this be an obvious sort of thing
+that people would tend to do so your ranking
+
+477
+00:56:13,609 --> 00:56:16,920
+would drop over time as everyone else incorporates
+this?
+
+478
+00:56:16,920 --> 00:56:27,609
+Answer: So I'm going to show you a few techniques
+I used this week. They're all very basic,
+
+479
+00:56:27,609 --> 00:56:39,359
+very normal. We're at a point now where this
+is a $150,000 dollar competition where over
+
+480
+00:56:39,359 --> 00:56:43,800
+500 people have entered. I am currently 20th.
+
+481
+00:56:43,800 --> 00:56:56,000
+So the stuff that you're learning in this
+course is not at all well-known. There's never
+
+482
+00:56:56,000 --> 00:57:01,970
+been an applied deep-learning course before.
+The people who are above me in this competition
+
+483
+00:57:01,970 --> 00:57:08,140
+are the people who have figured these things
+out. They've read a bunch of papers and studied
+
+484
+00:57:08,140 --> 00:57:09,810
+and whatever else.
+
+485
+00:57:09,810 --> 00:57:17,660
+I definitely think that the people in this
+course, particularly if some of you teamed
+
+486
+00:57:17,660 --> 00:57:20,410
+up together, would have a very good chance
+at winning this competition because it's a
+
+487
+00:57:20,410 --> 00:57:28,010
+perfect fit for everything we've been talking
+about. And particularly collaborate on the
+
+488
+00:57:28,010 --> 00:57:30,119
+forums and stuff like that.
+
+489
+00:57:30,119 --> 00:57:37,619
+I should mention that I haven't even done
+any cropping yet. This is just using the whole
+
+490
+00:57:37,619 --> 00:57:40,400
+image, which is clearly not the right way
+to tackle this.
+
+491
+00:57:40,400 --> 00:57:44,300
+I was actually intentionally trying not to
+do too well because I'm going to have to release
+
+492
+00:57:44,300 --> 00:57:49,240
+this notebook to everyone on the Kaggle forum
+because it's $150,000 dollars and I didn't
+
+493
+00:57:49,240 --> 00:57:57,130
+want to say here's a way to get into the top
+10 because that's not fair to everyone else.
+
+494
+00:57:57,130 --> 00:58:04,859
+To answer you question -- by the end of the
+competition, to win one of these things, you've
+
+495
+00:58:04,859 --> 00:58:07,300
+got to do everything right at every point.
+
+496
+00:58:07,300 --> 00:58:11,079
+Everytime you fail, you have to try again.
+Tenacity is part of winning these things.
+
+497
+00:58:11,079 --> 00:58:16,400
+I know from experience -- being on top of
+the leaderboard and waking up the next day
+
+498
+00:58:16,400 --> 00:58:25,352
+and finding that people have passed you. You
+know they have found something that is there
+
+499
+00:58:25,352 --> 00:58:27,569
+that you haven't found yet.
+
+500
+00:58:27,569 --> 00:58:32,529
+That's part of what makes competing in the
+Kaggle competition so different from looking
+
+501
+00:58:32,529 --> 00:58:39,839
+at academic papers, or looking at old Kaggle
+competitions. It's a really great test of
+
+502
+00:58:39,839 --> 00:58:45,609
+your own processes, and your own grit.
+
+503
+00:58:45,609 --> 00:58:52,260
+What you'll probably find yourself doing is
+repeatedly playing around with hyper-parameters
+
+504
+00:58:52,260 --> 00:59:03,700
+and minor architectural details because it's
+just so addictive.
+
+505
+00:59:03,700 --> 00:59:10,670
+I hope some of you will consider seriously
+investing -- like putting an hour a day in
+
+506
+00:59:10,670 --> 00:59:19,800
+to a competition. I learn far more doing that
+than anything else I have ever done. It's
+
+507
+00:59:19,800 --> 00:59:25,040
+totally different than just playing around.
+
+508
+00:59:25,040 --> 00:59:34,619
+Afterwards, every real-world project that
+I've ever done greatly benefited from that
+
+509
+00:59:34,619 --> 00:59:35,619
+experience.
+
+510
+00:59:35,619 --> 00:59:43,190
+To give you a sense of this ... Here's #7,
+here's #6 -- I can't even see that fish, but
+
+511
+00:59:43,190 --> 00:59:50,130
+it's done a pretty good job.
+I think maybe it knows that people tend to
+
+512
+00:59:50,130 --> 00:59:55,290
+float around where the fish is or something,
+because that fish is pretty hard to see. This
+
+513
+00:59:55,290 --> 01:00:03,720
+is just a 224x224 image, so this model is
+brilliant. The amount of time it took to train
+
+514
+01:00:03,720 --> 01:00:05,599
+was under 10 seconds.
+
+515
+01:00:05,599 --> 01:00:06,890
+[Time: 1:00 hour mark]
+
+516
+01:00:06,890 --> 01:00:14,779
+Question: Is there a way to find the bounding
+box without hand-coding it?
+
+517
+01:00:14,779 --> 01:00:33,880
+Answer: Before we look at finding things without
+manually annotating bounding boxes, I want
+
+518
+01:00:33,880 --> 01:00:36,700
+to talk more about different sized images.
+
+519
+01:00:36,700 --> 01:00:46,579
+So let's talk about sizes, specifically talk
+about in which situations is our model going
+
+520
+01:00:46,579 --> 01:00:55,079
+to be sensitive to the size of the inputs,
+like a pre-trained model.
+
+521
+01:00:55,079 --> 01:01:02,890
+It's all about what are these layer operations
+exactly.
+
+522
+01:01:02,890 --> 01:01:11,000
+If it's a dense layer, then there's a weight
+going from every input to every output. So
+
+523
+01:01:11,000 --> 01:01:17,569
+if you have a different sized input, then
+that's not going to work at all because your
+
+524
+01:01:17,569 --> 01:01:23,279
+weight matrix of the dense layer is just simply
+of the wrong size. Who knows what it should
+
+525
+01:01:23,279 --> 01:01:24,279
+do.
+
+526
+01:01:24,279 --> 01:01:33,890
+What if it's a convolutional layer? If it's
+a convolutional layer, then we have a little
+
+527
+01:01:33,890 --> 01:01:40,560
+set of weights for each 3x3 block, for each
+different feature. And that 3x3 block is going
+
+528
+01:01:40,560 --> 01:01:44,099
+to be slid over to create the outputs.
+
+529
+01:01:44,099 --> 01:01:50,450
+If the image is bigger, it doesn't change
+the number of weights. It just means that
+
+530
+01:01:50,450 --> 01:01:54,510
+this block is going to be slid around more,
+and the output will be bigger.
+
+531
+01:01:54,510 --> 01:01:59,880
+The max pooling layer doesn't have any weights.
+
+532
+01:01:59,880 --> 01:02:06,450
+A Batch Normalization layer simply cares about
+the number of weights of the previous layer.
+
+533
+01:02:06,450 --> 01:02:11,819
+So when you think about it the only layer
+that really cares what size your input is
+
+534
+01:02:11,819 --> 01:02:18,440
+is the dense layer. And remember that with
+VGG, nearly all of the layers are convolutional
+
+535
+01:02:18,440 --> 01:02:20,380
+layers.
+
+536
+01:02:20,380 --> 01:02:34,589
+So that's why we can say not only include
+top=False, but we can also choose what size
+
+537
+01:02:34,589 --> 01:02:35,800
+we want.
+
+538
+01:02:35,800 --> 01:02:47,109
+So if you look at my new version of the VGG
+model, I've actually got something here that
+
+539
+01:02:47,109 --> 01:02:57,049
+says, if size is not equal to 224x224, the
+don't try to add the fully-connected blocks
+
+540
+01:02:57,049 --> 01:03:06,450
+at all -- just return.
+
+541
+01:03:06,450 --> 01:03:15,030
+So if we cut off whatever our architecture
+is before any dense layers happen, then we're
+
+542
+01:03:15,030 --> 01:03:20,859
+going to be able to use it on any size input
+to create those convolutional features. That's
+
+543
+01:03:20,859 --> 01:03:23,980
+what I'm about to show you now.
+
+544
+01:03:23,980 --> 01:03:30,780
+Question: For a convolutional layer, shouldn't
+the input size be fixed?
+
+545
+01:03:30,780 --> 01:03:35,980
+Answer: There's no reason it has to be fixed.
+A dense layer has to be fixed, because a dense
+
+546
+01:03:35,980 --> 01:03:39,270
+layer has a specific weight matrix.
+
+547
+01:03:39,270 --> 01:03:44,119
+And the input to that weight matrix generally
+is the flattened out version of the previous
+
+548
+01:03:44,119 --> 01:03:51,089
+convolutional layer. And the size of that
+depends on the size of the image. The convolutional
+
+549
+01:03:51,089 --> 01:03:57,880
+weight matrix simply depends on the filter
+size, not on the image size.
+
+550
+01:03:57,880 --> 01:04:06,509
+So, let's try it. Specifically, we're going
+to try building something called a Fully Convolutional
+
+551
+01:04:06,509 --> 01:04:10,039
+Net, which is going to have no dense layers
+at all.
+
+552
+01:04:10,039 --> 01:04:29,740
+So the input (as usual) will be the output
+of the last convolutional layer. But this
+
+553
+01:04:29,740 --> 01:04:34,390
+time when we create our VGG16 model, we're
+going to tell it we want it to be 640x360
+
+554
+01:04:34,390 --> 01:04:35,799
+[vgg640 = Vgg16((360,6740)).model]
+
+555
+01:04:35,799 --> 01:04:42,921
+Be careful here. When we talk about matrices,
+we talk about rows by columns. When we talk
+
+556
+01:04:42,921 --> 01:04:51,789
+about images, we talk about columns by rows.
+So a 640x360 image is a 360x640 matrix.
+
+557
+01:04:51,789 --> 01:04:56,980
+I mention this because I've screwed it up.
+But I knew I screwed it up because I always
+
+558
+01:04:56,980 --> 01:05:06,609
+draw pictures. So when I drew the picture
+I saw I had this little squashed boat, I knew
+
+559
+01:05:06,609 --> 01:05:08,750
+that I screwed it up.
+
+560
+01:05:08,750 --> 01:05:09,750
+[Time: 1:05 hour mark]
+
+561
+01:05:09,750 --> 01:05:10,750
+Question: Do the weights you are loading here
+for CNN layers also have batch normalization?
+
+562
+01:05:10,750 --> 01:05:16,500
+Answer: Yes, this is the exact same VGG16
+network we've been using since I added BatchNormalization.
+
+563
+01:05:16,500 --> 01:05:21,460
+Nothing's been changed other than this one
+piece of code I just showed you which says
+
+564
+01:05:21,460 --> 01:05:29,550
+you can use different sizes, and if you do,
+don't add fully connected layers.
+
+565
+01:05:29,550 --> 01:05:43,650
+So now I've got this VGG model which is expecting
+a 640x360 input. I can then add to it my top
+
+566
+01:05:43,650 --> 01:05:53,819
+layers. This time my top layers are going
+to get an input of size 22x40.
+
+567
+01:05:53,819 --> 01:06:03,289
+Normally our VGG's final layer is 14x14, or
+if you include the final MaxPooling, it is
+
+568
+01:06:03,289 --> 01:06:04,289
+7x7.
+
+569
+01:06:04,289 --> 01:06:11,030
+In this case, though, it's 22x40. That's because
+we've told it we're not going to pass a 224x224,
+
+570
+01:06:11,030 --> 01:06:13,339
+we're going to pass it a 640x360.
+
+571
+01:06:13,339 --> 01:06:17,970
+So this is what happens -- we end up with
+a different output shape.
+
+572
+01:06:17,970 --> 01:06:21,279
+So if we now try to pass that to the same
+dense layer we used before, it wouldn't work,
+
+573
+01:06:21,279 --> 01:06:26,509
+it would be the wrong size. We're actually
+going to do something different anyway. We're
+
+574
+01:06:26,509 --> 01:06:34,819
+not going to use any pre-trained, fully-connected
+weights. We're instead going to have no dense
+
+575
+01:06:34,819 --> 01:06:35,819
+layers at all.
+
+576
+01:06:35,819 --> 01:06:38,109
+Instead, we're going to do:
+Convolution2D, BatchNormalization, MaxPooling,
+
+577
+01:06:38,109 --> 01:06:39,779
+Convolution2D, BatchNormalization, MaxPooling,
+Convolution2D, GlobalAveragePooling2D.
+
+578
+01:06:39,779 --> 01:06:52,440
+The best way to look at this is to see what's
+happening to our shape.
+
+579
+01:06:52,440 --> 01:07:00,400
+It goes from 22x40 until the MaxPooling, then
+11x20. Until the next MaxPooling - 5x10.
+
+580
+01:07:00,400 --> 01:07:09,619
+And because this is rectangular, the last
+MaxPooling I did a 1,2 shape; that gives me
+
+581
+01:07:09,619 --> 01:07:12,809
+a square result - 5x5.
+
+582
+01:07:12,809 --> 01:07:19,690
+Then I do a convolutional layer, in which
+I have just 8 filters. Remember I have just
+
+583
+01:07:19,690 --> 01:07:21,660
+8 types of fish.
+
+584
+01:07:21,660 --> 01:07:26,160
+There are no other weights after this. In
+fact, even the Dropout is not doing anything
+
+585
+01:07:26,160 --> 01:07:31,289
+because I've set my p value to zero, so ignore
+that Dropout layer.
+
+586
+01:07:31,289 --> 01:07:38,130
+So we're going straight from a convolutional
+layer which is grid size 5x5 and have 8 filters.
+
+587
+01:07:38,130 --> 01:07:43,539
+And then we're going to average across the
+5x5, and that's going to give us something
+
+588
+01:07:43,539 --> 01:07:47,859
+of size 8.
+
+589
+01:07:47,859 --> 01:07:53,480
+So if we now say, please train this model
+and please try and make these 8 things equal
+
+590
+01:07:53,480 --> 01:07:55,039
+to the classes of fish.
+
+591
+01:07:55,039 --> 01:08:01,690
+Now you have to think backwards. How would
+it do that? If it were to do that for us (and
+
+592
+01:08:01,690 --> 01:08:05,619
+it will because it's going to use SGD), what
+would it have to do?
+
+593
+01:08:05,619 --> 01:08:12,039
+Well, it has no ability to use any weights
+to get to this point (GlobalAveragePolling2D),
+
+594
+01:08:12,039 --> 01:08:15,599
+so it has to do everything by the time it
+gets to this point (Convolution2D(8,3,3, border_mode='same')).
+
+595
+01:08:15,599 --> 01:08:20,479
+Which means this Convolution2D layer is going
+to have to have in each of its 5 grid areas
+
+596
+01:08:20,479 --> 01:08:26,189
+something saying how fish-y is that area,
+because that's all it can do. After that,
+
+597
+01:08:26,189 --> 01:08:29,039
+all it can do is to average them together.
+
+598
+01:08:29,040 --> 01:08:34,520
+We haven't done anything specifically to capture
+it this way, we just have to create an architecture
+
+599
+01:08:34,520 --> 01:08:36,700
+which had to do that.
+
+600
+01:08:36,700 --> 01:08:42,000
+My feeling is this out to work fairly well
+because as we saw in that earlier picture,
+
+601
+01:08:42,000 --> 01:08:46,189
+the fish only appears in one little spot.
+As we discussed earlier, maybe even a Global
+
+602
+01:08:46,189 --> 01:08:50,559
+Max Pooling could be better.
+
+603
+01:08:50,560 --> 01:08:56,229
+So let's try this. We can fit it as per usual,
+and you can see here, even without bounding
+
+604
+01:08:56,229 --> 01:09:05,519
+boxes, we've got a pretty good and a pretty
+stable result (97.6) in about 30 seconds.
+
+605
+01:09:05,520 --> 01:09:21,410
+When I then tried this on the Kaggle leaderboard,
+I got a much better result.
+
+606
+01:09:21,410 --> 01:09:25,930
+The 20th place was just me averaging together
+four different models, four of the models
+
+607
+01:09:25,930 --> 01:09:27,620
+I'm showing you today.
+
+608
+01:09:27,620 --> 01:09:50,439
+But this one on its own was .986, which would
+be 22nd. So 
+
+609
+01:09:50,439 --> 01:09:54,880
+that little model on its own would get us
+22nd position.
+
+610
+01:09:54,880 --> 01:09:58,960
+No data augmentation. No pseudo-labeling.
+We're not using the validation set to help
+
+611
+01:09:58,960 --> 01:10:00,800
+us (which we should).
+
+612
+01:10:00,800 --> 01:10:03,060
+[Time: 1:10 hour mark]
+
+613
+01:10:03,060 --> 01:10:10,450
+So you can get 22nd position with this very
+simple approach, which is to use a slightly
+
+614
+01:10:10,450 --> 01:10:13,720
+larger image and use a fully convolutional
+network.
+
+615
+01:10:13,720 --> 01:10:19,470
+There's something else cool about this fully
+convolutional network which can get us in
+
+616
+01:10:19,470 --> 01:10:26,200
+the 22nd position which is that we can actually
+look at the output of this layer, the Convolutional2D
+
+617
+01:10:26,200 --> 01:10:28,750
+layer ... and remember it's 5x5.
+
+618
+01:10:28,750 --> 01:10:42,640
+Question: How are you using VGG?
+Answer: VGG (as always before) is the input
+
+619
+01:10:42,640 --> 01:10:52,600
+to this model. Every single model I'm showing
+you today, I've pre-computed the output of
+
+620
+01:10:52,600 --> 01:11:00,310
+the last convolutional layer.
+
+621
+01:11:00,310 --> 01:11:07,120
+I say get_data and get a 360x640 sized data
+[trn = get_data(path='train', (360,640))]
+
+622
+01:11:07,120 --> 01:11:24,120
+and that gives me my image. Then I 
+create my model and pop off the last MaxPooling
+
+623
+01:11:24,120 --> 01:11:38,320
+layer [vgg640.pop()], and then call predict
+to get the features from that last layer.
+
+624
+01:11:38,320 --> 01:11:40,800
+It's what we always do.
+
+625
+01:11:40,800 --> 01:11:46,130
+The only difference is that we passed 360x640
+for our constructor for the model, and we
+
+626
+01:11:46,130 --> 01:11:47,540
+passed 360,640 to the get_data.
+
+627
+01:11:47,540 --> 01:11:58,550
+Question: So then you're adding a lot of layers
+later on?
+
+628
+01:11:58,550 --> 01:12:06,250
+Answer: Exactly. Everything I'm showing you
+today is taking as input the last convolutional
+
+629
+01:12:06,250 --> 01:12:07,720
+layer.
+
+630
+01:12:07,720 --> 01:12:14,920
+Question: Why did you replace all dense layers
+with CNN?
+
+631
+01:12:14,920 --> 01:12:17,190
+Answer: A couple of reasons why.
+
+632
+01:12:17,190 --> 01:12:21,750
+The first beacuse the authors of the paper
+which created fully ConvolutionalNet found
+
+633
+01:12:21,750 --> 01:12:30,560
+that it worked pretty well. The GlobalAveragePolling2D
+layer turns out to have excellent generalization
+
+634
+01:12:30,560 --> 01:12:32,480
+characteristics.
+
+635
+01:12:32,480 --> 01:12:42,620
+You notice here we have no DropOut, yet we're
+in 22nd place on the leaderboard.
+
+636
+01:12:42,620 --> 01:12:53,140
+The final reason is the thing I'm about to
+show you ... which is we're maintained a sense
+
+637
+01:12:53,140 --> 01:12:59,430
+of x y coordinates all the way through, which
+means that we can now visualize this last
+
+638
+01:12:59,430 --> 01:13:05,500
+layer.
+
+639
+01:13:05,500 --> 01:13:15,140
+I can say let's create a function which takes
+our model's input and our 4th from last layer
+
+640
+01:13:15,140 --> 01:13:19,240
+as output (that is the convolutional layer
+I just showed you).
+
+641
+01:13:19,240 --> 01:13:28,740
+I'm going to take that and I'm going to pass
+into it the features of my first validation
+
+642
+01:13:28,740 --> 01:13:33,310
+image and draw a picture of it.
+
+643
+01:13:33,310 --> 01:13:40,200
+Here is my picture. You can see it's done
+exactly what we thought it would do. It's
+
+644
+01:13:40,200 --> 01:13:46,060
+had to figure out that there's a fish here.
+
+645
+01:13:46,060 --> 01:13:52,770
+So these fully convolutional networks have
+a nice side effect which is they allow us
+
+646
+01:13:52,770 --> 01:13:56,550
+to find whereabouts the interesting parts
+are.
+
+647
+01:13:56,550 --> 01:14:06,810
+Question: Why does MaxPooling reduce the dimensions
+along the x and y by half?
+
+648
+01:14:06,810 --> 01:14:13,480
+Answer: The default parameters for MaxPooling
+are 2,2. So it's taking each 2x2 square and
+
+649
+01:14:13,480 --> 01:14:18,600
+replacing it with the largest value in that
+2x2 square.
+
+650
+01:14:18,600 --> 01:14:24,350
+This is not the most high-res heatmap we've
+ever seen. The obvious thing to make it all
+
+651
+01:14:24,350 --> 01:14:27,560
+more high-res would be to remove all the MaxPooling
+layers.
+
+652
+01:14:27,560 --> 01:14:34,370
+So here's exactly the same thing as before,
+but I've removed all the MaxPooling layers.
+
+653
+01:14:34,370 --> 01:14:42,030
+That means my model remains at 22x40 all the
+way through. Everything else is the same.
+
+654
+01:14:42,030 --> 01:14:52,990
+That does not give quite as accurate a result.
+You get 95.2 instead of 97.6.
+
+655
+01:14:52,990 --> 01:15:01,540
+But on the other hand, we do have a much higher
+resolution grid. So if we now do exactly the
+
+656
+01:15:01,540 --> 01:15:03,400
+same thing to create the heatmap.
+
+657
+01:15:03,400 --> 01:15:04,870
+[Time: 1:15 hour mark]
+
+658
+01:15:04,870 --> 01:15:08,520
+The other thing we're going to do is we're
+going to resize the heatmap to 360x640
+
+659
+01:15:08,520 --> 01:15:13,330
+[return scipi.misc.imresize(conv,(360,640))].
+By default, this resize command will try and
+
+660
+01:15:13,330 --> 01:15:24,260
+interpolate and return big pixels for interpolated
+small pixels. And that gives us, for this
+
+661
+01:15:24,260 --> 01:15:28,660
+image, this answer, which is much more interesting.
+
+662
+01:15:28,660 --> 01:15:32,890
+Now we can stick one on top of the other,
+like so.
+
+663
+01:15:32,890 --> 01:15:41,840
+This tells us a lot. It tells us that on the
+whole, this is doing a good job, identifying
+
+664
+01:15:41,840 --> 01:15:48,280
+the fish-y thing, the albacore-y thing (because
+we're asking here for the albacore). Remember,
+
+665
+01:15:48,280 --> 01:16:00,180
+that layer of the model is 8x22x40 so we have
+to ask how much like albacore is each one
+
+666
+01:16:00,180 --> 01:16:03,490
+of those areas, or how much like shark is
+each of those areas.
+
+667
+01:16:03,490 --> 01:16:14,370
+So when we called this function, it returned
+a heatmap for every type of fish. We can pass
+
+668
+01:16:14,370 --> 01:16:23,990
+in zero (the number for albacore) [ get_cm2(inp,
+0) ]. Plus four is the number for no fish,
+
+669
+01:16:23,990 --> 01:16:27,370
+one of the classes you have to predict in
+this competition is no fish.
+
+670
+01:16:27,370 --> 01:16:34,010
+So we could say how much of this part of the
+picture looks like the no fish class [ get_cm2(inp,4)
+
+671
+01:16:34,010 --> 01:16:35,010
+].
+
+672
+01:16:35,010 --> 01:16:38,160
+What happens is if you look at the no fish
+version of this heatmap, you get the exact
+
+673
+01:16:38,160 --> 01:16:45,580
+opposite. You get a big blue spot here and
+pink all around it.
+
+674
+01:16:45,580 --> 01:16:51,290
+The other thing I wanted to point out here
+-- these areas of pink-ishness that are not
+
+675
+01:16:51,290 --> 01:16:59,920
+where the fish is. This is telling me that
+our model is not currently just looking for
+
+676
+01:16:59,920 --> 01:17:07,030
+fish, it's looking for particular characteristics
+of the boat.
+
+677
+01:17:07,030 --> 01:17:13,290
+This is suggesting to me that since it's not
+all concentrated on the fish, I do think that
+
+678
+01:17:13,290 --> 01:17:17,130
+there's some data leakage still coming through.
+
+679
+01:17:17,130 --> 01:17:21,660
+Question: How much do we know about why its
+working.
+
+680
+01:17:21,660 --> 01:17:37,650
+Answer: I think we know everything about why
+it's working. We have set up a model where
+
+681
+01:17:37,650 --> 01:17:47,120
+we've said we want you to predict each of
+the 8 fish classes.
+
+682
+01:17:47,120 --> 01:17:54,610
+We have set it up so that the last layer simply
+averages the answers from the previous layer.
+
+683
+01:17:54,610 --> 01:18:00,020
+The previous layer we have set up so it has
+the 8 classes we need -- that's obviously
+
+684
+01:18:00,020 --> 01:18:03,900
+the only way you can average and get the right
+number of classes.
+
+685
+01:18:03,900 --> 01:18:10,040
+We know that SGD is a general optimization
+approach which will find a set of parameters
+
+686
+01:18:10,040 --> 01:18:12,620
+which will solve the problem you give it.
+
+687
+01:18:12,620 --> 01:18:24,140
+When you think of it that way, unless it failed
+to train (which it could, for all kinds of
+
+688
+01:18:24,140 --> 01:18:33,960
+reasons), it could only get a decent answer
+if it solved it in this way. If it actually
+
+689
+01:18:33,960 --> 01:18:36,360
+looked at each area and figured out how fish-y
+it is.
+
+690
+01:18:36,360 --> 01:18:42,040
+Question: Could we build some sort of a attention
+model for the heatmaps, and if so, would that
+
+691
+01:18:42,040 --> 01:18:46,990
+help with leakage?
+Answer: We're not doing attention models in
+
+692
+01:18:46,990 --> 01:18:49,710
+this part of the course, per se.
+
+693
+01:18:49,710 --> 01:18:56,980
+I would say for now the simple attention model
+that I would do would be to find the largest
+
+694
+01:18:56,980 --> 01:19:06,420
+area of the heatmap, crop it and maybe compare
+that to the bounding boxes to make sure they
+
+695
+01:19:06,420 --> 01:19:11,010
+look about the same. Those that don't, you
+might want to hand-fix. If you hand-fix them,
+
+696
+01:19:11,010 --> 01:19:19,620
+you have to give that back to the Kaggle community
+of course, because that's hand-labeling.
+
+697
+01:19:19,620 --> 01:19:25,600
+Honestly, that's the state-of-the-art. In
+terms of who wins the money in Kaggle competitions,
+
+698
+01:19:25,600 --> 01:19:29,470
+that's how the Kaggle winners have won these
+type of competitions.
+
+699
+01:19:29,470 --> 01:19:35,840
+They have two-stages, first they find the
+thing of interest and then they zoom into
+
+700
+01:19:35,840 --> 01:19:39,090
+it and they do a model on that thing.
+
+701
+01:19:39,090 --> 01:19:47,070
+Actually, the other thing that you might want
+to do is to orient the fish so that the head
+
+702
+01:19:47,070 --> 01:19:50,580
+is in the same place and the tail is in the
+same place.
+
+703
+01:19:50,580 --> 01:19:58,880
+Make it as easy as possible for your ConvNet
+to do one of these.
+
+704
+01:19:58,880 --> 01:20:02,780
+[Time: 1:20 hour mark]
+
+705
+01:20:02,780 --> 01:20:09,640
+You guys might have heard about another architecture
+called Inception. A combination of Inception
+
+706
+01:20:09,640 --> 01:20:15,600
+plus ResNet won this years ImageNet competition.
+
+707
+01:20:15,600 --> 01:20:27,130
+Let me give you a very quick hint as to how
+it works. I have built the world's tiniest
+
+708
+01:20:27,130 --> 01:20:28,370
+Inception network here.
+
+709
+01:20:28,370 --> 01:20:36,170
+One of the reasons I want to show it to you
+is that it actually uses the same technique
+
+710
+01:20:36,170 --> 01:20:45,930
+that we heard from Ben Bowles, remember his
+language model used a trick where he had multiple
+
+711
+01:20:45,930 --> 01:20:52,220
+different convolution filter sizes, ran all
+of them and concatenated them together.
+
+712
+01:20:52,220 --> 01:20:54,580
+That's actually what the Inception network
+does.
+
+713
+01:20:54,580 --> 01:21:07,960
+Question: How would you align the head and
+tail?
+
+714
+01:21:07,960 --> 01:21:14,521
+Answer: To align the head and tail, the easiest
+way would be to hand-annotate the head and
+
+715
+01:21:14,521 --> 01:21:17,960
+hand-annotate the tail. That was what was
+done in the whale competition.
+
+716
+01:21:17,960 --> 01:21:27,520
+Question: How is this a better way to isolate
+the fish than just taking the boundary box
+
+717
+01:21:27,520 --> 01:21:33,250
+approach?
+Answer: Hand-labeling always has errors. There
+
+718
+01:21:33,250 --> 01:21:37,950
+are quite a few people on the forum who pointed
+out various bounding boxes that they don't
+
+719
+01:21:37,950 --> 01:21:38,950
+think are correct.
+
+720
+01:21:38,950 --> 01:21:42,930
+So it's great to have an automatic approach
+which ought to give the same answer as the
+
+721
+01:21:42,930 --> 01:21:50,230
+hand approach, and you can compare the two
+and use the best of both.
+
+722
+01:21:50,230 --> 01:21:57,130
+In general, this idea of combining human intelligence
+and machine intelligence seems to be a great
+
+723
+01:21:57,130 --> 01:21:58,260
+approach.
+
+724
+01:21:58,260 --> 01:22:04,510
+Particularly early on. You can do that for
+the first few bounding boxes to improve your
+
+725
+01:22:04,510 --> 01:22:14,580
+bounding box model and then use that to gradually
+make the model have to ask you less and less
+
+726
+01:22:14,580 --> 01:22:16,480
+for your input.
+
+727
+01:22:16,480 --> 01:22:30,870
+Question: You showed finding the location
+of the fish by finding out what kind of fish
+
+728
+01:22:30,870 --> 01:22:41,490
+it is. What is the purpose of finding the
+location if you already found out kind of
+
+729
+01:22:41,490 --> 01:22:42,490
+fish it is? (for the heatmap)
+
+730
+01:22:42,490 --> 01:22:51,110
+Answer: For the heatmap you don't need to.
+In the heatmap, we're just visualizing one
+
+731
+01:22:51,110 --> 01:23:00,840
+of layers of the network. It's just a side-effect
+of this kind of model is that you can visualize
+
+732
+01:23:00,840 --> 01:23:07,730
+the last convolutional layer, and in doing
+so will give you a heatmap.
+
+733
+01:23:07,730 --> 01:23:13,110
+Comment: It's nice because a lot of people
+refer to neural networks as black boxes without
+
+734
+01:23:13,110 --> 01:23:14,110
+intermediate interpretability.
+
+735
+01:23:14,110 --> 01:23:19,200
+Response: There's so many ways of interpreting
+neural nets and one of them is to draw pictures
+
+736
+01:23:19,200 --> 01:23:23,690
+of the intermediate activations. You can also
+draw pictures of the intermediate gradients.
+
+737
+01:23:23,690 --> 01:23:28,670
+There's all kinds of things you can draw pictures
+of.
+
+738
+01:23:28,670 --> 01:23:39,060
+Question: You just showed us a way to build
+a model that implicitly defines the bounding
+
+739
+01:23:39,060 --> 01:23:42,200
+box and does classification all in one model.
+Are you saying that people take the bounding
+
+740
+01:23:42,200 --> 01:23:51,300
+box model, crop it and then run a classifier?
+Answer: Yes
+
+741
+01:23:51,300 --> 01:23:56,600
+The Inception network is going to use this
+trick where we're going to use multiple different
+
+742
+01:23:56,600 --> 01:24:06,330
+convolutional filter sizes 
+and concatenate them all together.
+
+743
+01:24:06,330 --> 01:24:11,870
+Just like in ResNet there's this idea of a
+block that we repeat again and again. In the
+
+744
+01:24:11,870 --> 01:24:16,460
+Inception network, there's an inception block
+that's repeated again and again.
+
+745
+01:24:16,460 --> 01:24:25,000
+I've created a version of one here. I have
+one thing that takes my input and does a 1x1
+
+746
+01:24:25,000 --> 01:24:29,190
+convolution. I've got one thing that takes
+the input and does a 5x5 convolution. I've
+
+747
+01:24:29,190 --> 01:24:34,290
+got one thing that takes the input and does
+two 3x3 convolutions. I've got one thing that
+
+748
+01:24:34,290 --> 01:24:40,680
+takes the input and just average pools it.
+And then we concatenate them all together.
+
+749
+01:24:40,680 --> 01:24:46,900
+So what this is doing is each Inception block
+is able to look for things at various different
+
+750
+01:24:46,900 --> 01:24:54,640
+scales and create a single feature map at
+the end which adds all of these together.
+
+751
+01:24:54,640 --> 01:25:00,970
+So once I've defined that I can create a little
+model InceptionBlock->InceptionBlock->InceptionBlock->Dropout->Conv2D->GlobalAveragePooling->Output.
+
+752
+01:25:00,970 --> 01:25:04,910
+[Time: 1:25 hour mark]
+
+753
+01:25:04,910 --> 01:25:12,370
+I haven't managed to get this to work terribly
+well yet. I haven't tried submitting this
+
+754
+01:25:12,370 --> 01:25:15,710
+to Kaggle to see how it's generalizing.
+
+755
+01:25:15,710 --> 01:25:23,772
+Part of the purpose of this is to give you
+a sense of the kinds of things we're going
+
+756
+01:25:23,772 --> 01:25:32,360
+to be doing next year. We've built the basic
+pieces now of convolutions, fully-connected
+
+757
+01:25:32,360 --> 01:25:38,850
+layers, activation function, SGD.
+
+758
+01:25:38,850 --> 01:25:43,040
+From here, deep-learning is putting these
+pieces together. What are the ways people
+
+759
+01:25:43,040 --> 01:25:51,210
+have put these things together to solve problems
+as well as possible. The Inception network
+
+760
+01:25:51,210 --> 01:25:53,120
+is one of these ways.
+
+761
+01:25:53,120 --> 01:25:57,750
+The other thing I wanted to do was to give
+you plenty of things to think about and play
+
+762
+01:25:57,750 --> 01:26:04,050
+with. Hopefully this notebook is going to
+be full of things you can experiment with.
+
+763
+01:26:04,050 --> 01:26:09,100
+And maybe try submitting some Kaggle results.
+
+764
+01:26:09,100 --> 01:26:19,860
+The warnings about the Inception network are
+a bit like the warnings about the ResNet network.
+
+765
+01:26:19,860 --> 01:26:27,980
+Like ResNet, the Inception network is available;
+Keras has one that you can download and use.
+
+766
+01:26:27,980 --> 01:26:36,550
+It hasn't been well-studied in terms of its
+transfer-learning capabilities. I haven't
+
+767
+01:26:36,550 --> 01:26:43,740
+seen people winning Kaggle competitions using
+transfer-learning of Inception networks. It's
+
+768
+01:26:43,740 --> 01:26:48,330
+just a little bit less well-studied.
+
+769
+01:26:48,330 --> 01:26:52,980
+The combination of Inception plus ResNet is
+the most recent ImageNet winner.
+
+770
+01:26:52,980 --> 01:26:59,310
+So if you are looking to start with the most
+predictive predictive model, this is where
+
+771
+01:26:59,310 --> 01:27:02,860
+you want to start.
+
+772
+01:27:02,860 --> 01:27:16,390
+I wanted to finish off on a very different
+note which is looking at RNNs one more time.
+
+773
+01:27:16,390 --> 01:27:22,180
+I've spent much more time on CNNs than RNNs.
+The reason is that this course is much more
+
+774
+01:27:22,180 --> 01:27:27,690
+about being pragmatic, teaching you the stuff
+that works.
+
+775
+01:27:27,690 --> 01:27:35,090
+In the vast majority of areas where I see
+people using deep-learning to solve their
+
+776
+01:27:35,090 --> 01:27:38,550
+problems, they're using CNNs.
+
+777
+01:27:38,550 --> 01:27:45,190
+Having said that, some of the most challenging
+problems are now being solved with RNNs. Like
+
+778
+01:27:45,190 --> 01:27:51,870
+speech recognition and language translation.
+When you use Google Translate now, you are
+
+779
+01:27:51,870 --> 01:27:52,870
+using RNNs.
+
+780
+01:27:52,870 --> 01:27:59,240
+My suspicion is you're going to come across
+these problems a lot less often.
+
+781
+01:27:59,240 --> 01:28:07,400
+I also suspect that in a business context,
+a very common type of problem is a time-series
+
+782
+01:28:07,400 --> 01:28:15,890
+problem. Like looking at a time-series click
+events on your website, or e-commerce transactions,
+
+783
+01:28:15,890 --> 01:28:19,940
+or logistics, or whatever.
+
+784
+01:28:19,940 --> 01:28:25,310
+These sequence-to-sequence RNNs we've been
+looking at which we've been using to create
+
+785
+01:28:25,310 --> 01:28:31,050
+Nietzschean philosophy are identical to the
+ones that you would use to analyze a series
+
+786
+01:28:31,050 --> 01:28:35,640
+of e-commerce transactions and try to find
+anomolies.
+
+787
+01:28:35,640 --> 01:28:43,480
+I think CNNs are more practically important
+for most people in most organizations right
+
+788
+01:28:43,480 --> 01:28:49,090
+now. RNNs also have a lot of opportunities.
+
+789
+01:28:49,090 --> 01:28:54,620
+We'll also be looking at them next year when
+it comes to looking at attentional models,
+
+790
+01:28:54,620 --> 01:28:58,990
+which is figuring out in a really big image,
+which part should we look at next.
+
+791
+01:28:58,990 --> 01:29:05,315
+Question: Does Inception have the merge characteristic
+that ResNet does?
+
+792
+01:29:05,315 --> 01:29:09,360
+Answer: The Inception merge is a concat (rather
+than an add) which is the same as what we
+
+793
+01:29:09,360 --> 01:29:13,500
+saw when we looked at Ben Bowles' Quid NLP
+model.
+
+794
+01:29:13,500 --> 01:29:22,070
+We're talking multiple ConvNet convolution
+filter sizes and we're sticking them next
+
+795
+01:29:22,070 --> 01:29:32,940
+to each other, so that feature basically contains
+information about 5x5 features and 3x3 features
+
+796
+01:29:32,940 --> 01:29:37,730
+and 1x1 features. When you add them together,
+you lose that specific information.
+
+797
+01:29:37,730 --> 01:29:41,620
+ResNet does that for a reason, we want to
+cause it to learn residuals. In Inception,
+
+798
+01:29:41,620 --> 01:29:52,960
+we don't want that. In Inception we want to
+keep them all in that feature space.
+
+799
+01:29:52,960 --> 01:29:55,330
+[Time: 1:30 hour mark]
+
+800
+01:29:55,330 --> 01:30:03,340
+The other reason I wanted to look at RNNs
+is that last week we looked at building an
+
+801
+01:30:03,340 --> 01:30:11,670
+RNN nearly from scratch. I said "nearly from
+scratch" because there's one key step which
+
+802
+01:30:11,670 --> 01:30:17,820
+it did for us, the gradients.
+
+803
+01:30:17,820 --> 01:30:22,480
+Really understanding how the gradients are
+calculated is not something you would ever
+
+804
+01:30:22,480 --> 01:30:28,750
+have to do by hand, but I think it can be
+helpful to your intuition of training neural
+
+805
+01:30:28,750 --> 01:30:32,730
+networks to be able to trace it through.
+
+806
+01:30:32,730 --> 01:30:38,070
+For that reason, this is the one time in this
+course (in this year's course and next year's
+
+807
+01:30:38,070 --> 01:30:43,840
+course) where we're really going to go through
+and actually calculate the gradients ourselves.
+
+808
+01:30:43,840 --> 01:30:48,430
+So here is a recurrent neural network in pure
+Python.
+
+809
+01:30:48,430 --> 01:30:51,950
+The reason I'm doning a recurrent neural network
+in pure Python is because this is kind of
+
+810
+01:30:51,950 --> 01:30:58,250
+the hardest. RNNs are the hardest thing to
+get your head around back-propograting gradients.
+
+811
+01:30:58,250 --> 01:31:03,250
+So if you look at this and study this and
+step through this over the next couple of
+
+812
+01:31:03,250 --> 01:31:08,621
+months, you will really get a great understanding
+of what a neural net is supposed to be doing.
+
+813
+01:31:08,621 --> 01:31:13,390
+There will be no magic or mystery because
+this thing is going to be every line of code.
+
+814
+01:31:13,390 --> 01:31:16,640
+It will be something you can see and play
+with.
+
+815
+01:31:16,640 --> 01:31:21,390
+If we're going to do it all ourselves, we
+have to write everything ourselves. If we
+
+816
+01:31:21,390 --> 01:31:24,700
+want a sigmoid function, we have to write
+the sigmoid function.
+
+817
+01:31:24,700 --> 01:31:29,750
+Anytime we write any function, we have to
+create its derivative - so here's its derivative.
+
+818
+01:31:29,750 --> 01:31:33,830
+I'm going to use this approach where underscore-d
+( _d ) is the derivative of a function.
+
+819
+01:31:33,830 --> 01:31:37,720
+So I'm going to have to have relu and the
+derivative of relu (relu_d).A
+
+820
+01:31:37,720 --> 01:31:44,660
+The Eucledian distance, and the derivative
+of the Euclidian distance (dist_d).
+
+821
+01:31:44,660 --> 01:31:55,590
+The cross-entropy, and the derivative of the
+cross-entropy (x_entropy_d). Note here that
+
+822
+01:31:55,590 --> 01:32:02,830
+I am clipping my predictions, because if you
+have zeros or ones here, you're going to get
+
+823
+01:32:02,830 --> 01:32:08,550
+infinities - which destroys everything. This
+did actually happen. I didn't have this clipping
+
+824
+01:32:08,550 --> 01:32:11,690
+at first and I started to get infinities.
+
+825
+01:32:11,690 --> 01:32:18,610
+Here's my softmax, here's my derivative of
+softmax (softmax_d).
+
+826
+01:32:18,610 --> 01:32:22,560
+So then I go through and I double check that
+the answers I get with my versions are the
+
+827
+01:32:22,560 --> 01:32:32,620
+same as the answers I get with the Theano
+versions, and they all seem to be fine.
+
+828
+01:32:32,620 --> 01:32:37,860
+I am going to use as my activation function
+relu, which means the derivative is relu_d.
+
+829
+01:32:37,860 --> 01:32:42,620
+And my loss function is cross-entropy (x_entropy),
+so the loss function is x_entropy_d)
+
+830
+01:32:42,620 --> 01:32:45,210
+I also have to write my own scan.
+
+831
+01:32:45,210 --> 01:32:50,390
+Do you guys remember scan? Scan is this thing
+where we go through a sequence one step at
+
+832
+01:32:50,390 --> 01:32:54,650
+a time, calling a function on each element
+of the sequence.
+
+833
+01:32:54,650 --> 01:32:58,211
+Each time the function is going to get two
+things - it's going to get the next element
+
+834
+01:32:58,211 --> 01:33:02,699
+of the sequence as well as the previous result
+of the call.
+
+835
+01:33:02,699 --> 01:33:11,000
+So for example,scan on add two things together
+on integers from one to five [ scan(lambda
+
+836
+01:33:11,000 --> 01:33:15,920
+prev,curr: prev+curr, 0, range((5)) ] is going
+to give us the cumulative sum.
+
+837
+01:33:15,920 --> 01:33:20,280
+One of the reasons we do this is GPUs don't
+know how to do loops. Our Theano version uses
+
+838
+01:33:20,280 --> 01:33:25,940
+scan, and I wanted to make this as close to
+Theano as possible.
+
+839
+01:33:25,940 --> 01:33:31,940
+In Theano, scan is not implemeted like this
+with a for loop. In Theano, they use a very
+
+840
+01:33:31,940 --> 01:33:38,390
+clever approach, creating a tree where it
+does a lot of things simultaneously, and gradually
+
+841
+01:33:38,390 --> 01:33:48,230
+combines them together. Next year we may even
+look at how that works, if anybody's interested.
+
+842
+01:33:48,230 --> 01:33:53,690
+In order to create our Nietzschean philosopy
+we need an input and an output. So we have
+
+843
+01:33:53,690 --> 01:34:01,670
+the 8-character squences one-hot encoded for
+our inputs. And the 8-character sequences
+
+844
+01:34:01,670 --> 01:34:05,880
+moved across by one, one-hot encoded, for
+our outputs.
+
+845
+01:34:05,880 --> 01:34:12,840
+And we've got our vocab size, which is 86
+characters.
+
+846
+01:34:12,840 --> 01:34:17,690
+So here's our input and output shape - 75,000
+phrases, each one has 8 characters in, and
+
+847
+01:34:17,690 --> 01:34:25,980
+each of those 8 characters is a one-hot encoded
+vector of size 86.
+
+848
+01:34:25,980 --> 01:34:34,670
+We first of all need to do the forward pass.
+So the forward pass is to scan through all
+
+849
+01:34:34,670 --> 01:34:42,280
+the characters in the n-th phrase, the input
+and output, calling some function.
+
+850
+01:34:42,280 --> 01:34:47,660
+So here is the forward pass. This is basically
+identical as what we saw in Theano. In Theano
+
+851
+01:34:47,660 --> 01:34:50,010
+we had to lay out the forward pass as well.
+
+852
+01:34:50,010 --> 01:34:56,060
+To create the hidden state, we had to take
+the dot product of x with its weight matrix,
+
+853
+01:34:56,060 --> 01:35:01,020
+and the dot product of the hidden with its
+weight matrix, and then we had to put all
+
+854
+01:35:01,020 --> 01:35:02,270
+through the activation function.
+
+855
+01:35:02,270 --> 01:35:03,970
+[Time: 1:35 hour mark]
+
+856
+01:35:03,970 --> 01:35:09,230
+Then to create the predictions, we had to
+take the dot product of the hidden with its
+
+857
+01:35:09,230 --> 01:35:15,790
+weight matrix, and then put that through softmax.
+
+858
+01:35:15,790 --> 01:35:20,870
+We have to keep track of all of the state
+that it needs, so at the end we will return
+
+859
+01:35:20,870 --> 01:35:31,470
+the loss: The pre_hidden and the pre_pred,
+because we're going to be using them every
+
+860
+01:35:31,470 --> 01:35:34,530
+time we go through. In the back-prop we'll
+be using those
+
+861
+01:35:34,530 --> 01:35:39,510
+We need to know the hidden state of course,
+we have to keep track of that because we're
+
+862
+01:35:39,510 --> 01:35:45,810
+going to be using it the next time we go through
+the RNN. And of course we're going to need
+
+863
+01:35:45,810 --> 01:35:47,210
+our actual predictions.
+
+864
+01:35:47,210 --> 01:35:50,960
+So, that's the forward pass - very similar
+to Theano.
+
+865
+01:35:50,960 --> 01:35:57,390
+The backward pass is the bit I wanted to show
+you, and I wanted to show you how I think
+
+866
+01:35:57,390 --> 01:36:04,400
+about it.
+
+867
+01:36:04,400 --> 01:36:10,260
+This is how I think of it. All of my arrows,
+I've reversed their direction. The reason
+
+868
+01:36:10,260 --> 01:36:18,730
+for that is when we create a derivative, we're
+really saying how does a change in the input
+
+869
+01:36:18,730 --> 01:36:19,730
+impact the output.
+
+870
+01:36:19,730 --> 01:36:24,660
+To do that, we have to use the chain rule.
+We have to go back from the end, all the way
+
+871
+01:36:24,660 --> 01:36:25,960
+back to the start.
+
+872
+01:36:25,960 --> 01:36:36,680
+So this is our output last hidden layer activation
+matrix. This is our loss, adding together
+
+873
+01:36:36,680 --> 01:36:44,320
+at each of the characters. If we want the
+derivative of the loss with respect to this
+
+874
+01:36:44,320 --> 01:36:50,010
+hidden activation, we would have to take the
+derivative of the loss with this output activation
+
+875
+01:36:50,010 --> 01:36:55,900
+and multiply it by the derivative of this
+output activation with this hidden activation.
+
+876
+01:36:55,900 --> 01:37:01,750
+You have to then multiply them together, because
+that's the chain rule. The chain rule basically
+
+877
+01:37:01,750 --> 01:37:10,590
+tells you - to go from some function of some
+other function of x, the derivative is the
+
+878
+01:37:10,590 --> 01:37:17,700
+product.
+
+879
+01:37:17,700 --> 01:37:24,070
+So I find it really helpful to literally draw
+the arrows. So let's draw the arrors from
+
+880
+01:37:24,070 --> 01:37:27,550
+the loss function to each of the outputs as
+well.
+
+881
+01:37:27,550 --> 01:37:37,520
+So to calculate the derivatives, we basically
+have to go through and undo each of those
+
+882
+01:37:37,520 --> 01:37:41,680
+steps. In order to figure out how that input
+would change that output, we have to basically
+
+883
+01:37:41,680 --> 01:37:46,730
+have to undo it. We have to go back along
+the arrow in the opposite direction.
+
+884
+01:37:46,730 --> 01:37:55,980
+So how do we get from the loss to the output?
+To do that we need the derivative of the loss
+
+885
+01:37:55,980 --> 01:38:02,170
+function. And we're also going to need, if
+we're going to get back to the activation
+
+886
+01:38:02,170 --> 01:38:05,760
+function, we're going to need the derivative
+of the activation function as well.
+
+887
+01:38:05,760 --> 01:38:13,620
+So you can see it here. This is a single backward
+pass. We grab one of our inputs, one of our
+
+888
+01:38:13,620 --> 01:38:20,850
+outputs and then we go backwards through each
+one, each of the 8 characters, from the end
+
+889
+01:38:20,850 --> 01:38:22,370
+to the start.
+
+890
+01:38:22,370 --> 01:38:28,440
+So grab our input character and our ouput
+character. The first thing you want is the
+
+891
+01:38:28,440 --> 01:38:35,170
+derivative of pre_pred. [d_pre_pred = softmax_d(pre_pred).dot(loss_d(ypred,y))
+] Remember, pre_pred was the prediction prior
+
+892
+01:38:35,170 --> 01:38:38,800
+to putting it through the softmax.
+
+893
+01:38:38,800 --> 01:38:45,040
+So that was the bit I just showed you. It
+was the derivative of the softmax times the
+
+894
+01:38:45,040 --> 01:38:51,330
+derivative of the loss. So the derivative
+of the loss is going to get us from here back
+
+895
+01:38:51,330 --> 01:38:58,170
+to here. And the derivative of the softmax
+gets us from here back to the other side of
+
+896
+01:38:58,170 --> 01:39:09,040
+the activation function.
+
+897
+01:39:09,040 --> 01:39:14,360
+So we want to keep going further, which is
+we want to get back to the other side of the
+
+898
+01:39:14,360 --> 01:39:25,360
+hidden. We want to get all the way over to
+here.
+
+899
+01:39:25,360 --> 01:39:30,420
+For those of you that haven't done vector
+calculus (which I'm sure is many of you),
+
+900
+01:39:30,420 --> 01:39:37,380
+just take my word for it when I say the derivative
+of a matrix multiplication is the multiplication
+
+901
+01:39:37,380 --> 01:39:39,650
+with the transpose.
+
+902
+01:39:39,650 --> 01:39:50,860
+In order to take the derivative of the pre_hidden
+by its weights, we simply take it by its transpose
+
+903
+01:39:50,860 --> 01:39:52,080
+of its weights.
+
+904
+01:39:52,080 --> 01:39:55,270
+[Time: 1:40 hour mark]
+
+905
+01:39:55,270 --> 01:40:02,370
+Remember, the hidden we actually have two
+arrows coming back out of it, and also we've
+
+906
+01:40:02,370 --> 01:40:09,100
+got two arrows coming in to it. So we're going
+to have to add together that derivative and
+
+907
+01:40:09,100 --> 01:40:10,100
+that derivative.
+
+908
+01:40:10,100 --> 01:40:11,100
+d_pre_hidden = (np.dot(d_pre_hidden, w_h.T)
++ np.dot(d_pre_pred, w_y.T) * act_d(pre_hidden)
+
+909
+01:40:11,100 --> 01:40:17,460
+So here is the second part, there it is with
+respect to the outputs, and there it is with
+
+910
+01:40:17,460 --> 01:40:19,050
+respect to the hidden.
+
+911
+01:40:19,050 --> 01:40:24,940
+And then finally we have to undo the activation
+function, so multiply it by the derivative
+
+912
+01:40:24,940 --> 01:40:30,420
+of the activation function. So that's the
+chain rule that gets us all the way back to
+
+913
+01:40:30,420 --> 01:40:34,550
+here.
+
+914
+01:40:34,550 --> 01:40:41,230
+So now that we've got those two pieces of
+information, we can update our weights.
+
+915
+01:40:41,230 --> 01:40:48,860
+We can now say for the blue line, what are
+these weights now going to equal? We basically
+
+916
+01:40:48,860 --> 01:40:56,810
+have to take the derivative we got to at this
+point (d_pre_pred), we have to multiply it
+
+917
+01:40:56,810 --> 01:41:00,750
+by our learning rate (alpha).
+
+918
+01:41:00,750 --> 01:41:06,860
+Then we have to undo the multiplication by
+the hidden state to get the derivative with
+
+919
+01:41:06,860 --> 01:41:12,590
+respect to the weights. I created this little
+columnify function (col) to do that -- it's
+
+920
+01:41:12,590 --> 01:41:18,280
+turning a vector into a column. It's taking
+its transpose, if you like. That gives me
+
+921
+01:41:18,280 --> 01:41:21,500
+my new output weights.
+
+922
+01:41:21,500 --> 01:41:26,340
+My new hidden weights are basically the same
+thing. It's the learning rate times the derivative
+
+923
+01:41:26,340 --> 01:41:30,990
+we just calculated, and then we have to do
+its weights.
+
+924
+01:41:30,990 --> 01:41:38,630
+Our new input weights are the learning rates
+times the pre_hidden times the columnified
+
+925
+01:41:38,630 --> 01:41:40,050
+version of x.
+
+926
+01:41:40,050 --> 01:41:48,070
+So I'm going through that very quickly. The
+details aren't important, but it might be
+
+927
+01:41:48,070 --> 01:41:58,640
+fun to look at it. You can see here in this
+here are all the steps to do backprop through
+
+928
+01:41:58,640 --> 01:41:59,850
+an RNN.
+
+929
+01:41:59,850 --> 01:42:16,170
+Which is also why we would never want to do
+this by hand again. Thank god Theano does
+
+930
+01:42:16,170 --> 01:42:29,690
+this for us. I think it's useful just to see
+it though.
+
+931
+01:42:29,690 --> 01:42:36,270
+Finally I have to create my initial weight
+matrices, normally distributed matrices where
+
+932
+01:42:36,270 --> 01:42:43,990
+the normal distribution is just the square
+root of 2 divided by the number of inputs.
+
+933
+01:42:43,990 --> 01:42:51,090
+For my hidden matrix for a simple RNN, we
+will use the identity matrix to initialize
+
+934
+01:42:51,090 --> 01:42:52,090
+it.
+
+935
+01:42:52,090 --> 01:42:54,750
+Question: Is state maintained across the samples?
+
+936
+01:42:54,750 --> 01:43:01,870
+Answer: We haven't gotten to that bit yet.
+It all depends on how we use it. At this stage,
+
+937
+01:43:01,870 --> 01:43:08,130
+all we've gotten to is we've defined the matrices
+and we've defined the transitions. Whether
+
+938
+01:43:08,130 --> 01:43:13,900
+we maintain state will depend entirely on
+what we do next, which is the loop.
+
+939
+01:43:13,900 --> 01:43:21,900
+And so here is our loop. In our loop, we're
+going to go through a bunch of examples, run
+
+940
+01:43:21,900 --> 01:43:34,530
+one forward step, one backwards step and then
+from time-to-time, print out how we're getting
+
+941
+01:43:34,530 --> 01:43:35,530
+along.
+
+942
+01:43:35,530 --> 01:43:46,440
+In this case, the forward step is passing
+to scan the initial state is a whole bunch
+
+943
+01:43:46,440 --> 01:43:53,710
+of zeros. So currently, this is resetting
+the state. It's not doing it statefully.
+
+944
+01:43:53,710 --> 01:43:59,080
+If you wanted to do it statefully, it would
+be pretty easy to change. You would have to
+
+945
+01:43:59,080 --> 01:44:07,440
+have the final state returned by this and
+then feed it back the next time through the
+
+946
+01:44:07,440 --> 01:44:08,630
+loop.
+
+947
+01:44:08,630 --> 01:44:12,820
+Having said that, you probably won't get great
+results, because remember when you do things
+
+948
+01:44:12,820 --> 01:44:18,270
+statefully you're much more likely to have
+gradients and activations explode, unless
+
+949
+01:44:18,270 --> 01:44:25,930
+you do a GRU or an LSTM.
+
+950
+01:44:25,930 --> 01:44:36,590
+So that was a very quick fly-through and more
+showing you around the code. If you're interested,
+
+951
+01:44:36,590 --> 01:44:39,920
+you can check it out.
+
+952
+01:44:39,920 --> 01:44:47,680
+What I really wanted to get on to was this
+more interesting type of RNN -- there's actually
+
+953
+01:44:47,680 --> 01:44:55,810
+two interesting types of RNN -- called Long
+Short-Term Memory and Gated Recurrent Unit.
+
+954
+01:44:55,810 --> 01:45:04,620
+Many of you will have heard of the one on
+the left, LSTM.
+
+955
+01:45:04,620 --> 01:45:08,930
+[Time: 1:45 hour mark]
+
+956
+01:45:08,930 --> 01:45:14,940
+Question: Mini-batches?
+Answer: For stateful RNNs, you can't exactly
+
+957
+01:45:14,940 --> 01:45:20,580
+have mini-batches because you're doing one
+at a time. And in our case, we were going
+
+958
+01:45:20,580 --> 01:45:32,290
+through it in order. Using mini-batches is
+a great way to parallelize things on the GPU
+
+959
+01:45:32,290 --> 01:45:41,350
+and make things run faster. We have to be
+careful about how we're thinking about state.
+
+960
+01:45:41,350 --> 01:45:44,960
+LSTMs, a lot of you will have heard about
+because they've been very popular over the
+
+961
+01:45:44,960 --> 01:45:50,140
+last couple years for all kinds of cool stuff
+that Google does.
+
+962
+01:45:50,140 --> 01:45:59,250
+On the right is the GRU, which is simpler
+and better than the LSTM. I'm not going to
+
+963
+01:45:59,250 --> 01:46:03,130
+talk about the LSTM, I'm going to talk about
+the GRU.
+
+964
+01:46:03,130 --> 01:46:09,460
+They're both techniques for building a RNN
+where your gradients are much less likely
+
+965
+01:46:09,460 --> 01:46:21,020
+to explode. Another great example of a clever
+architecture, but it's just going to be more
+
+966
+01:46:21,020 --> 01:46:25,670
+of using the same ideas that we've seen again
+and again.
+
+967
+01:46:25,670 --> 01:46:37,390
+What we have here on the right hand side,
+is this box is basically zooming in to what's
+
+968
+01:46:37,390 --> 01:46:41,990
+going on inside one of these circles in a
+GRU.
+
+969
+01:46:41,990 --> 01:46:46,970
+Normally, in our standard GRU, what's going
+on in here is pretty simple. We do a multiplication
+
+970
+01:46:46,970 --> 01:46:53,430
+by this w_h weight matrix and stick it through
+an activation function, grab our input and
+
+971
+01:46:53,430 --> 01:47:01,960
+do a multiplication by weight matrix to its
+activation function and we add the two together.
+
+972
+01:47:01,960 --> 01:47:07,970
+A GRU is going to do something more complex.
+We still have the input coming in and the
+
+973
+01:47:07,970 --> 01:47:13,110
+output going out (that's what these arrows
+are -- they represent new input character
+
+974
+01:47:13,110 --> 01:47:14,110
+and our prediction).
+
+975
+01:47:14,110 --> 01:47:22,780
+What's going on the middle is more complex.
+We still have our hidden state just like before.
+
+976
+01:47:22,780 --> 01:47:32,841
+But whereas in a normal RNN, the hidden state
+each time simply updates itself; it just goes
+
+977
+01:47:32,841 --> 01:47:39,570
+through a weight matrix and an activation
+fuction and it updates itself.
+
+978
+01:47:39,570 --> 01:47:44,400
+But in this case, you can see that the loop
+looks like its going to come back to itself,
+
+979
+01:47:44,400 --> 01:47:52,570
+but then there's this gate here (at Z), so
+it's actually not just a self-loop ... there's
+
+980
+01:47:52,570 --> 01:47:53,570
+something more complicated.
+
+981
+01:47:53,570 --> 01:47:57,670
+In order to understand what's going on, we're
+going to have to follow across to the right-hand
+
+982
+01:47:57,670 --> 01:48:03,190
+side. On the right-hand side, you can see
+that the hidden state is going to go through
+
+983
+01:48:03,190 --> 01:48:06,310
+another gate (at r).
+
+984
+01:48:06,310 --> 01:48:16,230
+What's a gate? A gate is simply a little mini
+neural network which is going to output a
+
+985
+01:48:16,230 --> 01:48:21,970
+bunch of numbers between 0 and 1, which we're
+going to multiply by its input.
+
+986
+01:48:21,970 --> 01:48:27,670
+In this particular one, the "r" stands for
+reset.
+
+987
+01:48:27,670 --> 01:48:32,860
+The numbers between 0 and 1 ... if they were
+all 0, then the thing coming out of the reset
+
+988
+01:48:32,860 --> 01:48:40,570
+gate would be just a bunch of zeros. In other
+words, it would allow this network to forget
+
+989
+01:48:40,570 --> 01:48:42,680
+the hidden state.
+
+990
+01:48:42,680 --> 01:48:50,520
+Or it could be a big bunch of 1's, which would
+allow the network to remember the hidden state.
+
+991
+01:48:50,520 --> 01:48:56,910
+Do we want it to remember or forget? We don't
+know, which is why we implement this gate
+
+992
+01:48:56,910 --> 01:48:59,570
+using a little neural network.
+
+993
+01:48:59,570 --> 01:49:08,780
+This neural network is going to have two inputs:
+the input to the GRU unit and the current
+
+994
+01:49:08,780 --> 01:49:17,730
+hidden state. So it's going to learn a set
+of weights so it can decide when to forget.
+
+995
+01:49:17,730 --> 01:49:24,420
+It's now got the ability to forget what it
+knows. That's what the reset gate does.
+
+996
+01:49:24,420 --> 01:49:30,260
+Assuming that the reset gate has at least
+some non-zero entries (which it surely will,
+
+997
+01:49:30,260 --> 01:49:36,330
+most of the time), then whatever comes through
+we're going to call h-tilda (in my code, I
+
+998
+01:49:36,330 --> 01:49:37,960
+call it h_new).
+
+999
+01:49:37,960 --> 01:49:46,390
+So this is the new value of the hidden state
+after being reset.
+
+1000
+01:49:46,390 --> 01:49:54,910
+So then finally, the original hidden state
+goes up to this top bit here, and there's
+
+1001
+01:49:54,910 --> 01:50:00,610
+a gate (z) which decides how much of each
+one should we have.
+
+1002
+01:50:00,610 --> 01:50:01,770
+[Time: 1:50 hour mark]
+
+1003
+01:50:01,770 --> 01:50:12,540
+So this gate "z" is an update gate. This gate
+is going to decide if it's 1, we'll take more
+
+1004
+01:50:12,540 --> 01:50:16,780
+from this (left) side. If it's 0, we'll take
+more from this (right) side.
+
+1005
+01:50:16,780 --> 01:50:21,920
+And again, that's implemented as a little
+neural network. I think the easiest way to
+
+1006
+01:50:21,920 --> 01:50:27,720
+understand this is probably to look at the
+code. So I have implemented this in Theano.
+
+1007
+01:50:27,720 --> 01:50:35,050
+You can use a GRU in Keras by simply replacing
+the words "SimpleRNN" with "GRU". You don't
+
+1008
+01:50:35,050 --> 01:50:39,460
+really need to know this to use it. And you
+get pretty good results.
+
+1009
+01:50:39,460 --> 01:50:49,480
+Here's what it looks like when implemented.
+We don't just have a hidden weight matrix
+
+1010
+01:50:49,480 --> 01:50:55,190
+and an input weight matrix and an output weight
+matrix anymore. We also have a hidden and
+
+1011
+01:50:55,190 --> 01:51:04,440
+input weight matrix for our reset gate neural
+net and for our update gate neural net.
+
+1012
+01:51:04,440 --> 01:51:10,130
+So here's the definition of a gate. A gate
+is something that takes its inputs, its hidden
+
+1013
+01:51:10,130 --> 01:51:17,621
+state, its hidden state weights, its input
+weights and its biases. Then it does a dot
+
+1014
+01:51:17,621 --> 01:51:23,470
+product of the x with W_x, a dot product of
+h with W_h and adds the biases.
+
+1015
+01:51:23,470 --> 01:51:30,800
+That's what I meant by a mini neural net.
+It's hardly a neural net, it's just got one
+
+1016
+01:51:30,800 --> 01:51:31,800
+layer.
+
+1017
+01:51:31,800 --> 01:51:38,500
+So that's the definition of the reset gate
+and the update gate.
+
+1018
+01:51:38,500 --> 01:51:45,820
+In our step function (this is the thing that
+runs each time on the scan), it looks exactly
+
+1019
+01:51:45,820 --> 01:51:48,960
+the same as what we looked at last week.
+
+1020
+01:51:48,960 --> 01:51:55,490
+The output equals the hidden state times the
+hidden weight matrix plus the hidden biases.
+
+1021
+01:51:55,490 --> 01:52:04,740
+The new hidden state equals our inputs times
+its weights and the hidden state times its
+
+1022
+01:52:04,740 --> 01:52:10,470
+weights plus the biases. But this time the
+hidden weights are multiplied by the reset
+
+1023
+01:52:10,470 --> 01:52:17,360
+gate. And the reset gate is just our little
+neural net.
+
+1024
+01:52:17,360 --> 01:52:28,070
+So now that we have h_new, our actual hidden
+state is equal to that times 1 minus the update
+
+1025
+01:52:28,070 --> 01:52:32,420
+gate plus our previous hidden state times
+the update gate.
+
+1026
+01:52:32,420 --> 01:52:33,420
+h = update*h + (1 - update)*h_new
+
+1027
+01:52:33,420 --> 01:52:41,630
+You can see that update plus 1 - update will
+add to 1, so you can see why it's being drawn
+
+1028
+01:52:41,630 --> 01:52:49,070
+like so, this can be anywhere at either end,
+or somewhere in between.
+
+1029
+01:52:49,070 --> 01:52:59,590
+So the update gate decides how much is h_new
+going to replace the new hidden state.
+
+1030
+01:52:59,590 --> 01:53:05,580
+So actually although people tend to talk about
+LSTMs and GRUs being pretty complex, it really
+
+1031
+01:53:05,580 --> 01:53:11,090
+wasn't much code. It actually wasn't that
+hard to write.
+
+1032
+01:53:11,090 --> 01:53:16,610
+The key outcome of this though is because
+we now have these reset and update gates is
+
+1033
+01:53:16,610 --> 01:53:23,880
+that it has the ability to learn these special
+sets of weights to make sure that it throws
+
+1034
+01:53:23,880 --> 01:53:29,840
+away state when that's a good idea. Or to
+ignore state when that's a good idea.
+
+1035
+01:53:29,840 --> 01:53:36,020
+So these extra degrees of freedom allow SGD
+to find better answers basically.
+
+1036
+01:53:36,020 --> 01:53:42,990
+And so again, this is one of these things
+where coming up with architectures which just
+
+1037
+01:53:42,990 --> 01:53:48,820
+try to make it easier for the optimizer to
+come up with good answers.
+
+1038
+01:53:48,820 --> 01:53:53,650
+Everything up to this is identical to what
+we looked at last week. We calculated the
+
+1039
+01:53:53,650 --> 01:54:09,490
+scan function, we calculated the loss, we
+calculated the gradients, we do the SGD updates.
+
+1040
+01:54:09,490 --> 01:54:17,490
+Really the main reason I wanted to do all
+that today was to show you the back prop example.
+
+1041
+01:54:17,490 --> 01:54:23,150
+I know some learning styles are more detail-oriented
+as well, so hopefully some of you will have
+
+1042
+01:54:23,150 --> 01:54:26,530
+found that helpful.
+
+1043
+01:54:26,530 --> 01:54:32,950
+Anytime you find yourself wondering how did
+this neural network do this, you can come
+
+1044
+01:54:32,950 --> 01:54:38,580
+back to this piece of code ... that's all
+it did.
+
+1045
+01:54:38,580 --> 01:54:47,180
+Where you really get successful with neural
+nets is when you go to a whole nother level,
+
+1046
+01:54:47,180 --> 01:54:53,380
+and you don't think of it at that level any
+more. Instead you start thinking ... if I'm
+
+1047
+01:54:53,380 --> 01:54:58,610
+an optimizer and I'm given an architecture
+like this, what would I have to do in order
+
+1048
+01:54:58,610 --> 01:54:59,610
+to optimize it.
+
+1049
+01:54:59,610 --> 01:55:01,120
+[Time: 1:55 hour mark]
+
+1050
+01:55:01,120 --> 01:55:07,130
+Once you start thinking like that, then you
+can start thinking in this kind-of-like an
+
+1051
+01:55:07,130 --> 01:55:11,350
+upside-down way that is necessary to come
+up with good architectures.
+
+1052
+01:55:11,350 --> 01:55:20,230
+You can start to understand why this convolution
+layer, followed by this average pooling layer,
+
+1053
+01:55:20,230 --> 01:55:28,020
+gives the answers that it does.
+
+1054
+01:55:28,020 --> 01:55:37,080
+There's two levels at which you need to think
+about neural nets, the sooner you can think
+
+1055
+01:55:37,080 --> 01:55:41,360
+about it at this super high level I feel like
+the sooner you'll do well with them.
+
+1056
+01:55:41,360 --> 01:55:49,240
+One of the best ways to do that is over the
+next couple of weeks, run this fish notebook
+
+1057
+01:55:49,240 --> 01:55:53,800
+yourself and play around with it a lot.
+
+1058
+01:55:53,800 --> 01:56:01,460
+Make sure you know how to do these things
+that I did where I actually create a little
+
+1059
+01:56:01,460 --> 01:56:07,190
+function that allows me to spit out any of
+the layers and visualize it. Make sure you
+
+1060
+01:56:07,190 --> 01:56:13,290
+know how to inspect it, really look a the
+inputs and outputs. I think that's the best
+
+1061
+01:56:13,290 --> 01:56:16,450
+way to get an intuition.
+
+1062
+01:56:16,450 --> 01:56:26,460
+So this, especially the first half of this
+class, was a bit of a preview of next year.
+
+1063
+01:56:26,460 --> 01:56:30,570
+In the first six weeks, you learned all the
+pieces.
+
+1064
+01:56:30,570 --> 01:56:37,350
+Then today we very rapidly tried putting those
+pieces together in 1000 different ways and
+
+1065
+01:56:37,350 --> 01:56:44,970
+saw what happened. There's a million more
+ways that we know of, and probably a billion
+
+1066
+01:56:44,970 --> 01:56:47,570
+more ways we don't know of.
+
+1067
+01:56:47,570 --> 01:56:56,860
+Knowing this little set of tools -- convolutions,
+fully connected layers, activation functions,
+
+1068
+01:56:56,860 --> 01:57:04,380
+sgd -- you're now able to be an architect
+and create these architectures.
+
+1069
+01:57:04,380 --> 01:57:10,010
+Keras' functional API makes it ridiculously
+easy. Today I created all of the architectures
+
+1070
+01:57:10,010 --> 01:57:17,590
+you see today. Today. This week, while I was
+sick and my baby wasn't sleeping. My brain
+
+1071
+01:57:17,590 --> 01:57:25,890
+wasn't even working, that's how easy Keras
+makes this.
+
+1072
+01:57:25,890 --> 01:57:34,190
+It takes a few weeks to build your comfort
+level up, but hopefully you can try that.
+
+1073
+01:57:34,190 --> 01:57:40,441
+Most importantly, over the next few weeks,
+as Rachel and I (with some of your help) start
+
+1074
+01:57:40,441 --> 01:57:46,360
+to develop the MOOC, you guys can stay talking
+on the forums.
+
+1075
+01:57:46,360 --> 01:57:52,370
+Keep working through whatever problems you're
+interested in. Whether it be the problems
+
+1076
+01:57:52,370 --> 01:57:57,730
+you are working on at your organizations,
+or your personal passion projects, or if you
+
+1077
+01:57:57,730 --> 01:58:00,480
+want to try and win a competition or two.
+
+1078
+01:58:00,480 --> 01:58:07,090
+Rachel and I are going to still be on the
+forums. In a few weeks time, when the MOOC
+
+1079
+01:58:07,090 --> 01:58:18,650
+goes online, hopefully there will be thousands
+of people joining this.
+
+1080
+01:58:18,650 --> 01:58:26,030
+I really hope you guys will stay a part of
+it and help. Can you imagine that first day,
+
+1081
+01:58:26,030 --> 01:58:34,460
+when half the people think a python is a snake,
+and don't know how to connect to an AWS instance.
+
+1082
+01:58:34,460 --> 01:58:42,740
+You'll be able to say, "Read the Wiki, here's
+the page, I had that problem too"
+
+1083
+01:58:42,740 --> 01:58:50,280
+Our goal here is to create a new generation
+of deep learning practicioners. People who
+
+1084
+01:58:50,280 --> 01:58:56,110
+have useful problems that they're trying to
+solve and can use this tool to solve them.
+
+1085
+01:58:56,110 --> 01:59:41,130
+Rather than create more and more exclusive,
+heavily mathematical content that's designed
+
+1086
+01:59:41,130 --> 00:00:00,000
+to put people off. That's our hope, that's
+why we're doing this.
+

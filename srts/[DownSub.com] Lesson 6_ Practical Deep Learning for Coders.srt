@@ -1,0 +1,5639 @@
+1
+00:00:00,500 --> 00:00:08,650
+We talked about pseudo-labeling several weeks
+ago as a way of dealing with semi-supervised
+
+2
+00:00:08,650 --> 00:00:09,650
+learning.
+
+3
+00:00:09,650 --> 00:00:16,239
+Remember how in the State Farm competition,
+we had far more unlabeled images in the test
+
+4
+00:00:16,239 --> 00:00:21,800
+set than we had in the training set and the
+question was how do we take advantage of knowing
+
+5
+00:00:21,800 --> 00:00:25,380
+something about the structure even though
+they don't have labels.
+
+6
+00:00:25,380 --> 00:00:29,699
+And we learned this crazy technique called
+pseudo-labeling, or a combination of pseudo-labeling
+
+7
+00:00:29,699 --> 00:00:38,030
+and knowledge distillation, which is where
+you predict the outputs of the test set and
+
+8
+00:00:38,030 --> 00:00:45,510
+then you act as if those outputs were true
+labels, ind of add them in to your training.
+
+9
+00:00:45,510 --> 00:00:50,120
+The reason I wasn't able to actually implement
+that and see how it works because we needed
+
+10
+00:00:50,120 --> 00:00:58,670
+a way of combining two different sets of batches.
+In particular, the advice I saw from Jeff
+
+11
+00:00:58,670 --> 00:01:07,560
+Hinton when he wrote about pseudo-labeling
+is thatyou want 1-in-3 or 1-in-4 of your training
+
+12
+00:01:07,560 --> 00:01:13,780
+data to come from your pseudo-labeled data,
+and the rest to come from your real data.
+
+13
+00:01:13,780 --> 00:01:22,220
+So the good news is I built that thing and
+it was ridiculously easy. This is the entire
+
+14
+00:01:22,220 --> 00:01:28,720
+code, I call it the MixIterator, and it will
+be in our utils class.
+
+15
+00:01:28,720 --> 00:01:37,590
+All it does is it's something where you create
+your generators or whatever batches you like
+
+16
+00:01:37,590 --> 00:01:45,490
+and then you pass an array of those iterators
+to this constructor and then you pass an array
+
+17
+00:01:45,490 --> 00:01:48,979
+of those iterators to this constructor. Every
+time the Keras system calls next on it, it
+
+18
+00:01:48,979 --> 00:01:55,979
+grabs the next batch from all of those sets
+of batches and concatenates themall together.
+
+19
+00:01:55,979 --> 00:02:05,189
+I tried doing pseudo-labeling on Nmist (remember
+on Nmist we already had a pretty close to
+
+20
+00:02:05,189 --> 00:02:19,120
+state-of-the-art result, 99.69). So I thought,
+can we improve it any more if we use pseudo-labeling
+
+21
+00:02:19,120 --> 00:02:20,340
+on the test set.
+
+22
+00:02:20,340 --> 00:02:29,590
+So to do so, just do this -- you grab your
+training batches as usual, using data augmentation
+
+23
+00:02:29,590 --> 00:02:45,280
+if you want. Then you create your pseudo-batches
+by saying my labels are my test set [X_test]
+
+24
+00:02:45,280 --> 00:02:51,950
+and my labels are my predictions [avg_preds].
+
+25
+00:02:51,950 --> 00:02:59,239
+So now this is the second set of batches,
+my pseudo-batches. Then passing an array of
+
+26
+00:02:59,239 --> 00:03:06,709
+those two things to the MixIterator, which
+is going to give us a few images from here
+
+27
+00:03:06,709 --> 00:03:09,739
+(batches) and a few images from here (ps_batches).
+
+28
+00:03:09,739 --> 00:03:19,489
+How many? However many you asked for. In this
+case I was getting 64 from my training set
+
+29
+00:03:19,489 --> 00:03:30,220
+and 64/4 from my test set (Come to think of
+it, that's probably less than Hinton recommends).
+
+30
+00:03:30,220 --> 00:03:37,470
+Now I can use that like any other generator.
+Just call model.fit_generator, pass in that
+
+31
+00:03:37,470 --> 00:03:42,950
+thing I just created. So what it's going to
+do is create a bunch of batches that will
+
+32
+00:03:42,950 --> 00:03:56,080
+be 64 items from my regular training set and
+a quarter of that for my pseudo-labeled set.
+
+33
+00:03:56,080 --> 00:04:01,570
+And lo and behold, it gave me a slightly better
+score. There's only so much better we can
+
+34
+00:04:01,570 --> 00:04:05,250
+do at this point, but that took us up to 99.72.
+
+35
+00:04:05,250 --> 00:04:13,160
+It's worth mentioning that every .01% is just
+one image, so we're really on the edges at
+
+36
+00:04:13,160 --> 00:04:18,238
+this point, but this is getting even closer
+to the state-of-the-art, despite the fact
+
+37
+00:04:18,238 --> 00:04:21,258
+that we're not doing any handwriting-specific
+techniques.
+
+38
+00:04:21,259 --> 00:04:28,680
+I also tried it on the Fish dataset. I realized
+at that point that this allows us to do something
+
+39
+00:04:28,680 --> 00:04:32,090
+else.
+
+40
+00:04:32,090 --> 00:04:35,940
+Normally when we train on the training set,
+we set aside a validation set.
+
+41
+00:04:35,940 --> 00:04:42,449
+If we don't want to submit to Kaggle, we only
+train on a subset of the data they gave us,
+
+42
+00:04:42,449 --> 00:04:47,169
+we don't train on the validation set as well
+(which is not great, right).
+
+43
+00:04:47,169 --> 00:04:55,930
+So what you can do is create 3 sets of batches
+- you can have your regular training batches,
+
+44
+00:04:55,930 --> 00:05:01,770
+you can have your pseudo-labeled test batches.
+If you think about it, you could also add
+
+45
+00:05:01,770 --> 00:05:05,620
+in some validation batches using the true
+labels for the validation set.
+
+46
+00:05:05,620 --> 00:05:06,620
+[Time: 5 minute mark]
+
+47
+00:05:06,620 --> 00:05:11,500
+This is something you do right at the end.
+Once you say this is the model I'm happy with,
+
+48
+00:05:11,500 --> 00:05:15,340
+you can fine-tune it using some of the validation
+data.
+
+49
+00:05:15,340 --> 00:05:21,820
+As you can see out my batch size of 64, I'm
+putting 44 in the training set, 4 from the
+
+50
+00:05:21,820 --> 00:05:27,570
+validation set and 16 from the pseudo-labeled
+test set.
+
+51
+00:05:27,570 --> 00:05:38,210
+This worked pretty well. It got me from about
+110 to 60 on the leaderboard.
+
+52
+00:05:38,210 --> 00:05:47,780
+Question: In the Keras implementation, there
+is something called SampleWeight. I was wondering
+
+53
+00:05:47,780 --> 00:05:54,440
+if you could just set the sample weight lower?
+Answer: Yes, you can use the sample weight
+
+54
+00:05:54,440 --> 00:06:03,770
+but you would still still have to construct
+the consolidated dataset. This is a more convenient
+
+55
+00:06:03,770 --> 00:06:14,819
+way where you don't have to append it all
+together.
+
+56
+00:06:14,819 --> 00:06:20,889
+I will mention that I've found the way I'm
+doing it seems a little slow. There's some
+
+57
+00:06:20,889 --> 00:06:30,850
+obvious ways I can speed it up. It might be
+that this concatention each time is having
+
+58
+00:06:30,850 --> 00:06:35,000
+to create new memory and that takes time.
+There's some obvious things I can do to try
+
+59
+00:06:35,000 --> 00:06:39,610
+to speed it up, but it's good enough - it
+does the job.
+
+60
+00:06:39,610 --> 00:06:46,240
+I'm pleased that we know have a convenient
+way to do pseudo-labeling in Keras that seems
+
+61
+00:06:46,240 --> 00:06:52,389
+to do a pretty good job.
+
+62
+00:06:52,389 --> 00:07:04,639
+The other thing I wanted to talk about today
+(before we move on to new material) was embeddings.
+
+63
+00:07:04,639 --> 00:07:09,210
+I think for at least some of you some additional
+explanations could be helpful.
+
+64
+00:07:09,210 --> 00:07:16,699
+So I wanted to start out by reminding you
+that when I introduced embeddings to you,
+
+65
+00:07:16,699 --> 00:07:24,650
+the data we had was in this cross-tab form.
+In this cross-tab form, it's very easy to
+
+66
+00:07:24,650 --> 00:07:32,380
+visualize what embeddings look like -- for
+movieId 27 and userId 28, here is that movieId's
+
+67
+00:07:32,380 --> 00:07:38,310
+embedding right here, and here is that userId's
+embedding right here, so here is the product
+
+68
+00:07:38,310 --> 00:07:42,970
+of the two right here. That was all pretty
+straight-forward.
+
+69
+00:07:42,970 --> 00:07:51,750
+All we had to do to optimize our embeddings
+was utilize the gradient descent solver built
+
+70
+00:07:51,750 --> 00:08:03,440
+in to MS Excel, Solver. We just told it was
+our objective is ... minimize this cell by
+
+71
+00:08:03,440 --> 00:08:08,620
+changing these cells.
+
+72
+00:08:08,620 --> 00:08:17,389
+Now the data that we are given, the MovieLens
+data, requires some manipulation to get into
+
+73
+00:08:17,389 --> 00:08:18,389
+a cross-tab form.
+
+74
+00:08:18,389 --> 00:08:22,410
+We're actually given data in this form, and
+we wouldn't want to create a cross-tab with
+
+75
+00:08:22,410 --> 00:08:26,560
+all of this data because it would be way too
+big -- it would be every single user times
+
+76
+00:08:26,560 --> 00:08:29,690
+every single movie.
+
+77
+00:08:29,690 --> 00:08:35,950
+That's not how Keras works. Keras uses this
+data in exactly this format.
+
+78
+00:08:35,950 --> 00:08:42,630
+Let me show you how that works and what an
+embedding is actually doing. Here is the exact
+
+79
+00:08:42,630 --> 00:08:48,410
+same thing, but I'm going to show you the
+data in the format that Keras uses it.
+
+80
+00:08:48,410 --> 00:08:57,450
+So this is our input data. Every rating is
+a row, it has a userId, a movieId and a rating.
+
+81
+00:08:57,450 --> 00:09:04,950
+And this is what an embedding matrix looks
+like for 15 users.
+
+82
+00:09:04,950 --> 00:09:13,190
+These are the userIds. This is userId 14's
+embeddings, this is userId 29's embedding,
+
+83
+00:09:13,190 --> 00:09:19,790
+this is userId 72's embedding. At this stage,
+they're just random -- I initialized them
+
+84
+00:09:19,790 --> 00:09:20,930
+to random numbers.
+
+85
+00:09:20,930 --> 00:09:27,810
+And here is the movie embedding matrix. So
+the embedding matrix for movieId 27 are these
+
+86
+00:09:27,810 --> 00:09:29,399
+5 numbers.
+
+87
+00:09:29,399 --> 00:09:36,740
+So what happens when we look at userId 14
+and movieId 17 rating number 2?
+
+88
+00:09:36,740 --> 00:09:45,550
+The first thing is that we have to find userId
+14. Here it is -- userId 14 is the first thing
+
+89
+00:09:45,550 --> 00:09:50,820
+in this array, so the index of userId 14 is
+1.
+
+90
+00:09:50,820 --> 00:10:00,350
+So then here is the first row from the user
+embeddings embedding matrix.
+
+91
+00:10:00,350 --> 00:10:07,260
+[Time: 10 minute mark]
+
+92
+00:10:07,260 --> 00:10:19,011
+Similarly, here is movieId 417, the 14th row
+of this table, so you want to return the 14th
+
+93
+00:10:19,011 --> 00:10:20,011
+row.
+
+94
+00:10:20,011 --> 00:10:25,730
+You can see here, it has looked up and found
+the 14th row and then indexed it to the table's
+
+95
+00:10:25,730 --> 00:10:26,800
+14th row.
+
+96
+00:10:26,800 --> 00:10:33,209
+So then to calculate the dot product, we simply
+take the dot product of the user embedding
+
+97
+00:10:33,209 --> 00:10:34,990
+with the movie embedding.
+
+98
+00:10:34,990 --> 00:10:41,390
+To calculate the loss, we simply take the
+rating and subtract prediction and square
+
+99
+00:10:41,390 --> 00:10:42,390
+it
+
+100
+00:10:42,390 --> 00:10:49,810
+To calculate total loss function, we just
+add that all up and take the square root.
+
+101
+00:10:49,810 --> 00:10:58,660
+The orange background cells are the cells
+whcih we want our SGD solver to change.
+
+102
+00:10:58,660 --> 00:11:09,230
+In order to minize this cell here (rmse),
+all of the orange cells will be calculated.
+
+103
+00:11:09,230 --> 00:11:17,399
+We were saying last week that an embedding
+is simply looking up an array by an index.
+
+104
+00:11:17,399 --> 00:11:21,080
+You can see why I was saying that, right?
+It's essentially taking an index, looks it
+
+105
+00:11:21,080 --> 00:11:27,649
+up in an array and returns that row. That's
+literally all it's doing.
+
+106
+00:11:27,649 --> 00:11:30,350
+You might want to convince yourself during
+the week (if you haven't done so already),
+
+107
+00:11:30,350 --> 00:11:39,820
+that this is identical to taking a one-hot
+encoded matrix and multiplying it by an embedding
+
+108
+00:11:39,820 --> 00:11:41,490
+matrix.
+
+109
+00:11:41,490 --> 00:11:51,389
+So we can do exactly the same thing this way.
+We can say, Data->Solver and we want to set
+
+110
+00:11:51,389 --> 00:12:00,470
+this cell to a minimum by changing these cells.
+If I say Solve, then Excel will go away and
+
+111
+00:12:00,470 --> 00:12:03,440
+try to improve our objective.
+
+112
+00:12:03,440 --> 00:12:13,210
+What it's doing here is using gradient descent
+to try to find ways to increase or decrease
+
+113
+00:12:13,210 --> 00:12:20,730
+all of these numbers such that the rmse becomes
+as low as possible.
+
+114
+00:12:20,730 --> 00:12:33,600
+That's literally all that's going on in our
+Keras example here, this dot product. So this
+
+115
+00:12:33,600 --> 00:12:36,580
+thing here where we said create an embedding
+for a user, u=Embedding(n_users,n)factors,input_length=1,W_regularizer=12(1e-4))(user_in)
+
+116
+00:12:36,580 --> 00:12:42,980
+That's just saying create something where
+I can look up a userId and find their row,
+
+117
+00:12:42,980 --> 00:12:54,650
+look up a movieId and find its row, take the
+dot product, train a model (model.fit), try
+
+118
+00:12:54,650 --> 00:13:04,040
+to predit a rating and use SGD to make it
+better and better.
+
+119
+00:13:04,040 --> 00:13:11,080
+So you can see here that it's got the mean
+square error down to .4.
+
+120
+00:13:11,080 --> 00:13:18,080
+For example, the first one predicted 3 and
+it's actually 2; the second one predicted
+
+121
+00:13:18,080 --> 00:13:25,070
+4.5 and it's actually 4; the third one predicted
+4.6 and it's actually 5 ... you get the idea.
+
+122
+00:13:25,070 --> 00:13:34,860
+Word embeddings work exactly the same way.
+One of the students talked about it this week.
+
+123
+00:13:34,860 --> 00:13:51,910
+I grabbed the text of Green Eggs 
+and Ham. I've turned this column of words
+
+124
+00:13:51,910 --> 00:14:03,310
+into a matrix. The way I did that was to take
+every unique word in that column (here is
+
+125
+00:14:03,310 --> 00:14:04,519
+the wordId of each of thos words).
+
+126
+00:14:04,519 --> 00:14:07,699
+So then I just randomly generated an embedding
+matrix.
+
+127
+00:14:07,699 --> 00:14:15,080
+So then I just randomly generated an embedding
+matrix. I equally could have used downloaded
+
+128
+00:14:15,080 --> 00:14:18,930
+GloVe embeddings as well.
+
+129
+00:14:18,930 --> 00:14:27,100
+And so then for each word, I look up each
+word in the list. "I" is wordId 8, and here
+
+130
+00:14:27,100 --> 00:14:30,860
+is the 8th row of the embedding matrix.
+
+131
+00:14:30,860 --> 00:14:39,930
+So you see we've started with a poem and we've
+turned it into a matrix of floats. The reason
+
+132
+00:14:39,930 --> 00:14:48,550
+we do this is our machine learning tools support
+a matrix of floats.
+
+133
+00:14:48,550 --> 00:14:54,940
+All of the questions like, "Does it matter
+what the wordIds are?" You can see it doesn't
+
+134
+00:14:54,940 --> 00:15:01,160
+matter at all. All we're doing is we're looking
+them up in this matrix and returning the floats.
+
+135
+00:15:01,160 --> 00:15:02,160
+[Time: 15 minute mark]
+
+136
+00:15:02,160 --> 00:15:07,850
+Once we've done that, we never use it again.
+We just use this matrix of floats. So that's
+
+137
+00:15:07,850 --> 00:15:09,930
+what embedding does.
+
+138
+00:15:09,930 --> 00:15:18,930
+I hope that's helpful. Feel free to ask if
+you have any questions because we're going
+
+139
+00:15:18,930 --> 00:15:23,080
+to be using embeddings throught this class.
+
+140
+00:15:23,080 --> 00:15:34,610
+Hopefully that helped a few people clarify
+what's going on.
+
+141
+00:15:34,610 --> 00:15:45,070
+Let's get back to Recurrent Neural Networks.
+To remind you, we talked about the purpose
+
+142
+00:15:45,070 --> 00:15:57,269
+of recurrent neural networks as being really
+all about memory.
+
+143
+00:15:57,269 --> 00:16:09,820
+If we're going to handle something like recognizing
+a comment start and a comment end, and being
+
+144
+00:16:09,820 --> 00:16:14,230
+able to keep track of the fact that we're
+in a comment through all of this time so that
+
+145
+00:16:14,230 --> 00:16:20,959
+we can do modeling on this kind of structured
+language, we're really going to need memory.
+
+146
+00:16:20,959 --> 00:16:27,840
+That allows us to handle long-term dependencies
+and provides a stateful represention. In general,
+
+147
+00:16:27,840 --> 00:16:32,610
+the stuff we're going to be looking at will
+be particularly needing these three things
+
+148
+00:16:32,610 --> 00:16:35,100
+(long-term dependency, stateful representation,
+and memory). And it's also helpful when you
+
+149
+00:16:35,100 --> 00:16:40,180
+have a variable length sequence.
+
+150
+00:16:40,180 --> 00:16:46,279
+Question: How does the size of my embedding
+depend on the number of unique words? Mapping
+
+151
+00:16:46,279 --> 00:16:53,480
+Green Eggs and Ham, real numbers seem sufficient,
+but wouldn't be for all of J.R.R. Tolkien.
+
+152
+00:16:53,480 --> 00:16:59,860
+Answer: So your choice of how big to make
+your embedding matrix, as in how many latent
+
+153
+00:16:59,860 --> 00:17:05,640
+factors to create is on of these architectural
+decisions which we don't really have an answer
+
+154
+00:17:05,640 --> 00:17:08,910
+to.
+
+155
+00:17:08,910 --> 00:17:17,050
+My best suggestion would be to read the word
+to vec paper (which kind of introduced a lot
+
+156
+00:17:17,050 --> 00:17:24,339
+of this, or at least took it a lot further)
+and look at the difference between a 50-dimensional,
+
+157
+00:17:24,339 --> 00:17:31,460
+100-dimensional, 200, 300, 600 dimensional
+and see what are the different levels of accuracies
+
+158
+00:17:31,460 --> 00:17:37,400
+that these different sized embedding matrices
+created when the authors of that paper provided
+
+159
+00:17:37,400 --> 00:17:42,790
+this information. So that's a quick shortcut
+because other people have experiemented and
+
+160
+00:17:42,790 --> 00:17:44,309
+provided this information for you.
+
+161
+00:17:44,309 --> 00:17:49,669
+The other is to do your own experiments. Try
+a few different sizes. It's not really about
+
+162
+00:17:49,669 --> 00:17:56,070
+the length of the wordlist. It's really about
+the complexity of the language or the type
+
+163
+00:17:56,070 --> 00:18:00,030
+of problem you're trying to solve.
+
+164
+00:18:00,030 --> 00:18:06,650
+That's really problem dependent and will require
+intuition developed through reading, experimenting,
+
+165
+00:18:06,650 --> 00:18:08,419
+and also your own experience.
+
+166
+00:18:08,419 --> 00:18:13,890
+Question: What would be the range of root
+mean square values to say that a model is
+
+167
+00:18:13,890 --> 00:18:14,890
+good?
+
+168
+00:18:14,890 --> 00:18:23,540
+Answer: To say that a model is good is another
+model-specific issue. A root mean square error
+
+169
+00:18:23,540 --> 00:18:31,710
+is very interpretable - it's basically how
+far out is it on average. So if we found out
+
+170
+00:18:31,710 --> 00:18:47,789
+we were getting in the range of .4 on average,
+it sounds like it's 
+
+171
+00:18:47,789 --> 00:18:53,620
+good enough to be useful to help people find
+movies they might like.
+
+172
+00:18:53,620 --> 00:19:10,870
+There's really no one solution. I actually
+wrote a whole paper about this, "Designing
+
+173
+00:19:10,870 --> 00:19:20,220
+Great Data Products". This is based on ten
+years of work I did at a company I created
+
+174
+00:19:20,220 --> 00:19:28,770
+called Optimal Decisions Group. Optimal Decisions
+Group was all about how to use predictive
+
+175
+00:19:28,770 --> 00:19:34,539
+modeling not just to make predictions but
+to optimize actions. This whole paper is about
+
+176
+00:19:34,539 --> 00:19:35,539
+that.
+
+177
+00:19:35,539 --> 00:19:41,809
+In the end, it's really about coming up with
+a way to measure the benefit to your organization,
+
+178
+00:19:41,809 --> 00:19:44,950
+or to your project, of getting that extra
+0.1% accuracy. There are some suggestions
+
+179
+00:19:44,950 --> 00:19:49,130
+on how to do that in this paper.
+
+180
+00:19:49,130 --> 00:19:56,090
+[Time: 20 minute mark]
+
+181
+00:19:56,090 --> 00:20:11,410
+Okay, so we looked at kind of a visual vocabulary
+we developed for writing down neural nets.
+
+182
+00:20:11,410 --> 00:20:16,620
+Any colored box represents a matrix of activations.
+
+183
+00:20:16,620 --> 00:20:22,710
+That's a really important point. A colored
+box represents a matrix of activations. It
+
+184
+00:20:22,710 --> 00:20:28,940
+could be the input matrix, it could be the
+output matrix, it could be the matrix that
+
+185
+00:20:28,940 --> 00:20:37,360
+comes from taking an input matrix and putting
+it through a matrix product.
+
+186
+00:20:37,360 --> 00:20:45,380
+The rectangle boxes represent inputs, the
+circular ones represent hidden or intermediate
+
+187
+00:20:45,380 --> 00:20:49,140
+activations, and triangles represent outputs.
+
+188
+00:20:49,140 --> 00:20:56,040
+Arrows, very importantly, represent layer
+operations. A layer operation is anything
+
+189
+00:20:56,040 --> 00:20:58,830
+you can do to one colored box to create another
+colored box.
+
+190
+00:20:58,830 --> 00:21:04,650
+In general, it's going to almost always involve
+some kind of a linear function, like a matrix
+
+191
+00:21:04,650 --> 00:21:13,980
+product, or a convolution, and it will probably
+include an activation function like relu.
+
+192
+00:21:13,980 --> 00:21:20,230
+Because the activation functions are unimportant
+in terms of detail, I started removing those
+
+193
+00:21:20,230 --> 00:21:26,340
+from the pictures.
+
+194
+00:21:26,340 --> 00:21:31,150
+Because the layer operations are pretty consistent
+(we probably know what they are), I started
+
+195
+00:21:31,150 --> 00:21:35,650
+removing those as well just to keep things
+simple.
+
+196
+00:21:35,650 --> 00:21:41,040
+So we're simplifying these diagrams to try
+and keep the main pieces. As we did so, we
+
+197
+00:21:41,040 --> 00:21:43,870
+can start to create more complex diagrams.
+
+198
+00:21:43,870 --> 00:21:51,080
+We talked about a kind of a language model
+where we would take inputs character #1 and
+
+199
+00:21:51,080 --> 00:21:56,070
+character #2 and we would try and predict
+character #3.
+
+200
+00:21:56,070 --> 00:22:05,110
+We thought one way to do that would be to
+create a deep neural network with two layers.
+
+201
+00:22:05,110 --> 00:22:10,830
+The character #1 input would go through a
+layer operation to create our first fully
+
+202
+00:22:10,830 --> 00:22:11,989
+connected layer.
+
+203
+00:22:11,989 --> 00:22:15,870
+That would go through another layer operation
+to create the second fully connected layer,
+
+204
+00:22:15,870 --> 00:22:21,650
+and we would also add our second character
+input going through its own fully connected
+
+205
+00:22:21,650 --> 00:22:23,400
+layer at this point.
+
+206
+00:22:23,400 --> 00:22:29,610
+The last important thing you have to learn
+is that 2 arrows going in to a single shape
+
+207
+00:22:29,610 --> 00:22:35,370
+means that we are adding the results of those
+2 layer operations together. So 2 arrows going
+
+208
+00:22:35,370 --> 00:22:45,690
+in to a shape represents summing up, element-wise,
+the results of these two layer operations.
+
+209
+00:22:45,690 --> 00:22:52,560
+This was the little visual vocabulary we set
+up last week and I kind of kept track of it
+
+210
+00:22:52,560 --> 00:22:56,660
+down here (in the lower right corner) as to
+what things are.
+
+211
+00:22:56,660 --> 00:23:04,770
+So now I wanted to point out something really
+interesting - there's three kinds of layer
+
+212
+00:23:04,770 --> 00:23:17,059
+operations going on. We've got predicting
+the 4th character using characters 1, 2, and
+
+213
+00:23:17,059 --> 00:23:18,659
+3.
+
+214
+00:23:18,659 --> 00:23:27,571
+There are layer operations that turn a character
+input into a hidden activation matrix, here
+
+215
+00:23:27,571 --> 00:23:29,510
+and here.
+
+216
+00:23:29,510 --> 00:23:34,700
+There are layer operations that turn one hidden
+layer activation matrix into a new hidden
+
+217
+00:23:34,700 --> 00:23:36,980
+layer activation matrix.
+
+218
+00:23:36,980 --> 00:23:41,990
+And there there's layer operations that takes
+hidden activations and turns them into output
+
+219
+00:23:41,990 --> 00:23:42,990
+activations.
+
+220
+00:23:42,990 --> 00:23:49,980
+You can see here that I've colored them in,
+and here I've got a little legend. Green are
+
+221
+00:23:49,980 --> 00:23:56,600
+the input->hidden, blue is the hidden->output,
+and orange is the hidden->hidden.
+
+222
+00:23:56,600 --> 00:24:03,049
+So I claim that the dimensions of the weight
+matrices -- all of them connected by the green
+
+223
+00:24:03,049 --> 00:24:07,100
+arrows have the same dimensions. All of the
+green ones have the sime dimensions because
+
+224
+00:24:07,100 --> 00:24:17,429
+they're taking an input of vocab size and
+turning it into an output with size # of activations.
+
+225
+00:24:17,429 --> 00:24:24,000
+So all of the green arrows represent weight
+matrices of the same dimensionality. Ditto
+
+226
+00:24:24,000 --> 00:24:28,850
+the orange arrows, the orange arrows all represent
+weight matrices of the same dimensionality.
+
+227
+00:24:28,850 --> 00:24:33,970
+I would go further than that and say that
+the green arrows represent semantically the
+
+228
+00:24:33,970 --> 00:24:39,770
+same thing -- they're all saying how do you
+take a character and convert it to a hidden
+
+229
+00:24:39,770 --> 00:24:41,270
+state.
+
+230
+00:24:41,270 --> 00:24:46,289
+The orange arrows are all saying how do you
+take hidden state from a previous character
+
+231
+00:24:46,289 --> 00:24:49,330
+and turn it into a hidden state for a new
+character.
+
+232
+00:24:49,330 --> 00:24:54,610
+The blue arrows are how do you take a hidden
+state and turn it into outputs.
+
+233
+00:24:54,610 --> 00:25:00,279
+When you look at it that way, all of these
+circles are basically the same thing. They're
+
+234
+00:25:00,279 --> 00:25:04,250
+just representing this hidden state at a different
+point in time.
+
+235
+00:25:04,250 --> 00:25:05,250
+[Time: 25 minute mark]
+
+236
+00:25:05,250 --> 00:25:09,750
+I'm going to use this word "time" in a fairly
+general way. I'm not really talking about
+
+237
+00:25:09,750 --> 00:25:13,640
+time, I'm just talking about the sequence
+in which we're presenting additional pieces
+
+238
+00:25:13,640 --> 00:25:15,280
+of information to this model.
+
+239
+00:25:15,280 --> 00:25:21,909
+We first present the first character, then
+the second character, then the third character.
+
+240
+00:25:21,909 --> 00:25:27,490
+So we could redraw this whole thing in a simpler
+way, in a more general way.
+
+241
+00:25:27,490 --> 00:25:36,120
+Before we do, I'm actually going to show you
+in Keras how to build this model, and in doing
+
+242
+00:25:36,120 --> 00:25:42,700
+so we're going to learn a bit more about functional
+API.
+
+243
+00:25:42,700 --> 00:25:54,070
+To do that, we are going to use this corpus
+of all of the collected words of Nietzsche.
+
+244
+00:25:54,070 --> 00:26:02,070
+So we load in those works and we find all
+the unique characters (of which there are
+
+245
+00:26:02,070 --> 00:26:06,470
+86). Here they are, joined up all together.
+
+246
+00:26:06,470 --> 00:26:12,510
+And then we create a mapping from the character
+to the index at which it appears in the list,
+
+247
+00:26:12,510 --> 00:26:15,770
+and the mapping from the index to the character.
+
+248
+00:26:15,770 --> 00:26:24,600
+So this is basically creating the equivalent
+of these tables, or more specifically, this
+
+249
+00:26:24,600 --> 00:26:29,450
+table. But rather than using words, we'll
+use characters.
+
+250
+00:26:29,450 --> 00:26:37,440
+So that allows us to take the text of Nietzsche
+and convert it into a list of numbers, where
+
+251
+00:26:37,440 --> 00:26:42,140
+the numbers represent the number at which
+the character appears in this list (idx=[char_indices[c]
+
+252
+00:26:42,140 --> 00:26:45,360
+for c in text]). So here are the first 10
+(idx[:10]), that's called idx.
+
+253
+00:26:45,360 --> 00:26:54,520
+So at any point we can turn our poll text
+into the equivalent indices. At any point
+
+254
+00:26:54,520 --> 00:27:01,490
+we can turn it back into text by simply taking
+those indexes and looking them up in our index-to-character
+
+255
+00:27:01,490 --> 00:27:07,120
+mapping. So here you see we turn it back into
+the start of the text again.
+
+256
+00:27:07,120 --> 00:27:11,049
+So that's the data we're working with. The
+data we're working with is a list of character
+
+257
+00:27:11,049 --> 00:27:18,100
+ids and those character ids represent the
+works of Nietzsche.
+
+258
+00:27:18,100 --> 00:27:27,570
+So we're going to build a model 
+which attempts to predict the 4th character
+
+259
+00:27:27,570 --> 00:27:36,440
+from the previous 3. To do that, we're going
+to go through our whole list of indexes, from
+
+260
+00:27:36,440 --> 00:27:42,049
+0 to the end minus three.
+
+261
+00:27:42,049 --> 00:27:48,150
+We're going to create a whole list of the
+0th, 4th, 8th, 12th, etc. characters. And
+
+262
+00:27:48,150 --> 00:27:58,460
+a list of the 1st, 5th, 9th, etc. And a list
+of the 2nd, 6th, 10th and so forth.
+
+263
+00:27:58,460 --> 00:28:04,030
+So this is going to represent the first character
+in each sequence, the second character in
+
+264
+00:28:04,030 --> 00:28:07,419
+each sequence, the third character in each
+sequence. And this is the one we want to predict,
+
+265
+00:28:07,419 --> 00:28:11,299
+the 4th character.
+
+266
+00:28:11,299 --> 00:28:16,720
+We can now turn these in to numpy arrays just
+by stacking them up together.
+
+267
+00:28:16,720 --> 00:28:22,370
+Now we've got our input for our 1st characters,
+our 2nd characters, our 3rd characters for
+
+268
+00:28:22,370 --> 00:28:27,490
+every 4 character piece of this collected
+works.
+
+269
+00:28:27,490 --> 00:28:34,120
+And then our y's - our labels - will simply
+be the 4th characters.
+
+270
+00:28:34,120 --> 00:28:44,480
+Here you can see them. For example, if we
+took x1, x2, and x3 - this is the first character
+
+271
+00:28:44,480 --> 00:28:51,309
+of the text, the second character of the text,
+the third character of the text and the fourth
+
+272
+00:28:51,309 --> 00:28:57,169
+character of the text. So we're trying to
+predict this, based on these three. And then
+
+273
+00:28:57,169 --> 00:29:06,840
+we're trying to predict this, based on these
+three. So that's our data point.
+
+274
+00:29:06,840 --> 00:29:20,020
+So you see we've got about 200,000 of these
+inputs for each of x1, x2, and x3 for y.
+
+275
+00:29:20,020 --> 00:29:25,360
+We're going to first turn them into embeddings
+by creating an embedding matrix. I have to
+
+276
+00:29:25,360 --> 00:29:32,520
+mention that this is not normal, I have not
+actually seen anybody else do this.
+
+277
+00:29:32,520 --> 00:29:40,620
+Most people just treat them as one-hot encodings.
+So for example the most widely used blog post
+
+278
+00:29:40,620 --> 00:29:46,909
+about CAR RNNs was Andrej Karpathy's (which
+was quite fantastic), "The Unreasonable Effectiveness
+
+279
+00:29:46,909 --> 00:29:51,409
+of Recurrent Neural Networks".
+
+280
+00:29:51,409 --> 00:29:59,820
+You can see in his version he shows them as
+being one-hot encoded.
+
+281
+00:29:59,820 --> 00:30:02,850
+[Time: 30 minute mark]
+
+282
+00:30:02,850 --> 00:30:08,659
+We're not going to do that - we're going to
+turn them into embeddings.
+
+283
+00:30:08,659 --> 00:30:16,779
+I think it makes a lot of sense. Capital "A"
+and lower-case "a" have some similarities
+
+284
+00:30:16,779 --> 00:30:17,779
+that embeddings can understand.
+
+285
+00:30:17,779 --> 00:30:23,290
+Different types of things that have to be
+opened and closed, like parentheses and quotes
+
+286
+00:30:23,290 --> 00:30:27,580
+have things that can be captured in embeddings.
+
+287
+00:30:27,580 --> 00:30:34,500
+There's all kinds of things that we can expect
+embeddings can capture. My hypothesis is that
+
+288
+00:30:34,500 --> 00:30:44,510
+an 
+
+289
+00:30:44,510 --> 00:30:49,640
+embedding is going to do a better job than
+just a one-hot encoding. In my experiments
+
+290
+00:30:49,640 --> 00:30:55,000
+over the last couple of weeks, that generally
+seems to be true.
+
+291
+00:30:55,000 --> 00:31:01,149
+So we're going to take each character, 1 through
+3, and turn them into embeddings by first
+
+292
+00:31:01,149 --> 00:31:06,150
+of all creating an input layer for them and
+then creating an embedding layer for that
+
+293
+00:31:06,150 --> 00:31:12,400
+input. So we're going to return the input
+layer and a flattened version of the embedding
+
+294
+00:31:12,400 --> 00:31:13,400
+layer.
+
+295
+00:31:13,400 --> 00:31:19,269
+So this is the input to an output of each
+of our three embedding layers for our three
+
+296
+00:31:19,269 --> 00:31:26,650
+input characters. So that's basically our
+inputs.
+
+297
+00:31:26,650 --> 00:31:35,860
+We 
+now have to decide how many activations do
+
+298
+00:31:35,860 --> 00:31:44,981
+we want. That's something we can just pick.
+I've decided to go with 256 as something that
+
+299
+00:31:44,981 --> 00:31:48,640
+seems reasonable - seems to work okay.
+
+300
+00:31:48,640 --> 00:31:57,809
+We now have to somehow construction something
+where each of our green arrows ends up as
+
+301
+00:31:57,809 --> 00:32:05,260
+the same weight matrix. Keras makes this really
+easy with the Keras functional API.
+
+302
+00:32:05,260 --> 00:32:12,000
+When you call Dense like this [dense_in=Dense(n_hidden,activation='relu')],
+what it's actually doing is it's creating
+
+303
+00:32:12,000 --> 00:32:19,350
+a layer with a specific weight matrix. Notice
+I haven't passed it anything to say what it's
+
+304
+00:32:19,350 --> 00:32:24,779
+connected to, so it's not part of a model
+yet. This is just saying I'm going to have
+
+305
+00:32:24,779 --> 00:32:36,590
+something which is a dense layer which creates
+256 activations and I'm going to call it dense_in.
+
+306
+00:32:36,590 --> 00:32:41,419
+It doesn't actually do anything until I connect
+it to something.
+
+307
+00:32:41,419 --> 00:32:47,640
+Here I'm going to say character 1's hidden
+state comes from character #1, which is the
+
+308
+00:32:47,640 --> 00:32:53,710
+output of our first embedding and putting
+it through this dense_in layer [c1_hidden=dense_in(c1)].
+
+309
+00:32:53,710 --> 00:33:00,080
+So this is the thing which creates our first
+circle. So the embedding is the thing that
+
+310
+00:33:00,080 --> 00:33:05,320
+creates the output of the first rectangle
+and this creates our first circle.
+
+311
+00:33:05,320 --> 00:33:13,490
+So dense_in is the green arrow. So what that
+means is that now in order to create the next
+
+312
+00:33:13,490 --> 00:33:19,031
+set of activations, we need to create the
+orange arrow. Since the orange arrow is a
+
+313
+00:33:19,031 --> 00:33:22,159
+different weight matrix than the green arrow,
+we have to create a new dense layer.
+
+314
+00:33:22,159 --> 00:33:29,610
+So here it is, a new dense layer, and again,
+with n hidden outputs. So with a new dense
+
+315
+00:33:29,610 --> 00:33:34,840
+layer, this is a whole separate weight matrix.
+
+316
+00:33:34,840 --> 00:33:43,320
+So now that I've done that, I can create my
+character 2 hidden state, which is here. And
+
+317
+00:33:43,320 --> 00:33:50,000
+I'm going to have to sum up two separate things.
+I'm going to take my character 2 embedding,
+
+318
+00:33:50,000 --> 00:33:54,360
+put it through my green arrow, that's going
+to be there.
+
+319
+00:33:54,360 --> 00:34:02,160
+I'm going to take the output of my character
+1's hidden state and run it through my orange
+
+320
+00:34:02,160 --> 00:34:08,340
+arrow, and then we're going to merge the two
+together.
+
+321
+00:34:08,340 --> 00:34:17,668
+And merge, by default, does a sum. This is
+adding together these two outputs, it's adding
+
+322
+00:34:17,668 --> 00:34:24,638
+together these two layer operation outputs.
+And that gives us this circle.
+
+323
+00:34:24,639 --> 00:34:30,300
+So the 3rd character output is done in exactly
+the same way. We take the 3rd characters embedding,
+
+324
+00:34:30,300 --> 00:34:34,659
+run it through out green arrow, take it through
+the results of our previous hidden activations
+
+325
+00:34:34,659 --> 00:34:37,859
+and run it through our orange arrow and then
+merge the two together.
+
+326
+00:34:37,859 --> 00:34:44,520
+Question: Is the first output the size of
+the latent field's embeddings?
+
+327
+00:34:44,520 --> 00:34:55,520
+Answer: The size of the latent embeddings
+we defined when we created the embeddings
+
+328
+00:34:55,520 --> 00:35:05,240
+up here, and we defined them as having n_fac
+size. And n_fac we defined as 42.
+
+329
+00:35:05,240 --> 00:35:07,109
+[Time: 35 minute mark]
+
+330
+00:35:07,109 --> 00:35:13,099
+So c1, c2, and c3 represent the result of
+putting in each character through this embedding
+
+331
+00:35:13,099 --> 00:35:22,020
+and getting out 42 latent vectors. Those are
+then the things that we put in to our green
+
+332
+00:35:22,020 --> 00:35:25,280
+arrow.
+
+333
+00:35:25,280 --> 00:35:33,720
+So after doing this three times, we now have
+c3 hidden (which is here). So we now need
+
+334
+00:35:33,720 --> 00:35:42,289
+a new set of weights, we need another dense
+layer, blue arrow. We'll call that dense_out.
+
+335
+00:35:42,289 --> 00:35:48,450
+And this needs to create an output of size
+86, vocab size. It needs to create something
+
+336
+00:35:48,450 --> 00:35:54,560
+which can match to the one-hot encoded list
+of the possible characters, which is 86 long.
+
+337
+00:35:54,560 --> 00:35:59,830
+So now that we've got this orange arrow, we
+can apply that to our final hidden state to
+
+338
+00:35:59,830 --> 00:36:02,690
+get our output.
+
+339
+00:36:02,690 --> 00:36:11,760
+In Keras, all we need to do now is call Model,
+passing in the three inputs which were returned
+
+340
+00:36:11,760 --> 00:36:17,630
+to us way back here. Each time we created
+an embedding, we returned the input layer
+
+341
+00:36:17,630 --> 00:36:24,109
+(c1_in, c2_in, c3_in).
+
+342
+00:36:24,109 --> 00:36:30,070
+Passing in the three inputs and passing in
+out output. So that's our model. So we can
+
+343
+00:36:30,070 --> 00:36:39,220
+now compile it, set a learning rate, fit it.
+As you can see, its losses are actually decreasing.
+
+344
+00:36:39,220 --> 00:36:46,589
+We can then test that out very easily by creating
+a little function. We're going to pass 3 letters.
+
+345
+00:36:46,589 --> 00:36:52,230
+We're going to take those 3 letters and turn
+them in to character indices (just look them
+
+346
+00:36:52,230 --> 00:36:59,440
+up by their indexes). Turn each of these into
+a numpy array. Call model.predict on those
+
+347
+00:36:59,440 --> 00:37:11,880
+3 arrays. That gives us 86 outputs. We're
+then going to do argmax to find out which
+
+348
+00:37:11,880 --> 00:37:18,460
+index into those 86 is the highest and that's
+the character number that we want to return.
+
+349
+00:37:18,460 --> 00:37:26,460
+So if we pass in "phi", "l" is most likely
+next. If we pass in " th", "e" is mot likely
+
+350
+00:37:26,460 --> 00:37:31,550
+next. Pass in " an" and it thinks that "d"
+is most likely next.
+
+351
+00:37:31,550 --> 00:37:36,550
+So you can see that it seems to be doing a
+pretty reasonable job of taking 3 characters
+
+352
+00:37:36,550 --> 00:37:41,060
+and returning a 4th character that seems pretty
+sensible.
+
+353
+00:37:41,060 --> 00:37:50,940
+Not the world's most powerful model, but a
+good example of how we construct pretty arbitrary
+
+354
+00:37:50,940 --> 00:37:56,570
+architectures using Keras and then letting
+SGD do the work.
+
+355
+00:37:56,570 --> 00:38:05,960
+Question: This model, how would it predict
+the context in which we're trying to predict
+
+356
+00:38:05,960 --> 00:38:06,960
+the next?
+
+357
+00:38:06,960 --> 00:38:11,240
+Answer: It knows nothing about the context.
+All it has at any point in time are the previous
+
+358
+00:38:11,240 --> 00:38:24,940
+3 characters. So it's not a great model. We're
+going to improve it though. Gotta start somewhere.
+
+359
+00:38:24,940 --> 00:38:31,080
+Question: If we're at the stage where we're
+doing predictions on real data, how would
+
+360
+00:38:31,080 --> 00:38:32,099
+the context ...
+
+361
+00:38:32,099 --> 00:38:36,600
+Answer: We're getting there. So, in order
+to answer your question, let's build this
+
+362
+00:38:36,600 --> 00:38:38,440
+up a little further.
+
+363
+00:38:38,440 --> 00:38:42,390
+Rather than trying to predict character 4
+from the previous 3 characters, let's try
+
+364
+00:38:42,390 --> 00:38:47,020
+and predict character n from the previous
+n-1 characters.
+
+365
+00:38:47,020 --> 00:38:51,130
+Since all of these circles basically mean
+the same thing, which is the hidden state
+
+366
+00:38:51,130 --> 00:38:55,540
+at this point. And since all of these orange
+arrows are literally the same thing - it's
+
+367
+00:38:55,540 --> 00:38:59,510
+a dense layer with exactly the same weight
+matrix, let's stick all of the circles on
+
+368
+00:38:59,510 --> 00:39:04,980
+top of each other, which means all of these
+orange arrows just become one arrow pointing
+
+369
+00:39:04,980 --> 00:39:10,440
+to itself. And this is the definition of a
+Recurrent Neural Network.
+
+370
+00:39:10,440 --> 00:39:15,320
+When we see it in this form, we say that we
+are looking at it in its recurrent form. When
+
+371
+00:39:15,320 --> 00:39:21,020
+we see it in this form, we say that we are
+looking at it in its unrolled form, or unfolded
+
+372
+00:39:21,020 --> 00:39:22,020
+form.
+
+373
+00:39:22,020 --> 00:39:30,820
+They're both very common. This is obviously
+neater, so for quickly sketching out an RNN
+
+374
+00:39:30,820 --> 00:39:33,020
+architecture this is much more convenient.
+
+375
+00:39:33,020 --> 00:39:39,710
+But actually this unrolled form is really
+important. For example, when Keras uses TensorFlow
+
+376
+00:39:39,710 --> 00:39:47,220
+as a backend, it actually always unrolls it
+in this way in order to compute it.
+
+377
+00:39:47,220 --> 00:39:53,790
+That obviously takes up a lot more memory,
+so it's quite nice to use the Theano backend
+
+378
+00:39:53,790 --> 00:39:59,290
+in Keras which can actually directly implement
+it as this kind of loop. And that's what we'll
+
+379
+00:39:59,290 --> 00:40:00,339
+be doing today.
+
+380
+00:40:00,339 --> 00:40:03,339
+[Time: 40 minute mark]
+
+381
+00:40:03,339 --> 00:40:07,520
+In general, we've got the same idea. We're
+going to have character 1 input come in, go
+
+382
+00:40:07,520 --> 00:40:14,421
+through the first green arrow, go through
+the first orange arrow. From then on we can
+
+383
+00:40:14,421 --> 00:40:20,540
+just say take the second character and repeat,
+take the third character and repeat. At each
+
+384
+00:40:20,540 --> 00:40:26,030
+time period, we're getting a new character
+going through a layer operation as well as
+
+385
+00:40:26,030 --> 00:40:31,599
+taking the previous hidden state and taking
+it through its layer operation.
+
+386
+00:40:31,599 --> 00:40:35,930
+At the very end, we will put it through a
+different layer operation (blue arrow) to
+
+387
+00:40:35,930 --> 00:40:39,869
+get an output. So I'm going to show you this
+in Keras now.
+
+388
+00:40:39,869 --> 00:40:47,230
+Question: Does every fully connected layer
+have to have the same activation function?
+
+389
+00:40:47,230 --> 00:41:01,351
+Answer: In general, in all of the models we've
+seen so far we've construted them in a way
+
+390
+00:41:01,351 --> 00:41:07,470
+where you can write anything you want as the
+activation function.
+
+391
+00:41:07,470 --> 00:41:14,599
+In general though, I haven't seen any examples
+of any successful architetures that mix activation
+
+392
+00:41:14,599 --> 00:41:22,140
+functions - other than of course, at the output
+layer would pretty much always be a softMax.
+
+393
+00:41:22,140 --> 00:41:28,010
+I'm not sure it's not something that might
+become a good idea. It's just not something
+
+394
+00:41:28,010 --> 00:41:32,250
+that anybody's done successfully so far.
+
+395
+00:41:32,250 --> 00:41:39,369
+I will mention something importation about
+activation functions, though. You can use
+
+396
+00:41:39,369 --> 00:41:44,680
+pretty much any non-linear function as an
+activation function and get pretty reasonable
+
+397
+00:41:44,680 --> 00:41:49,320
+results. I've seen some papers that people
+have written where they've tried all kinds
+
+398
+00:41:49,320 --> 00:41:54,120
+of weird activation functions and they pretty
+much all work. So it's not something to get
+
+399
+00:41:54,120 --> 00:41:55,120
+hung up about.
+
+400
+00:41:55,120 --> 00:42:00,950
+It's just that certain activation functions
+will train more quickly and more resiliantly.
+
+401
+00:42:00,950 --> 00:42:11,930
+In particular, relu and relu variations tend
+to work particularly well.
+
+402
+00:42:11,930 --> 00:42:20,840
+Let's implement this. We're going to use a
+very similar approach to what we've used before
+
+403
+00:42:20,840 --> 00:42:25,840
+and we're going to create our first RNN. We're
+going to create it from scratch, using nothing
+
+404
+00:42:25,840 --> 00:42:29,930
+but standard Keras dense layers.
+
+405
+00:42:29,930 --> 00:42:38,230
+In this case, the inputs will not be c1, c2,
+c3. We're going to have to create an array
+
+406
+00:42:38,230 --> 00:42:42,490
+of inputs. We're going to have to decide what
+n we're going to use.
+
+407
+00:42:42,490 --> 00:42:52,869
+For this one, I've decided to use 8. I'm going
+to use 8 characters to create the 9th character.
+
+408
+00:42:52,869 --> 00:43:00,290
+So I'm going to create an array with 8 elements
+in it and each element will contain a list
+
+409
+00:43:00,290 --> 00:43:10,280
+of the 0th, 8th, 16th, 24th character, the
+1, 9, 17, 25 character, the 2, 10, 18, 26
+
+410
+00:43:10,280 --> 00:43:12,230
+charater, etc. Just like before.
+
+411
+00:43:12,230 --> 00:43:20,270
+We're going to have a sequence of inputs where
+each one is offset by 1 from the previous
+
+412
+00:43:20,270 --> 00:43:28,090
+one. And then our output will be exactly the
+same thing, except we're going to look at
+
+413
+00:43:28,090 --> 00:43:35,480
+the indexed across by cs, so 8. So this will
+be the 8th thing in each sequence, predicted
+
+414
+00:43:35,480 --> 00:43:39,710
+by the previous ones.
+
+415
+00:43:39,710 --> 00:43:45,609
+So now we can go through every one of those
+data items, lists and turn them into a numpy
+
+416
+00:43:45,609 --> 00:43:58,870
+array. Here you can see that we have 8 inputs
+and each one is of length 75 thousand or so
+
+417
+00:43:58,870 --> 00:43:59,870
+(75110).
+
+418
+00:43:59,870 --> 00:44:10,530
+We can take our y and make a numpy array out
+of it. Here we can visualize it. Here are
+
+419
+00:44:10,530 --> 00:44:17,630
+the first 8 elements of x.
+
+420
+00:44:17,630 --> 00:44:22,020
+Looking at the first 8 elements of x, let's
+look at the first element of each one -- 40,
+
+421
+00:44:22,020 --> 00:44:23,530
+42, 29 ....
+
+422
+00:44:23,530 --> 00:44:31,630
+So this column is the first 8 characters of
+our test. And here is the 9th character.
+
+423
+00:44:31,630 --> 00:44:36,120
+So the first thing that this model will try
+to do is to look at these 8 to predict this.
+
+424
+00:44:36,120 --> 00:44:41,790
+Then it will look at these 8 to predict this
+and so forth.
+
+425
+00:44:41,790 --> 00:44:49,560
+You can see that this list here is exactly
+the same as this list here; the final character
+
+426
+00:44:49,560 --> 00:44:51,839
+of each sequence is the same as the first
+charater of this sequence.
+
+427
+00:44:51,839 --> 00:44:57,089
+So it's almost exactly the same as our previous
+data, we've just done it in a more flexible
+
+428
+00:44:57,089 --> 00:44:58,089
+way.
+
+429
+00:44:58,089 --> 00:45:01,250
+We'll create 42 latent factors as before.
+
+430
+00:45:01,250 --> 00:45:03,330
+[Time: 45 minute mark]
+
+431
+00:45:03,330 --> 00:45:08,280
+We'll use exactly the same embedding input
+functions as before. Again, we're going to
+
+432
+00:45:08,280 --> 00:45:12,010
+have to use lists to store everything.
+
+433
+00:45:12,010 --> 00:45:15,660
+So in this case all of our embeddings are
+going to be in the list, so we go through
+
+434
+00:45:15,660 --> 00:45:25,530
+each of our characters and create an embedding
+input and output for each one, and store each.
+
+435
+00:45:25,530 --> 00:45:30,340
+Here we're going to define all at once - green
+arrow, orange arrow, blue arrow. Here we're
+
+436
+00:45:30,340 --> 00:45:36,150
+basically saying we've got three different
+weight matrices that we want Keras to keep
+
+437
+00:45:36,150 --> 00:45:40,010
+track of for us.
+
+438
+00:45:40,010 --> 00:45:51,720
+So the very first hidden state here is going
+to take the list of all of our inputs and
+
+439
+00:45:51,720 --> 00:45:58,870
+that's a tuple of two things -- first an input
+to it and second is the ouptput of the embedding,
+
+440
+00:45:58,870 --> 00:46:05,230
+the very first character, pass that into our
+green arrow and that's going to give us our
+
+441
+00:46:05,230 --> 00:46:08,260
+initial hidden state.
+
+442
+00:46:08,260 --> 00:46:14,829
+And then this looks exactly the same as we
+saw before, but rather than listing separately
+
+443
+00:46:14,829 --> 00:46:21,640
+we're just going to loop through all of our
+1-8 characters, and go ahead and create the
+
+444
+00:46:21,640 --> 00:46:27,950
+green arrow, the orange arrow, and add the
+two together.
+
+445
+00:46:27,950 --> 00:46:33,060
+So finally, we can take that final hidden
+state and put it through our blue arrow to
+
+446
+00:46:33,060 --> 00:46:35,440
+create our final output.
+
+447
+00:46:35,440 --> 00:46:42,569
+We can then tell Keras that our model is all
+of the embedding inputs for that list we created
+
+448
+00:46:42,569 --> 00:46:48,510
+together, that's our inputs and our output
+that we just created is the output. And we
+
+449
+00:46:48,510 --> 00:46:51,290
+can go ahead and fit that model.
+
+450
+00:46:51,290 --> 00:46:58,080
+We would expect this to be more accurate because
+it's now got 8 pieces of context in all to
+
+451
+00:46:58,080 --> 00:46:59,080
+predict.
+
+452
+00:46:59,080 --> 00:47:12,170
+So previously we were getting 2, and this
+time we get down to 1.8. So it's still not
+
+453
+00:47:12,170 --> 00:47:13,680
+great, but it's an improvement.
+
+454
+00:47:13,680 --> 00:47:25,040
+We can create the exact same kind of test
+as before, so now we can pass 8 characters.
+
+455
+00:47:25,040 --> 00:47:30,490
+That is our first RNN, now built from scratch.
+
+456
+00:47:30,490 --> 00:47:38,240
+This kind of RNN, where we're taking a list
+and predicting a single thing is most likely
+
+457
+00:47:38,240 --> 00:47:46,040
+to be useful for things like sentiment analysis.
+Remember our sentiment analysis example using
+
+458
+00:47:46,040 --> 00:47:47,950
+IMDb?
+
+459
+00:47:47,950 --> 00:47:52,890
+So in this case, we were taking a sequence,
+a list of words in a sentence and predicting
+
+460
+00:47:52,890 --> 00:47:57,349
+whether something is positive sentiment or
+negative sentiment. So that would seem like
+
+461
+00:47:57,349 --> 00:48:13,050
+an appropriate type of use case for this style
+of RNN.
+
+462
+00:48:13,050 --> 00:48:23,510
+So 
+
+463
+00:48:23,510 --> 00:48:28,569
+I wanted to show you something kind of interesting
+which you may have noticed, which is when
+
+464
+00:48:28,569 --> 00:48:40,670
+we created our hidden dense layer (that is
+our orange arrow), I did not initialize it
+
+465
+00:48:40,670 --> 00:48:48,650
+in the default way, but instead I said init="identity".
+
+466
+00:48:48,650 --> 00:48:57,860
+You may have also noticed that the equivalent
+thing was shown in our Keras RNN. Here where
+
+467
+00:48:57,860 --> 00:49:03,410
+it says inner_init='identity' is referring
+to the same thing. It's referring to what
+
+468
+00:49:03,410 --> 00:49:11,069
+is the initialization that is used for this
+orange arrow. How are those weights originally
+
+469
+00:49:11,069 --> 00:49:12,470
+initialized.
+
+470
+00:49:12,470 --> 00:49:18,090
+Rather than initializing them randomly, we're
+going to initialize them with an identity
+
+471
+00:49:18,090 --> 00:49:24,920
+matrix. An identity matrix, you may recall
+from your linear algebra, is a matrix which
+
+472
+00:49:24,920 --> 00:49:33,260
+is all 0's, except it is 1's down the diagonal.
+So if you multiply any matrix by the identity
+
+473
+00:49:33,260 --> 00:49:39,090
+matrix, it doesn't change the original matrix
+at all. You get back exactly what you started
+
+474
+00:49:39,090 --> 00:49:40,490
+with.
+
+475
+00:49:40,490 --> 00:49:47,700
+So in other words, we're going to start off
+by initializing our orange arrow, not with
+
+476
+00:49:47,700 --> 00:49:57,140
+a random matrix, but with a matrix that causes
+the hidden state not to change at all. That
+
+477
+00:49:57,140 --> 00:49:58,490
+makes some intuitive sense.
+
+478
+00:49:58,490 --> 00:50:00,099
+[Time: 50 minute mark]
+
+479
+00:50:00,099 --> 00:50:04,630
+It seems reasonable to say, in the absence
+of other evidence to the contrary, why don't
+
+480
+00:50:04,630 --> 00:50:12,380
+we start off by having the hidden state stay
+the same until the SGD has a chance to update
+
+481
+00:50:12,380 --> 00:50:13,380
+that.
+
+482
+00:50:13,380 --> 00:50:19,680
+But it turns out that it also makes sense
+based on an empirical analysis. Since we always
+
+483
+00:50:19,680 --> 00:50:24,550
+do things taht Geoffrey Hinton tells us to
+do, that's good news because this is a paper
+
+484
+00:50:24,550 --> 00:50:30,910
+by Geoffrey Hinton in which he points out
+this rather neat trick, which is if you initialize
+
+485
+00:50:30,910 --> 00:50:41,080
+an RNN with the hidden weight matrix initialized
+to an identity matrix and used rectified linear
+
+486
+00:50:41,080 --> 00:50:53,670
+units (as we are here), you actually get an
+architecture which can get fantastic results
+
+487
+00:50:53,670 --> 00:51:01,160
+on some reasonably significant problems, including
+speech recognition and language modeling.
+
+488
+00:51:01,160 --> 00:51:07,660
+I don't see this paper referred to or discussed
+very often, even though it is well over a
+
+489
+00:51:07,660 --> 00:51:12,940
+year old now. So I'm not sure if people forgot
+about it, or haven't noticed it, or what.
+
+490
+00:51:12,940 --> 00:51:19,880
+This is a good trick to remember, that you
+can get quite a long way doing nothing but
+
+491
+00:51:19,880 --> 00:51:26,780
+an identity matrix initialization and rectified
+linear units just as we have done here to
+
+492
+00:51:26,780 --> 00:51:36,641
+set up our architecture. That's a nice ittle
+trick to remember.
+
+493
+00:51:36,641 --> 00:51:47,339
+The next thing we're going to do is to make
+a couple of minor changes to this diagram.
+
+494
+00:51:47,339 --> 00:51:51,240
+The first change we're going to make is we're
+going to take this rectangle here -- this
+
+495
+00:51:51,240 --> 00:51:57,380
+rectangle is referring to what is it that
+we repeat. And so since in this case we're
+
+496
+00:51:57,380 --> 00:52:08,069
+predicting character n from characters 1 through
+n-1, then this whole area here we're looping
+
+497
+00:52:08,069 --> 00:52:13,530
+from 2 to n-1 before we generate our output.
+
+498
+00:52:13,530 --> 00:52:17,609
+So what we're going to do is we're going to
+take this triangle and we're going to put
+
+499
+00:52:17,609 --> 00:52:24,099
+it inside the loop, put it inside the rectangle.
+What that means is that every time we loop
+
+500
+00:52:24,099 --> 00:52:27,770
+through this we're going to generate another
+output.
+
+501
+00:52:27,770 --> 00:52:32,490
+Rather than generating one output at the end
+we're going to predict characters 2 through
+
+502
+00:52:32,490 --> 00:52:41,350
+n using characters 1 through n-1. So it's
+going to predict character 2 using character
+
+503
+00:52:41,350 --> 00:52:48,030
+1, and character 3 using characters 1 and
+2, and character 4 using characters 1, 2,
+
+504
+00:52:48,030 --> 00:52:50,160
+and 3. And so forth.
+
+505
+00:52:50,160 --> 00:52:54,270
+And so that's what this model will do. It's
+nearly exactly the same as the previous model,
+
+506
+00:52:54,270 --> 00:53:00,780
+except after every single step, after creating
+the hidden state on every step, we're going
+
+507
+00:53:00,780 --> 00:53:02,500
+to create an output every time.
+
+508
+00:53:02,500 --> 00:53:09,770
+So this is not going to create a single output,
+like this does, which predicted a single character,
+
+509
+00:53:09,770 --> 00:53:14,880
+the last character, the next after the last
+character in the sequence, the character n,
+
+510
+00:53:14,880 --> 00:53:18,359
+these are characters n through n-1.
+
+511
+00:53:18,359 --> 00:53:34,450
+This is going to create a sequence of characters,
+2 through n, using characters 1 through n-1.
+
+512
+00:53:34,450 --> 00:53:38,930
+Let's now talk about how we would implement
+this sequence where we're going to predict
+
+513
+00:53:38,930 --> 00:53:42,940
+characters 2 through n using characters 1
+through n-1.
+
+514
+00:53:42,940 --> 00:53:52,190
+Why would this be a good idea? There's a few
+reasons. One obvious reason is if we're only
+
+515
+00:53:52,190 --> 00:53:59,559
+predicting one output for every n inputs,
+then the number of times that our model has
+
+516
+00:53:59,559 --> 00:54:05,140
+the the opportunity to backpropagate through
+those gradients and improe those weights is
+
+517
+00:54:05,140 --> 00:54:08,480
+just once for each sequence of characters.
+
+518
+00:54:08,480 --> 00:54:15,330
+Whereas if we predict characts 2 through n
+using characters 1 through characters n-1
+
+519
+00:54:15,330 --> 00:54:20,829
+we're actually getting a whole lot of feedback
+on how the model is coming. So we can backpropogate
+
+520
+00:54:20,829 --> 00:54:27,650
+n times, or n-1 times every time we do another
+sequence.
+
+521
+00:54:27,650 --> 00:54:32,950
+So there's a lot more learning going on for
+the same amount, or nearly the same amount,
+
+522
+00:54:32,950 --> 00:54:35,310
+of computation.
+
+523
+00:54:35,310 --> 00:54:39,890
+The other reason this is handy is, as you'll
+see in a moment, it's very helpful for creating
+
+524
+00:54:39,890 --> 00:54:49,960
+RNNs which can do truly long-term dependencies,
+or context.
+
+525
+00:54:49,960 --> 00:54:55,340
+So we're going to start here before look at
+how we do context.
+
+526
+00:54:55,340 --> 00:55:01,190
+Really any time you're doing a sequence to
+sequence exercise, you probably want to construct
+
+527
+00:55:01,190 --> 00:55:06,770
+something of this format, where your triangle
+is inside the square rather than outside the
+
+528
+00:55:06,770 --> 00:55:07,770
+square.
+
+529
+00:55:07,770 --> 00:55:10,319
+[Time: 55 minute mark]
+
+530
+00:55:10,319 --> 00:55:15,710
+It's going to look very, very similar. I'm
+calling this Returning Sequences because rather
+
+531
+00:55:15,710 --> 00:55:19,280
+than returning a single character, I'm going
+to return a sequence.
+
+532
+00:55:19,280 --> 00:55:25,540
+And really, most things are the same. Our
+character in data (c_in_dat) is identical
+
+533
+00:55:25,540 --> 00:55:28,660
+to before, so I just commented it out.
+
+534
+00:55:28,660 --> 00:55:34,010
+And now our character out output (c_out_dat)
+isn't just a single character, but it's actually
+
+535
+00:55:34,010 --> 00:55:42,079
+a list of 8 sequences. In fact, it's exactly
+the same as the input except that I have removed
+
+536
+00:55:42,079 --> 00:55:46,160
+the -1. So it's just shifted over by 1.
+
+537
+00:55:46,160 --> 00:55:51,750
+So in each sequence, the first character will
+be used to predict the second, the first and
+
+538
+00:55:51,750 --> 00:55:54,609
+second will predict the third character, the
+third, second, and first character will predict
+
+539
+00:55:54,609 --> 00:55:58,070
+the fourth, and so forth.
+
+540
+00:55:58,070 --> 00:56:03,220
+So you've got a lot more predictions going
+on and a lot more opportunity for the model
+
+541
+00:56:03,220 --> 00:56:04,430
+to learn.
+
+542
+00:56:04,430 --> 00:56:15,410
+So then we will create our y's just as before
+with our x's. And so now our y dataset looks
+
+543
+00:56:15,410 --> 00:56:21,609
+exactly like our x dataset did, but everything's
+just shifted across by one character.
+
+544
+00:56:21,609 --> 00:56:27,160
+And the models are going to look almost identical
+as well. We've got our three dense layers
+
+545
+00:56:27,160 --> 00:56:34,309
+as before, but we're going to do one other
+thing different. Rather than treating the
+
+546
+00:56:34,309 --> 00:56:41,010
+first character as special, I'm going to move
+the character into here. So rather than repeating
+
+547
+00:56:41,010 --> 00:56:46,411
+from 2 to n-1, I'm going to repeat from 1
+to n-1. So I've moved my first character in
+
+548
+00:56:46,411 --> 00:56:47,411
+to here.
+
+549
+00:56:47,411 --> 00:56:51,869
+The only thing I have to be careful of is
+that we somehow have to initialize our hidden
+
+550
+00:56:51,869 --> 00:56:59,250
+state to something. So we're going to initialize
+our hidden state to a vector of 0's.
+
+551
+00:56:59,250 --> 00:57:03,589
+So here we do that. We say we're going to
+have to have something to initialize our hidden
+
+552
+00:57:03,589 --> 00:57:08,329
+state (we're going to feed it a vector of
+0's shortly). So our initial hidden state
+
+553
+00:57:08,329 --> 00:57:11,220
+is just going to be the result of that.
+
+554
+00:57:11,220 --> 00:57:18,720
+And our loop is identical to before, but at
+the end of every loop, we're going to append
+
+555
+00:57:18,720 --> 00:57:24,569
+this output. So we're now going to have 8
+outputs for ever sequence instead of just
+
+556
+00:57:24,569 --> 00:57:25,569
+1.
+
+557
+00:57:25,569 --> 00:57:31,970
+And so now our model has two changes. The
+first is it's got an array of outputs, and
+
+558
+00:57:31,970 --> 00:57:37,819
+we have to add the thing that we're going
+to use to store our vector of 0's somewhere,
+
+559
+00:57:37,819 --> 00:57:41,030
+so we're going to put this into our input
+as well.
+
+560
+00:57:41,030 --> 00:57:46,050
+Question: Back up the diagram, could you say
+what the box is again?
+
+561
+00:57:46,050 --> 00:57:51,930
+Answer: The box refers to the area that we
+repeat.
+
+562
+00:57:51,930 --> 00:58:00,040
+So initially we repeated the character n input
+going in to here, and the hidden state going
+
+563
+00:58:00,040 --> 00:58:04,549
+back onto itself, from 2 through n-1. So the
+box is the thing which I'm looping through
+
+564
+00:58:04,549 --> 00:58:06,980
+all those times.
+
+565
+00:58:06,980 --> 00:58:12,079
+This time I'm looping through this whole thing.
+Character input coming in, generating a hidden
+
+566
+00:58:12,079 --> 00:58:18,550
+state and creating an output. Repeating that
+whole thing every time.
+
+567
+00:58:18,550 --> 00:58:25,110
+And so now you can see, creating the output
+is inside the loop, rather than outside the
+
+568
+00:58:25,110 --> 00:58:32,820
+loop -- so we end up with an array of outputs.
+So our model is nearly exactly the same as
+
+569
+00:58:32,820 --> 00:58:34,710
+before, it's just got two changes.
+
+570
+00:58:34,710 --> 00:58:44,640
+So now when we fit our model, we're going
+to add an array of 0's to the start of our
+
+571
+00:58:44,640 --> 00:58:52,589
+inputs. Our outputs are going to be those
+lists of 8, offset by 1.
+
+572
+00:58:52,589 --> 00:59:02,800
+We can go ahead and train this. You can see
+as as we train it we don't just have 1 loss,
+
+573
+00:59:02,800 --> 00:59:08,020
+we have 8 losses. And that's because every
+one of those 8 outputs has its own loss.
+
+574
+00:59:08,020 --> 00:59:18,550
+As you would expect, our ability to predict
+the first character, using nothing but a vector
+
+575
+00:59:18,550 --> 00:59:23,030
+of 0's is pretty limited. So that very quickly
+flattens out.
+
+576
+00:59:23,030 --> 00:59:30,401
+Whereas our ability to predict the 8th character,
+well it has a lot more context. It has 7 characters
+
+577
+00:59:30,401 --> 00:59:38,040
+of context. So you can see that the 8th character's
+loss keeps on improving.
+
+578
+00:59:38,040 --> 00:59:44,940
+By a few epochs, we have a significantly better
+loss than we did before. So this is what a
+
+579
+00:59:44,940 --> 00:59:47,150
+sequence model looks like.
+
+580
+00:59:47,150 --> 00:59:56,569
+You can see a sequence model, when we test
+it we pass in a sequence like this, and after
+
+581
+00:59:56,569 --> 00:59:59,060
+every character it returns its guess.
+
+582
+00:59:59,060 --> 01:00:02,619
+After seeing a space, it guesses the next
+will be a "t".
+
+583
+01:00:02,619 --> 01:00:05,520
+[Time: 1 hour mark]
+
+584
+01:00:05,520 --> 01:00:08,060
+After seeing a space "t", the next thing will
+be an "h". After seeing a space "t" "h", the
+
+585
+01:00:08,060 --> 01:00:11,950
+next thing will be an "e" and so forth.
+
+586
+01:00:11,950 --> 01:00:17,099
+And so you can see it's predicting some pretty
+reasonable things here.
+
+587
+01:00:17,099 --> 01:00:24,900
+After seeing space "p" "a" "r" "t", it expect
+that will be the end of the word. And it was.
+
+588
+01:00:24,900 --> 01:00:32,609
+After seeing "p" "a" "r" "t" space, it's guessing
+that the next word is going to be "o" "f".
+
+589
+01:00:32,609 --> 01:00:39,960
+So it's able to use sequences of 8 to create
+a context, which isn't really it, but it's
+
+590
+01:00:39,960 --> 01:00:44,819
+an improvement.
+
+591
+01:00:44,819 --> 01:00:53,260
+How do we do this same thing with Keras? With
+Keras, it's identical to our previous model
+
+592
+01:00:53,260 --> 01:00:58,490
+except that we have to use the different input
+and oputput arrays, just like I just showed
+
+593
+01:00:58,490 --> 01:01:05,770
+you, so the whole sequence of labels and the
+whole sequence of inputs.
+
+594
+01:01:05,770 --> 01:01:11,450
+And the second thing we have to do is return
+one parameter, which is return_sequences=True.
+
+595
+01:01:11,450 --> 01:01:17,990
+return_sequences=True simply says rather than
+putting the triangle outside the loop, put
+
+596
+01:01:17,990 --> 01:01:24,910
+the triangle inside the loop. And so return
+an output every time you go to another time-step
+
+597
+01:01:24,910 --> 01:01:28,790
+rather than returning just a single output
+at the end.
+
+598
+01:01:28,790 --> 01:01:38,299
+So it's that easy in Keras. I add this return_sequences=True.
+I don't have to change my data at all, other
+
+599
+01:01:38,299 --> 01:01:45,790
+than some very minor dimensionality changes,
+and I can just fit it.
+
+600
+01:01:45,790 --> 01:01:53,350
+As you can see, I get a pretty similar loss
+function to what I did before. And I can build
+
+601
+01:01:53,350 --> 01:01:58,930
+something that looks pretty much like we had
+before and generate some pretty similar results.
+
+602
+01:01:58,930 --> 01:02:08,089
+So that's how we create this sequence model
+with Keras.
+
+603
+01:02:08,089 --> 01:02:17,770
+Then how do you create all state. How do you
+generate a model which is able to handle long-term
+
+604
+01:02:17,770 --> 01:02:19,670
+dependencies.
+
+605
+01:02:19,670 --> 01:02:26,960
+To generate model that understands long-term
+dependencies, we can't any more present our
+
+606
+01:02:26,960 --> 01:02:34,910
+pieces of data at random. So far, we've always
+been using the default when we do model.fit,
+
+607
+01:02:34,910 --> 01:02:42,140
+which is shuffle=True. So it's passing across
+these sequences of 8 in a random order.
+
+608
+01:02:42,140 --> 01:02:46,390
+If we're going to do something which understands
+long-term dependencies, the first thing we're
+
+609
+01:02:46,390 --> 01:02:50,950
+going to have to do is use shuffle=False.
+
+610
+01:02:50,950 --> 01:02:55,910
+The second thing we're going to have to do
+is we're going to have to stop passing in
+
+611
+01:02:55,910 --> 01:03:04,089
+an array of 0's as my starting point every
+time around. So effectively what I want to
+
+612
+01:03:04,089 --> 01:03:14,540
+do is I want to pass in my array of 0's at
+the very start, right as I start training,
+
+613
+01:03:14,540 --> 01:03:19,880
+but then at the end of myt sequence of 8,
+rather than going back to initialize to 0's,
+
+614
+01:03:19,880 --> 01:03:24,720
+I actualy want to keep this hidden state.
+
+615
+01:03:24,720 --> 01:03:29,560
+So then I just start my next sequence of 8
+with this hidden state exactly where it was
+
+616
+01:03:29,560 --> 01:03:37,400
+before. And that's going to allow it to build
+up arbitrarily long dependencies.
+
+617
+01:03:37,400 --> 01:03:46,309
+So in Keras, that's actually as simple as
+adding one additional parameter. And the additional
+
+618
+01:03:46,309 --> 01:03:53,460
+parameter is called stateful.
+
+619
+01:03:53,460 --> 01:04:01,170
+So when you say stateful=True, what that tells
+Keras is that at the end of each sequence,
+
+620
+01:04:01,170 --> 01:04:07,380
+don't reset the hidden activations to 0, but
+leave them as they are.
+
+621
+01:04:07,380 --> 01:04:12,880
+And that means that we have to make sure that
+we pass shuffle=False when we train it.
+
+622
+01:04:12,880 --> 01:04:17,260
+So it's now going to pass the first 8 characters,
+the second 8 characters of the book, the third
+
+623
+01:04:17,260 --> 01:04:24,150
+8 characters of the book, leaving the hidden
+state untouched between each one. And therefore,
+
+624
+01:04:24,150 --> 01:04:30,770
+it's allowing it to continue to build up as
+much state as it wants to.
+
+625
+01:04:30,770 --> 01:04:36,539
+Training these stateful models is a lot harder
+than training the models that we've seen so
+
+626
+01:04:36,539 --> 01:04:46,020
+far. The reason is this: in these stateful
+models, this orange arrow, this single weight
+
+627
+01:04:46,020 --> 01:04:55,150
+matrix it's being applied to the hidden matrix
+not 8 times, but 100,000 times (or more, depending
+
+628
+01:04:55,150 --> 01:04:56,660
+on how big your text is).
+
+629
+01:04:56,660 --> 01:04:57,660
+[Time: 1.05 hour mark]
+
+630
+01:04:57,660 --> 01:05:03,632
+And just imagine - if this weight matrix was
+even slightly poorly scaled, like if there
+
+631
+01:05:03,632 --> 01:05:08,960
+was just one number in it which was a bit
+too high, then effectively that number is
+
+632
+01:05:08,960 --> 01:05:15,609
+going to be to the power of 100,000. It's
+being multiplied again and again and again.
+
+633
+01:05:15,609 --> 01:05:19,930
+So what can happen is you get this problem
+called exploding gradients. In some ways,
+
+634
+01:05:19,930 --> 01:05:24,589
+it's better described as exploding activations.
+
+635
+01:05:24,589 --> 01:05:31,230
+Because we're multipying this by almost the
+same weight matrix each time, if that weight
+
+636
+01:05:31,230 --> 01:05:37,559
+matrix is anything less than perfectly scaled,
+then it's going to make our hidden matrix
+
+637
+01:05:37,559 --> 01:05:40,470
+disappear off into infinity.
+
+638
+01:05:40,470 --> 01:05:46,560
+So we have to be very careful how to train
+these. Indeed these kind of long-term dependency
+
+639
+01:05:46,560 --> 01:05:56,060
+models were thought of as impossible to train
+for a while. Until some folks in the '90's,
+
+640
+01:05:56,060 --> 01:06:03,750
+I guess, came up with a model called the LSTM
+model. Long Short Term Memory model.
+
+641
+01:06:03,750 --> 01:06:07,410
+In the Long Short Term Memory model (we'll
+learn more about it next week, we're actually
+
+642
+01:06:07,410 --> 01:06:13,000
+going to create it ourselves from scratch)
+we replaced this loop here with a loop where
+
+643
+01:06:13,000 --> 01:06:22,320
+there's a neural network inside the loop that
+decides how much of this state matrix to keep,
+
+644
+01:06:22,320 --> 01:06:25,180
+and how much to use at each activation.
+
+645
+01:06:25,180 --> 01:06:31,369
+So by having a neural network that actually
+controls how much state is kept and how much
+
+646
+01:06:31,369 --> 01:06:39,710
+is used, it can actually learn how to avoid
+those gradient explosions. It can actually
+
+647
+01:06:39,710 --> 01:06:44,609
+learn how to ceate an effective sequence.
+
+648
+01:06:44,609 --> 01:06:50,049
+So we're going ot look at that a lot more
+next week, but for now I will tell you that
+
+649
+01:06:50,049 --> 01:06:57,190
+when I try to run this using a simple RNN,
+even with an identity matrix initialization
+
+650
+01:06:57,190 --> 01:07:01,049
+and relu's, I had not luck at all.
+
+651
+01:07:01,049 --> 01:07:06,119
+So I had to replace it with an LSTM. Even
+that wasn't enough. I had to have well-scaled
+
+652
+01:07:06,119 --> 01:07:13,650
+inputs, so I added a batch noralization layer
+after my emeddings. After I did those things,
+
+653
+01:07:13,650 --> 01:07:16,470
+then I could fit it.
+
+654
+01:07:16,470 --> 01:07:24,140
+It still ran pretty slowly. Before I was getting
+4 seconds per epoch, now it's 13 seconds per
+
+655
+01:07:24,140 --> 01:07:28,799
+epoch. The reason is that it's much harder
+to parallelize this, it has to do this sequence
+
+656
+01:07:28,799 --> 01:07:38,930
+in order. So it's going to be slower. But
+over time, it does eventually get substantially
+
+657
+01:07:38,930 --> 01:07:44,030
+better loss than I had before, and that's
+because it's able to keep track of and use
+
+658
+01:07:44,030 --> 01:07:45,030
+this state.
+
+659
+01:07:45,030 --> 01:07:49,970
+Question: Doesn't it make sense to use batchnorm
+in the loop as well?
+
+660
+01:07:49,970 --> 01:08:01,280
+Answer: That's a good question. Definitely
+maybe. There's been a lot of discussion and
+
+661
+01:08:01,280 --> 01:08:06,820
+papers about this recently. There's a method
+called layer normalization, which is a method
+
+662
+01:08:06,820 --> 01:08:15,680
+specifically designed to work well with RNNs.
+Standard batchnorm doesn't.
+
+663
+01:08:15,680 --> 01:08:20,920
+It turns out it's actually very easy to do
+layer normalization with Keras using a couple
+
+664
+01:08:20,920 --> 01:08:26,988
+of simple parameters you can provide to the
+normal batchnorm constructor. In my experiments,
+
+665
+01:08:26,988 --> 01:08:38,218
+that hasn't worked so well. I will show you
+a lot more about that in just a few minutes.
+
+666
+01:08:38,219 --> 01:08:43,250
+Stateful models are great. We're going to
+look at some very successful stateful models
+
+667
+01:08:43,250 --> 01:08:48,170
+in just a moment. Just be aware that they
+are more challenging to train. You'll see
+
+668
+01:08:48,170 --> 01:08:54,520
+another thing I had to do here, I had to reduce
+the learning rate in the middle. You just
+
+669
+01:08:54,520 --> 01:09:02,800
+have to be so careful of these exploding gradient
+problems.
+
+670
+01:09:02,800 --> 01:09:13,149
+So let me show you what I did with this. I
+tried to create a stateful model which worked
+
+671
+01:09:13,149 --> 01:09:14,849
+as well as I could.
+
+672
+01:09:14,850 --> 01:09:21,299
+So I took the same Nietzsche data as before,
+and I tried splitting it into chunks of 40,
+
+673
+01:09:21,299 --> 01:09:29,460
+rather than 8 so each one could do more work.
+So here are some examples of those chunks
+
+674
+01:09:29,460 --> 01:09:33,149
+of 40.
+
+675
+01:09:33,149 --> 01:09:37,499
+I built a model that was slightly more sophisticated
+than the previous one in two ways:
+
+676
+01:09:37,500 --> 01:09:46,520
+The first is, it has an RNN feeding in to
+an RNN. That's kind of a crazy idea, so I
+
+677
+01:09:46,520 --> 01:09:48,839
+brought a picture.
+
+678
+01:09:48,839 --> 01:09:56,320
+So an RNN feeding in to an RNN means that
+the output is actually no longer going to
+
+679
+01:09:56,320 --> 01:10:02,380
+an output. Actually the output of the first
+RNN is becoming the input to the second RNN.
+
+680
+01:10:02,380 --> 01:10:04,100
+[Time: 1.10 hour mark]
+
+681
+01:10:04,100 --> 01:10:10,580
+So the character input goes in to our first
+RNN, and the state updates as per usual. And
+
+682
+01:10:10,580 --> 01:10:17,300
+then each time we go through the sequence,
+it feeds the result to the state of the second
+
+683
+01:10:17,300 --> 01:10:18,300
+RNN.
+
+684
+01:10:18,300 --> 01:10:26,400
+Why is this useful? Because it means that
+this output is now coming from not just a
+
+685
+01:10:26,400 --> 01:10:39,920
+single dense matrix with a single dense matrix
+here, it's actually going through 3 dense
+
+686
+01:10:39,920 --> 01:10:46,320
+matrices and activation functions. So I now
+have a deep neural network (assuming two layers
+
+687
+01:10:46,320 --> 01:10:51,920
+count as deep) between my first character
+and my first output.
+
+688
+01:10:51,920 --> 01:10:58,280
+And then indeed between every hidden state
+and every output, I now have multiple inputs.
+
+689
+01:10:58,280 --> 01:11:05,429
+So effectively what this is allowing us to
+do is to create a deep neural net for all
+
+690
+01:11:05,429 --> 01:11:11,949
+of our activations. And that turns out to
+work really well because the structure of
+
+691
+01:11:11,949 --> 01:11:20,250
+language is pretty complex and so it's nice
+to be able to give it a more flexible function.
+
+692
+01:11:20,250 --> 01:11:28,090
+That's the first thing I do. And it's easy
+to create that. Just copy and paste whatever
+
+693
+01:11:28,090 --> 01:11:37,380
+your RNN line is. You can see I've now added
+dropout inside my RNN.
+
+694
+01:11:37,380 --> 01:11:44,170
+As I talked about before, adding dropout inside
+your RNN turns out to be a really good idea.
+
+695
+01:11:44,170 --> 01:11:51,110
+There's a really great paper about that recently
+showing this is a great way to regularize
+
+696
+01:11:51,110 --> 01:11:52,860
+an RNN.
+
+697
+01:11:52,860 --> 01:11:59,280
+And then the second change I made ... rather
+than going straight from the RNN to our output,
+
+698
+01:11:59,280 --> 01:12:03,239
+I went through a dense layer.
+
+699
+01:12:03,239 --> 01:12:09,150
+Now there's something you might have noticed
+here, our dense layers have this extra word
+
+700
+01:12:09,150 --> 01:12:14,309
+in the front. Why would they have this extra
+word in the front -- TimeDistributed.
+
+701
+01:12:14,309 --> 01:12:22,110
+It might be easier to understand by looking
+at this earlier sequence model with Keras.
+
+702
+01:12:22,110 --> 01:12:32,260
+Note that the the output of our RNN is not
+just a vector of length 256, but 8 vectors
+
+703
+01:12:32,260 --> 01:12:36,749
+of length 256, because it's actually predicting
+8 outputs.
+
+704
+01:12:36,749 --> 01:12:45,110
+So we can't just have a normal dense layer
+because a normal dense layer needs a single
+
+705
+01:12:45,110 --> 01:12:48,110
+dimension that it can squish down.
+
+706
+01:12:48,110 --> 01:12:53,130
+So in this case, what we actually want to
+do is we want to create 8 separate dense layers
+
+707
+01:12:53,130 --> 01:12:56,590
+in the output, one for every one of the outputs.
+
+708
+01:12:56,590 --> 01:13:02,530
+And so what TimeDistributed does is it says
+whatever the layer in the middle, I want you
+
+709
+01:13:02,530 --> 01:13:09,300
+to create 8 copies of it (or however many
+this dimension is). And every one of those
+
+710
+01:13:09,300 --> 01:13:13,969
+copies is going to share the same weight matrix,
+which is exactly what we want.
+
+711
+01:13:13,969 --> 01:13:21,840
+So the short version here is, in Keras every
+time you say return_sequences=True, any dense
+
+712
+01:13:21,840 --> 01:13:28,130
+layers after that will have to have TimeDistributed
+wrapped around them, because we want to create
+
+713
+01:13:28,130 --> 01:13:33,800
+not just one dense layer, but 8 dense layers.
+
+714
+01:13:33,800 --> 01:13:40,540
+So in this case, since we're saying return_sequence=True,
+we then have a TimeDistributed dense layer,
+
+715
+01:13:40,540 --> 01:13:45,130
+dropout, and then another TimeDistributed
+dense layer.
+
+716
+01:13:45,130 --> 01:13:53,850
+Question: Does the first RNN complete before
+it passes to the second, or is it layer by
+
+717
+01:13:53,850 --> 01:13:54,850
+layer?
+
+718
+01:13:54,850 --> 01:14:03,170
+Answer: No, it's operating exactly like this.
+My initialization starts, this character comes
+
+719
+01:14:03,170 --> 01:14:11,150
+in. At the output of that is the hidden state
+for my next hidden state and the output that
+
+720
+01:14:11,150 --> 01:14:18,739
+goes into my second LSTM.
+
+721
+01:14:18,739 --> 01:14:22,570
+The best way to think about this actually
+would probably be to draw it in the unrolled
+
+722
+01:14:22,570 --> 01:14:29,489
+form. Then you'll realize there's nothing
+magical about this at all. In the unrolled
+
+723
+01:14:29,489 --> 01:14:33,690
+form, it just looks like a pretty standard
+neural network.
+
+724
+01:14:33,690 --> 01:14:37,110
+Question: What's dropout_U and droput_W?
+
+725
+01:14:37,110 --> 01:14:44,730
+Answer: We'll talk about that more next week.
+In an LSTM, there's kind of like little neural
+
+726
+01:14:44,730 --> 01:14:49,380
+nets that control how the state updates work.
+And this is talking about how the dropout
+
+727
+01:14:49,380 --> 01:14:52,400
+works in these little neural nets.
+
+728
+01:14:52,400 --> 01:14:58,340
+Question: And when stateful=False, can you
+explain again what is reset after each training
+
+729
+01:14:58,340 --> 01:15:00,110
+example?
+
+730
+01:15:00,110 --> 01:15:06,520
+Answer: The best way to describe that is to
+show us doing it.
+
+731
+01:15:06,520 --> 01:15:08,550
+[Time: 1.15 hour mark]
+
+732
+01:15:08,550 --> 01:15:18,010
+Remember that the RNNs that we built are identical
+to what Keras does, or close enough to identical.
+
+733
+01:15:18,010 --> 01:15:25,560
+So let's go and have a look at our version
+of return sequences. You can see that what
+
+734
+01:15:25,560 --> 01:15:35,500
+we did was we created a matrix of 0's that
+we stuck on to the front of our inputs. So
+
+735
+01:15:35,500 --> 01:15:41,260
+every set of 8 characters now starts with
+a vector of 0's.
+
+736
+01:15:41,260 --> 01:15:50,630
+So in other words, this initialize to zeros
+happens every time we finish a sequence. So
+
+737
+01:15:50,630 --> 01:15:56,050
+in other words, this hidden state gets initialized
+to 0 at the end of every sequence.
+
+738
+01:15:56,050 --> 01:16:04,820
+And it's this hidden state which is where
+all these dependencies and state is kept.
+
+739
+01:16:04,820 --> 01:16:09,780
+So doing that is resetting the state every
+time we look at a new sequence.
+
+740
+01:16:09,780 --> 01:16:18,300
+So when we say stateful=False, it only does
+this initialize to zero step once at the very
+
+741
+01:16:18,300 --> 01:16:22,840
+start, or when we explicitly ask it to.
+
+742
+01:16:22,840 --> 01:16:30,920
+So when I actually run this model .. the way
+I do it is wrote a little thing called run_epochs
+
+743
+01:16:30,920 --> 01:16:36,989
+that goes model.reset_states and then does
+a fit on one epoch, which is what you really
+
+744
+01:16:36,989 --> 01:16:43,140
+want. At the end of your entire works of Nietzsche,
+you reset your state because you're going
+
+745
+01:16:43,140 --> 01:16:55,800
+to go back to the very start and start again.
+
+746
+01:16:55,800 --> 01:17:05,469
+So with this multi-layer LTSM going into a
+neural net, I then tried seeing how that goes.
+
+747
+01:17:05,469 --> 01:17:14,140
+And remember with our simpler versions, we
+were getting 1.6, this was the best we could
+
+748
+01:17:14,140 --> 01:17:15,140
+do.
+
+749
+01:17:15,140 --> 01:17:23,630
+After one epoch, instead of just printing
+out one letter, I'm starting with a whole
+
+750
+01:17:23,630 --> 01:17:27,170
+sequence of letters and asking it to generate
+a sequence.
+
+751
+01:17:27,170 --> 01:17:32,710
+You can see it starts out by generating a
+pretty rubbishy sequence.
+
+752
+01:17:32,710 --> 01:17:40,370
+Question: In a double LSTM layer model, what
+is the input to the second LSTM in addition
+
+753
+01:17:40,370 --> 01:17:43,860
+to the output of the first LSTM?
+
+754
+01:17:43,860 --> 01:17:51,150
+Answer. In addition to the output of the first
+LSTM is the previous output of its own hidden
+
+755
+01:17:51,150 --> 01:17:53,199
+state.
+
+756
+01:17:53,199 --> 01:18:08,310
+After a few more epochs, it's starting to
+create some actually proper English words,
+
+757
+01:18:08,310 --> 01:18:13,820
+although the English words are not necessarily
+making a lot of sense.
+
+758
+01:18:13,820 --> 01:18:20,270
+So I keep running epochs. At this point, it's
+starting to generate chapters. In this book,
+
+759
+01:18:20,270 --> 01:18:23,760
+the chapters always start with a number and
+then an equals sign.
+
+760
+01:18:23,760 --> 01:18:30,230
+It hasn't learned how to close quotes, it's
+not really saying anything useful. A
+
+761
+01:18:30,230 --> 01:18:40,680
+So anyway, I kind of ran this overnight. I
+then seeded it with a larger amount of data
+
+762
+01:18:40,680 --> 01:18:47,850
+and I started getting some pretty reasonable
+resuls. "Shreds into one's own suffering"
+
+763
+01:18:47,850 --> 01:18:51,740
+sounds exactly like the kind of thing Nietzsche
+might say.
+
+764
+01:18:51,740 --> 01:18:58,739
+"Religions have acts done by man ..." It's
+not all perfect, but it's not all bad.
+
+765
+01:18:58,739 --> 01:19:02,610
+Interestingly, this sequence here (SACRIFIZIA
+DELL' INTELLETO) when I looked it up, it actually
+
+766
+01:19:02,610 --> 01:19:06,429
+appears in his book. And this makes sense,
+right?
+
+767
+01:19:06,429 --> 01:19:15,460
+It's a kind of over-fitting in a sense. He
+loves talking in all caps. He only does it
+
+768
+01:19:15,460 --> 01:19:23,100
+from time to time. And so once it starts writing
+something in all caps that looks like this
+
+769
+01:19:23,100 --> 01:19:28,679
+phrase that only appeared once, and it's very
+unique, there was kind of no other way that
+
+770
+01:19:28,679 --> 01:19:30,040
+it could have finished it.
+
+771
+01:19:30,040 --> 01:19:36,680
+So sometimes you get like this little rare
+phrases that basically it's plagiarized directly
+
+772
+01:19:36,680 --> 01:19:38,699
+from Nietzsche.
+
+773
+01:19:38,699 --> 01:19:43,230
+So I didn't stop there because I started thinking
+about how could we improve this. It was at
+
+774
+01:19:43,230 --> 01:19:48,230
+this point that I started thinking about batch
+normalization, fiddling around with all different
+
+775
+01:19:48,230 --> 01:19:59,340
+types of batch normalization and layer normalization,
+and discovered this interesting insight which
+
+776
+01:19:59,340 --> 01:20:07,909
+is the very best approach was when I simply
+applied batch normalization to the embedding
+
+777
+01:20:07,909 --> 01:20:08,909
+layer.
+
+778
+01:20:08,909 --> 01:20:09,909
+[Time: 1.20 hour mark]
+
+779
+01:20:09,909 --> 01:20:16,940
+So I wanted to show you what happened when
+I applied batch normalization to the embedding
+
+780
+01:20:16,940 --> 01:20:25,500
+layer, this is the training curve I got - over
+epochs, this is my loss. With no batch normalization
+
+781
+01:20:25,500 --> 01:20:31,520
+on the embedding layer, this was my loss.
+So you can see, this one's starting to flatten
+
+782
+01:20:31,520 --> 01:20:35,599
+out, this one really wasn't and this one was
+training a lot quicker.
+
+783
+01:20:35,599 --> 01:20:41,051
+So then I tried training it with batchnorm
+on the embedding layer overnight and I was
+
+784
+01:20:41,051 --> 01:20:57,040
+pretty stunned by the results. This was my
+seeding text, and after 1,000 epochs, this
+
+785
+01:20:57,040 --> 01:21:02,150
+is what it came up with. It's got all kind
+of actually pretty interesting little things.
+
+786
+01:21:02,150 --> 01:21:11,090
+"perhaps some m...orality equals self-glorification".
+This is really cool - "For there are holy
+
+787
+01:21:11,090 --> 01:21:18,290
+eyes to Schopenhauer's blind", "in reality
+we must step above it". You can see that it's
+
+788
+01:21:18,290 --> 01:21:22,400
+led to closed quotes, even when those quotes
+were open a long time ago.
+
+789
+01:21:22,400 --> 01:21:28,960
+If we weren't using stateful, it would have
+never learned how to do this. And I've looked
+
+790
+01:21:28,960 --> 01:21:34,260
+up these words in the original text and pretty
+much none of these phrases appear. This is
+
+791
+01:21:34,260 --> 01:21:43,170
+actually a genuine novely produced piece of
+text.
+
+792
+01:21:43,170 --> 01:21:49,900
+It's not perfect by any means, but considering
+that this is only doing it character by character,
+
+793
+01:21:49,900 --> 01:21:58,670
+using nothing but a 42 long embedding matrix
+for each character. There's no pre-trained
+
+794
+01:21:58,670 --> 01:22:04,340
+vectors or anything. It's just a pretty short
+600,000 character epoch, I think it's done
+
+795
+01:22:04,340 --> 01:22:09,760
+a pretty amazing job of creating a pretty
+good model.
+
+796
+01:22:09,760 --> 01:22:13,719
+So there's all kinds of things you can do
+with a model like this. The most obvious one
+
+797
+01:22:13,719 --> 01:22:20,630
+would be if you were producing a software
+keyboard for a mobile phone, for example,
+
+798
+01:22:20,630 --> 01:22:24,380
+you could use this to have a pretty accurate
+guess as to what they're going to type next
+
+799
+01:22:24,380 --> 01:22:29,780
+and correct it for them. You could do something
+similar on a word basis.
+
+800
+01:22:29,780 --> 01:22:36,010
+But more generally, you could do something
+like anomoly detection. You could generate
+
+801
+01:22:36,010 --> 01:22:41,380
+a sequence which is predicting what the rest
+of the sequence is going to look like for
+
+802
+01:22:41,380 --> 01:22:47,070
+the next hour, and then recognize if something
+falls outside of what your prediction was
+
+803
+01:22:47,070 --> 01:22:50,840
+- then you know there's been some kind of
+anomoly. There's all kinds of things you can
+
+804
+01:22:50,840 --> 01:22:54,710
+do with these kinds of models.
+
+805
+01:22:54,710 --> 01:23:01,989
+I think that's pretty fun and I want to show
+you something else that's pretty fun, which
+
+806
+01:23:01,989 --> 01:23:11,020
+is to build an RNN from scratch in Theano.
+And what we're going to do is we're going
+
+807
+01:23:11,020 --> 01:23:18,969
+to try to work up to next week where we're
+going to build an RNN from scratch in numpy.
+
+808
+01:23:18,969 --> 01:23:26,350
+And we're also going to build an LSTM from
+scratch in Theano.
+
+809
+01:23:26,350 --> 01:23:31,460
+The reason we're doing this is next week is
+our last class in this part of the course
+
+810
+01:23:31,460 --> 01:23:39,550
+and I want us to leave feeling like we really
+understand the detail of what's going on behind
+
+811
+01:23:39,550 --> 01:23:40,550
+the scenes.
+
+812
+01:23:40,550 --> 01:23:47,170
+The main thing I wanted to teach in this class
+was the applied stuff. Practical tips on how
+
+813
+01:23:47,170 --> 01:24:03,800
+you build a sequence model, but I know that
+to debug and build your models and architecutre
+
+814
+01:24:03,800 --> 01:24:08,000
+and stuff, it really helps to understand what's
+going on.
+
+815
+01:24:08,000 --> 01:24:13,830
+Particularly in the current situation where
+the libraries and the tools are available,
+
+816
+01:24:13,830 --> 01:24:20,590
+but are not that mature. They still require
+a whole lot of manual stuff, so I do want
+
+817
+01:24:20,590 --> 01:24:25,340
+to explain a bit more about what's going on
+behind the scenes.
+
+818
+01:24:25,340 --> 01:24:34,020
+So in order to build an RNN in Theano, I'm
+going to first of all make a small change
+
+819
+01:24:34,020 --> 01:24:38,719
+to our Keras model, which is that I'm going
+to use one-hot encoding.
+
+820
+01:24:38,719 --> 01:24:44,710
+I don't know if you noticed this, but we did
+something pretty cool in all of our models
+
+821
+01:24:44,710 --> 01:24:52,040
+so far, which is that we never actually one-hot
+encoded our output.
+
+822
+01:24:52,040 --> 01:24:58,150
+Question: Will TimeDistributedDense take longer
+to train than dense, and is it really that
+
+823
+01:24:58,150 --> 01:24:59,750
+important to use time-distributed dense?
+
+824
+01:24:59,750 --> 01:25:01,000
+[Time: 1.25 hour mark]
+
+825
+01:25:01,000 --> 01:25:06,381
+Answer: So if you don't add TimeDistributedDense
+to a model where return_sequences=True, it
+
+826
+01:25:06,381 --> 01:25:13,610
+literally won't work. It won't compile, because
+you're trying to predict 8 things and the
+
+827
+01:25:13,610 --> 01:25:19,239
+dense layer is going to stick that all into
+1 thing and say there is a mismatch in your
+
+828
+01:25:19,239 --> 01:25:26,920
+dimensions. But no, it doesn't really add
+much time because that's something that can
+
+829
+01:25:26,920 --> 01:25:33,080
+be very easily parallelized. And since a lot
+of things in RNNs can't be easily parallelized,
+
+830
+01:25:33,080 --> 01:25:39,960
+there generally is plenty of room in your
+GPU to do work, so that should be fine.
+
+831
+01:25:39,960 --> 01:25:46,050
+But the short answer is you have to use it
+otherwise it won't compile.
+
+832
+01:25:46,050 --> 01:25:53,210
+I wanted to point out something which is that
+in all of our models so far, we did not one-hot
+
+833
+01:25:53,210 --> 01:26:07,840
+encode our outputs. So our outputs look like
+this, they were sequences of numbers.
+
+834
+01:26:07,840 --> 01:26:16,350
+Always before we've had to one-hot encode
+our outputs to use them. It turns out that
+
+835
+01:26:16,350 --> 01:26:25,880
+Keras has a very cool loss function called
+sparse-categorical_crossentropy. This is identical
+
+836
+01:26:25,880 --> 01:26:34,199
+to categorical_crossentropy, but rather than
+taking a one-hot encoded target, it takes
+
+837
+01:26:34,199 --> 01:26:40,409
+an integer target. Basically it acts as if
+you had one-hot encoded it. So basically it
+
+838
+01:26:40,409 --> 01:26:44,280
+does the indexing into it diretly.
+
+839
+01:26:44,280 --> 01:26:50,120
+So this is a really helpful thing to know
+about because when you have a lot of output
+
+840
+01:26:50,120 --> 01:26:57,150
+categories, like for example, you're doing
+a word model, you could have 100,000 output
+
+841
+01:26:57,150 --> 01:27:04,090
+categories. There's no way you want to create
+a matrix that's 100,000 long. Nearly all 0's
+
+842
+01:27:04,090 --> 01:27:10,070
+for every single word in your output. So by
+using sparce_categorical_crossentropy, you
+
+843
+01:27:10,070 --> 01:27:15,860
+can just forget the whole one-hot encoding.
+You don't have to do it; Keras implicitly
+
+844
+01:27:15,860 --> 01:27:24,130
+does it for you without ever explcitly doing
+it, it just does it a direct lookup matrix.
+
+845
+01:27:24,130 --> 01:27:31,659
+However, because I want to make things simpler
+for us to understand, I'm going to recreate
+
+846
+01:27:31,659 --> 01:27:39,489
+our Keras model using one-hot encoding. So
+I'm going to take exactly the same model we
+
+847
+01:27:39,489 --> 01:27:47,740
+had before, with return_sequences=True, but
+this time I'm going to use normal categorical_crossentropy,
+
+848
+01:27:47,740 --> 01:27:52,710
+and the other thing I'm doing is I don't have
+an embedding layer.
+
+849
+01:27:52,710 --> 01:27:58,450
+So since I don't have an embedding layer,
+I have to one-hot encode my inputs. So you
+
+850
+01:27:58,450 --> 01:28:05,100
+can see I'm calling to_categorical on all
+of my input and to_categorical on all of my
+
+851
+01:28:05,100 --> 01:28:06,739
+outputs.
+
+852
+01:28:06,739 --> 01:28:18,060
+So now the shape is 75,000x8x86, so this is
+the one-hot encoding direction - there's eighty-five
+
+853
+01:28:18,060 --> 01:28:27,512
+0's and one 1. So we fit this in exactly the
+same way and we get exactly the same answer.
+
+854
+01:28:27,512 --> 01:28:33,989
+The only reason I'm doing that is I want to
+use one-hot encoding for the version we're
+
+855
+01:28:33,989 --> 01:28:40,010
+going to create ourselves from scratch.
+
+856
+01:28:40,010 --> 01:28:47,680
+So we haven't really looked at Theano before,
+but particularly if you come back next year,
+
+857
+01:28:47,680 --> 01:28:57,290
+as we start to try to add more and more stuff
+on top of Keras, or in to Keras, increasingly
+
+858
+01:28:57,290 --> 01:29:05,510
+you'll find yourself wanting to use Theano
+because Theano is the language that Keras
+
+859
+01:29:05,510 --> 01:29:09,580
+is using behind the scenes, and therefore
+it's kind of the language which you can use
+
+860
+01:29:09,580 --> 01:29:10,670
+to extend it.
+
+861
+01:29:10,670 --> 01:29:16,860
+Of course, you can use TensorFlow as well,
+but we're using Theano in this course because
+
+862
+01:29:16,860 --> 01:29:28,500
+it's much easier for this kind of application.
+So let's learn to use Theano. In the process
+
+863
+01:29:28,500 --> 01:29:34,090
+of doing it in Theano, we're going to have
+to force ourselves to think through a lot
+
+864
+01:29:34,090 --> 01:29:40,440
+more of the details than we have before because
+Theano doesn't have any of the conveniences
+
+865
+01:29:40,440 --> 01:29:45,160
+that Keras has. There's no such thing as a
+layer. We're going to have to think about
+
+866
+01:29:45,160 --> 01:29:48,199
+all of the weight matrices and activation
+functions ourself.
+
+867
+01:29:48,199 --> 01:29:58,740
+So let me show you how it works. In Theano,
+there's this concept of a variable, and a
+
+868
+01:29:58,740 --> 01:30:02,400
+variable is something that we basically define
+like so.
+
+869
+01:30:02,400 --> 01:30:03,400
+[Time: 1.30 hour mark]
+
+870
+01:30:03,400 --> 01:30:08,830
+We can say there is a variable which is a
+matrix, which I will call t_inp. There is
+
+871
+01:30:08,830 --> 01:30:13,230
+a variable which is a matrix, which I will
+call t_outp. There is a variable which is
+
+872
+01:30:13,230 --> 01:30:20,560
+a vector that we will call t_h0. Now what
+these are all saying is that these are things
+
+873
+01:30:20,560 --> 01:30:25,210
+that we will give values to later.
+
+874
+01:30:25,210 --> 01:30:29,850
+Programming in Theano is very different to
+programmming in normal python. The reason
+
+875
+01:30:29,850 --> 01:30:37,690
+for this is Theano's job in life is to provide
+a way for you to describe a computation that
+
+876
+01:30:37,690 --> 01:30:43,780
+you want to do and then it's going to compile
+it to the GPU, and then it's going to run
+
+877
+01:30:43,780 --> 01:30:45,650
+it on the GPU.
+
+878
+01:30:45,650 --> 01:30:49,920
+So, it's going to be a little more complex
+to work in Theano because Theano isn't going
+
+879
+01:30:49,920 --> 01:30:55,750
+to be something where we say "do this" and
+then it does this. Instead we're going to
+
+880
+01:30:55,750 --> 01:31:01,750
+build up a computation graph. It's going to
+be a series of steps. We're going to say in
+
+881
+01:31:01,750 --> 01:31:08,670
+the future, I'm going to give you some data,
+and when I do I want you to do these steps.
+
+882
+01:31:08,670 --> 01:31:14,150
+Rather than actually starting off by giving
+it data, we start off by describing the types
+
+883
+01:31:14,150 --> 01:31:17,580
+of data that when we do give it data, we're
+going to give it.
+
+884
+01:31:17,580 --> 01:31:23,489
+So eventually we're going to give it some
+input data, we're going to give it some output
+
+885
+01:31:23,489 --> 01:31:29,650
+data, and we're going to give it some way
+of initializing the first hidden state. Also,
+
+886
+01:31:29,650 --> 01:31:39,460
+we'll give it a learning rate.
+
+887
+01:31:39,460 --> 01:31:43,630
+So then we can create a list of those - this
+is all of the arguments - that we're going
+
+888
+01:31:43,630 --> 01:31:49,460
+to have to provide to Theano later on. There's
+no data here, nothing's been computed. We're
+
+889
+01:31:49,460 --> 01:31:55,489
+just telling Theano that these things are
+going to be used in the future.
+
+890
+01:31:55,489 --> 01:32:02,640
+The next thing that we're going to do (because
+we're going to build this) is we're going
+
+891
+01:32:02,640 --> 01:32:08,199
+to build all of the pieces in all of these
+layer operations. Specifically, we're going
+
+892
+01:32:08,199 --> 01:32:13,739
+to have to create the weight matrix and the
+bias matrix for the orange arrow, the weight
+
+893
+01:32:13,739 --> 01:32:21,909
+matrix and the bias matrix for the green arrow,
+the weight matrix and the bias matrix for
+
+894
+01:32:21,909 --> 01:32:29,000
+the blue arrow. Because that's what these
+layer operations are, they're matrix multiply
+
+895
+01:32:29,000 --> 01:32:33,179
+followed by an activation function.
+
+896
+01:32:33,179 --> 01:32:40,960
+So I've created some functions to do that.
+W_h is what I'm going to call the weights
+
+897
+01:32:40,960 --> 01:32:46,270
+and biases of my hidden layer, W_x will be
+my weights and biases of my input, and W_y
+
+898
+01:32:46,270 --> 01:32:49,300
+will be my weights and biases of my outputs.
+
+899
+01:32:49,300 --> 01:32:57,030
+So to create them I have this function called
+wgts_and_bias, which I tell it the size of
+
+900
+01:32:57,030 --> 01:33:03,830
+the matrix that I want to create. So the matrix
+that goes from input to hidden [W_x=wgts_and_biases(n_input,
+
+901
+01:33:03,830 --> 01:33:09,889
+n_hidden)] therefore has n input rows, and
+n hidden columns.
+
+902
+01:33:09,889 --> 01:33:16,940
+So weights_and_bias is here, and it's going
+to return a tuple. It's going to return our
+
+903
+01:33:16,940 --> 01:33:19,980
+weights and it's going to return our bias.
+
+904
+01:33:19,980 --> 01:33:26,260
+So how do we create the weights? To create
+the weights, we first of all calculate the
+
+905
+01:33:26,260 --> 01:33:35,170
+scale of the random numbers we're going to
+use, the square root of 2 over n, the number
+
+906
+01:33:35,170 --> 01:33:44,400
+of rows. We then create those numbers using
+the normal numpy random number function, and
+
+907
+01:33:44,400 --> 01:33:49,170
+then we use a special Theano keyword, shared.
+
+908
+01:33:49,170 --> 01:33:57,409
+What shared does is it says to Theano, this
+data is something I'm going to want you to
+
+909
+01:33:57,409 --> 01:34:02,440
+pass off to the GPU later and keep track of.
+So as soon as you wrap something in shared,
+
+910
+01:34:02,440 --> 01:34:06,060
+it kind of belongs to Theano now.
+
+911
+01:34:06,060 --> 01:34:13,440
+So here is a weight matrix that belongs to
+Theano. Here is a vector of 0's that belongs
+
+912
+01:34:13,440 --> 01:34:16,090
+to Theano, and that's our initial bias.
+
+913
+01:34:16,090 --> 01:34:23,601
+So we're initialized our weights and our bias.
+So we can do that for our inputs and we can
+
+914
+01:34:23,601 --> 01:34:26,130
+do that for our outputs.
+
+915
+01:34:26,130 --> 01:34:32,420
+And then for our hidden (which is the orange
+arrow, remember), we're going to do something
+
+916
+01:34:32,420 --> 01:34:36,920
+slightly different, which is we will initialize
+it using an identity matrix.
+
+917
+01:34:36,920 --> 01:34:42,940
+Rather amuzingly in numpy, it is "eye" for
+identity [np.eye].
+
+918
+01:34:42,940 --> 01:34:52,570
+So this is the identity matrix of n x n [np.eye(n,dtype=np.float32))].
+So that's our initial weights, and our initial
+
+919
+01:34:52,570 --> 01:34:56,660
+bias is exactly as before, it's a vector of
+zeros.
+
+920
+01:34:56,660 --> 01:34:58,370
+[Time: 1.35 hour mark]
+
+921
+01:34:58,370 --> 01:35:08,239
+So you can see we had to manually construct
+each of these 3 weight matrices and bias vectors.
+
+922
+01:35:08,239 --> 01:35:14,550
+It's nice to now stick them all into a single
+list. Python has thing thing, chain.from_iterable,
+
+923
+01:35:14,550 --> 01:35:19,560
+which basically takes all these tuples and
+dumps them altogether into a single list.
+
+924
+01:35:19,560 --> 01:35:28,530
+So this now has all 6 weight matrices and
+bias vectors.
+
+925
+01:35:28,530 --> 01:35:37,300
+Now we have defined initial contents of each
+of these arrows, and we've also defined kind
+
+926
+01:35:37,300 --> 01:35:43,430
+of symbolically the concept that we're going
+to have something to initialize it with here,
+
+927
+01:35:43,430 --> 01:35:47,140
+something to initialize it with here, and
+some target we have to initialize it with
+
+928
+01:35:47,140 --> 01:35:48,140
+here.
+
+929
+01:35:48,140 --> 01:35:55,190
+And the next thing we have to do is to tell
+Theano what happens each time we take a single
+
+930
+01:35:55,190 --> 01:36:00,740
+step of this RNN.
+
+931
+01:36:00,740 --> 01:36:07,310
+On the GPU, you can't use a for loop. The
+reason you can't use a for loop is the GPU
+
+932
+01:36:07,310 --> 01:36:11,989
+wants to be able to parallelize things. It
+wants to do things at the same time. And a
+
+933
+01:36:11,989 --> 01:36:15,930
+for loop, by definition, can't do the second
+part of the loop until it's done the first
+
+934
+01:36:15,930 --> 01:36:17,020
+part of the loop.
+
+935
+01:36:17,020 --> 01:36:22,679
+I don't know if we'll have time to do it in
+this course or not, but there's a very neat
+
+936
+01:36:22,679 --> 01:36:28,360
+result which shows there's something very
+similar to a for loop that you can parallelizie,
+
+937
+01:36:28,360 --> 01:36:30,780
+and it's called a scan operation.
+
+938
+01:36:30,780 --> 01:36:38,360
+A scan operation is something that is defined
+in a very particular way. A scan operation
+
+939
+01:36:38,360 --> 01:36:48,340
+is something where you call some function
+for every element of some sequence, and at
+
+940
+01:36:48,340 --> 01:36:56,560
+every point the function returns some output.
+And the next time that function is called,
+
+941
+01:36:56,560 --> 01:37:01,889
+it's going to get the output of the previous
+time you called it, along with the next element
+
+942
+01:37:01,889 --> 01:37:03,659
+of the sequence.
+
+943
+01:37:03,659 --> 01:37:20,210
+So I've got an example of it 
+in python. Here is the definition of scan,
+
+944
+01:37:20,210 --> 01:37:21,280
+and here is an example.
+
+945
+01:37:21,280 --> 01:37:27,460
+Let's start with the example. I'm going to
+do a scan and the function I'm going to use
+
+946
+01:37:27,460 --> 01:37:36,409
+is to add two things together. I'm going to
+start off with 0, and I'm going to pass in
+
+947
+01:37:36,409 --> 01:37:39,639
+a range of numbers from 1-4.
+
+948
+01:37:39,639 --> 01:37:46,060
+So what scan does, it starts out the first
+time through it's going to call this function,
+
+949
+01:37:46,060 --> 01:37:53,580
+with that argument, and the first element
+of this. It's going to be 0+0=0.
+
+950
+01:37:53,580 --> 01:38:00,570
+The second time it's going to call this function
+with the second element of this, along with
+
+951
+01:38:00,570 --> 01:38:06,619
+the result of the previous call. It will be
+0+1=1.
+
+952
+01:38:06,619 --> 01:38:12,420
+The next time through it's going to call this
+function with the result of the previous call,
+
+953
+01:38:12,420 --> 01:38:18,570
+plus the next element of this range. So 1+2=3.
+
+954
+01:38:18,570 --> 01:38:26,640
+So you can see this scan operation defines
+a cumulative sum, you can see the definition
+
+955
+01:38:26,640 --> 01:38:31,800
+of scan here. We're going to be returning
+an array of results.
+
+956
+01:38:31,800 --> 01:38:38,600
+Initially we take our starting point, 0, and
+that's our inital value for previous answer
+
+957
+01:38:38,600 --> 01:38:43,240
+from scan. Then we're going to go through
+everything in the sequence (which is 0-4),
+
+958
+01:38:43,240 --> 01:38:48,840
+we're going to apply this function (which
+was in this case add things up), we're going
+
+959
+01:38:48,840 --> 01:38:55,659
+to apply it to the previous result along with
+the next element in the sequence, stick the
+
+960
+01:38:55,659 --> 01:39:02,130
+result at the end of our list, set the previous
+result to what we just got, and then go back
+
+961
+01:39:02,130 --> 01:39:04,880
+to the next element in the sequence.
+
+962
+01:39:04,880 --> 01:39:10,260
+So it may be very suprising (hopefully it
+is very surprising because it's an extraordinary
+
+963
+01:39:10,260 --> 01:39:18,699
+result), but it is possible to write a parallel
+version of this. If you can turn your algorithm
+
+964
+01:39:18,699 --> 01:39:23,389
+into a scan, you can reun it on a CPU.
+
+965
+01:39:23,389 --> 01:39:35,820
+So our job is to turn this RNN into something
+that we can put in this kind of form. So let's
+
+966
+01:39:35,820 --> 01:39:45,699
+do that.
+
+967
+01:39:45,699 --> 01:39:52,590
+So the function we're going to call on each
+step though is the function called step. And
+
+968
+01:39:52,590 --> 01:39:57,139
+the function called step is going to be something
+which hopefully will not be very surprising
+
+969
+01:39:57,139 --> 01:40:03,100
+to you. It's going to be something which takes
+our input, x, and does a dot product by the
+
+970
+01:40:03,100 --> 01:40:09,230
+weight matrix we saw earlier, W_x, and adds
+on that bias that we calculated earlier, b_x.
+
+971
+01:40:09,230 --> 01:40:10,449
+[Time: 1.40 hour mark]
+
+972
+01:40:10,449 --> 01:40:15,040
+And then we do the same thing, taking our
+previous hidden state and multipying it by
+
+973
+01:40:15,040 --> 01:40:19,990
+the weight matrix - so the hidden state, and
+adding the biases of the hidden state - and
+
+974
+01:40:19,990 --> 01:40:24,050
+puts the whole thing through an activation
+function, relu.
+
+975
+01:40:24,050 --> 01:40:32,450
+So 
+we had one bit which was calculating our previous
+
+976
+01:40:32,450 --> 01:40:38,150
+hidden state and putting it through the hidden
+state weight matrix.
+
+977
+01:40:38,150 --> 01:40:44,880
+It was taking our next input and putting it
+through the input one and then adding the
+
+978
+01:40:44,880 --> 01:40:46,520
+two together.
+
+979
+01:40:46,520 --> 01:40:53,840
+So that's what we have here -- [h=nnet.relu(T.dot(x,W_x)+b_x+T.dot(h,W_h)+h_h)]
+-- the x by W_x, the h by W_h, then adding
+
+980
+01:40:53,840 --> 01:41:00,010
+the two together along with the biases, and
+then put that through an activation function.
+
+981
+01:41:00,010 --> 01:41:08,050
+So once we've done that, we now want to create
+an output every single time. And so our output
+
+982
+01:41:08,050 --> 01:41:13,860
+is going to be exactly the same thing -- it's
+going to take the result of our hidden state
+
+983
+01:41:13,860 --> 01:41:18,260
+(which we call h), multiply it by the output's
+weight vector and adding on the bias. This
+
+984
+01:41:18,260 --> 01:41:21,989
+time we're going to use softmax [y=nnet.softmax(T.dot(h,W_y)+b_y)].
+
+985
+01:41:21,989 --> 01:41:30,800
+So you can see that this sequence here is
+describing how to do one of these things.
+
+986
+01:41:30,800 --> 01:41:37,850
+This, therefore, defines what we want to do
+each step through. At the end of that we're
+
+987
+01:41:37,850 --> 01:41:46,659
+going to return the hidden state we have so
+far and our output. That's what's going to
+
+988
+01:41:46,659 --> 01:41:47,659
+happen each step.
+
+989
+01:41:47,659 --> 01:41:54,980
+So the sequence that we're going to pass in
+to it ... well, we're not going to give it
+
+990
+01:41:54,980 --> 01:41:59,430
+any data yet because remember all we're doing
+is we're describing a computation. So for
+
+991
+01:41:59,430 --> 01:42:08,940
+now, we're just telling it that it will be
+a matrix, we're saying we're going to pass
+
+992
+01:42:08,940 --> 01:42:10,639
+you a matrix.
+
+993
+01:42:10,639 --> 01:42:19,330
+It also needs a starting point. The starting
+point again, we're going to provide to you
+
+994
+01:42:19,330 --> 01:42:26,980
+an initial value for our hidden state, but
+we haven't done it yet. And then finally in
+
+995
+01:42:26,980 --> 01:42:31,290
+Theano you have to tell it what are all the
+other things ared passed in a function, and
+
+996
+01:42:31,290 --> 01:42:37,730
+we're going to pass it that whole list of
+weights. That's what we have here. The x,
+
+997
+01:42:37,730 --> 01:42:45,420
+the hidden, and then all of the weights and
+biases.
+
+998
+01:42:45,420 --> 01:42:56,179
+So let's now describe how to execute a whole
+sequence of steps for an RNN. We've now just
+
+999
+01:42:56,179 --> 01:43:02,210
+described how to do this, to Theano. We haven't
+given it any data to do it, we've just set
+
+1000
+01:43:02,210 --> 01:43:05,750
+up the computation.
+
+1001
+01:43:05,750 --> 01:43:10,489
+And so when that computation is run, it's
+going to return two things because step returns
+
+1002
+01:43:10,489 --> 01:43:16,800
+two things. It's going to return the hidden
+state and it's going to return our output
+
+1003
+01:43:16,800 --> 01:43:19,090
+activations.
+
+1004
+01:43:19,090 --> 01:43:22,570
+So now we need to calculate our error.
+
+1005
+01:43:22,570 --> 01:43:28,000
+So our error will be the categorical_crossentropy
+(these things are all part of Theano, using
+
+1006
+01:43:28,000 --> 01:43:34,750
+some Theano functions here). We're going to
+compare our output that came out of our scan
+
+1007
+01:43:34,750 --> 01:43:42,860
+and we're going to compare it to what? ... we
+don't know yet, but it will be a matrix. Then
+
+1008
+01:43:42,860 --> 01:43:45,400
+once you do that, add it all together.
+
+1009
+01:43:45,400 --> 01:43:51,610
+Now here's the amazing thing, every step we're
+going to want to apply SGD. Which means every
+
+1010
+01:43:51,610 --> 01:43:59,550
+step we're going to want to take the derivative
+of this whole thing with respect to all of
+
+1011
+01:43:59,550 --> 01:44:05,070
+the weights, and use that, along with the
+learning rate, to update all the weights.
+
+1012
+01:44:05,070 --> 01:44:13,929
+In Theano, that's how you do it. You just
+say please tell me the gradient of this function
+
+1013
+01:44:13,929 --> 01:44:20,580
+with repect to the inputs and Theano will
+symbolically automatically calculate all of
+
+1014
+01:44:20,580 --> 01:44:27,770
+your derivatives for you. So that's very nearly
+magic. We don't have to worry about derivatives
+
+1015
+01:44:27,770 --> 01:44:31,260
+because it's going to calculate them all for
+us.
+
+1016
+01:44:31,260 --> 01:44:37,360
+So at this point, I now have a function that
+calculates our loss and that calculates all
+
+1017
+01:44:37,360 --> 01:44:42,219
+of the gradients that we need with respect
+to all of the different weights and parameters
+
+1018
+01:44:42,219 --> 01:44:43,760
+that we have.
+
+1019
+01:44:43,760 --> 01:44:52,060
+So we're now ready to build our final function.
+Our final function as input takes all of our
+
+1020
+01:44:52,060 --> 01:44:57,310
+outputs, that is these four things, [t_h0,t_inp,t_outp,lr],
+which is the four things we told it we're
+
+1021
+01:44:57,310 --> 01:44:58,540
+going to need later.
+
+1022
+01:44:58,540 --> 01:45:00,440
+[Time: 1.45 hour mark]
+
+1023
+01:45:00,440 --> 01:45:07,420
+The thing that's going to create the output
+is this error, which was this output.
+
+1024
+01:45:07,420 --> 01:45:12,489
+And then at each step it's going to do some
+updates. What are the updates it's going to
+
+1025
+01:45:12,489 --> 01:45:16,590
+do? The updates it's going to do is the result
+of this function, OrderedDict. This little
+
+1026
+01:45:16,590 --> 01:45:27,040
+function is something that is going to map
+every one of our weights to that weight minus
+
+1027
+01:45:27,040 --> 01:45:33,320
+each one of our gradients times the learning
+rate.
+
+1028
+01:45:33,320 --> 01:45:41,540
+So it's going to update every weight to itself
+minus its gradient times the learning rate.
+
+1029
+01:45:41,540 --> 01:45:47,440
+So basically what Theano does (it's got thing
+thing called updates), it says every time
+
+1030
+01:45:47,440 --> 01:45:55,090
+you calculate the next step, I want you to
+change your shared variables as follows, so
+
+1031
+01:45:55,090 --> 01:46:00,610
+there's our list of changes to make. So that's
+it.
+
+1032
+01:46:00,610 --> 01:46:06,510
+So we use our one-hot encoded x's and our
+one-hot encoded y's and we have to now manually
+
+1033
+01:46:06,510 --> 01:46:11,850
+create our own loop. Theano doesn't have any
+built-in stuff for us. So we're going to go
+
+1034
+01:46:11,850 --> 01:46:23,239
+through every element of our input and we're
+going to say that function that we just created
+
+1035
+01:46:23,239 --> 01:46:30,719
+and now we have to pass in all of these inputs.
+So we finally have to pass in a value for
+
+1036
+01:46:30,719 --> 01:46:35,580
+the initial hidden state (t_h0), the input
+(t_inp), the target (t_outp) and the learning
+
+1037
+01:46:35,580 --> 01:46:39,150
+rate (lr). So this is where we get to do it,
+when we finally call it here.
+
+1038
+01:46:39,150 --> 01:46:47,510
+So here's our initial hidden state (just a
+bunch of zeros), our input, our output, and
+
+1039
+01:46:47,510 --> 01:46:52,710
+our learning rate (which we set to .01). And
+then I have something here that says every
+
+1040
+01:46:52,710 --> 01:47:01,869
+1,000 times, print our the error. As you can
+see, over time it works.
+
+1041
+01:47:01,869 --> 01:47:11,230
+At the end of learning, I create a new Theano
+function, which takes some piece of input
+
+1042
+01:47:11,230 --> 01:47:18,050
+along with some initial hidden state, and
+it produces, not the loss, but the output.
+
+1043
+01:47:18,050 --> 01:47:25,630
+Question: Are we using gradient_descent and
+not stochastic_gradient_descent here?
+
+1044
+01:47:25,630 --> 01:47:33,080
+Answer: We're using stochastic_gradient_descent
+with a minibatch size of 1. So gradient_descent
+
+1045
+01:47:33,080 --> 01:47:36,100
+without stochastic acutally means your using
+gradient_descent with a minibatch size of
+
+1046
+01:47:36,100 --> 01:47:40,460
+the whole dataset. This is kind of the opposite
+of that. I think this is called online gradient
+
+1047
+01:47:40,460 --> 01:47:44,570
+descent. That's a good question, thank you.
+
+1048
+01:47:44,570 --> 01:47:54,909
+So remember earlier on we had this thing to
+calculate the vector of outputs. So now to
+
+1049
+01:47:54,909 --> 01:48:00,050
+do our testing, we're going to create a new
+function which goes from our input to a vector
+
+1050
+01:48:00,050 --> 01:48:06,710
+of outputs. So our prediction will be to take
+that function, pass it in our initial hidden
+
+1051
+01:48:06,710 --> 01:48:13,670
+state and some input, and that's going to
+give us our predictions.
+
+1052
+01:48:13,670 --> 01:48:27,320
+So if we call it, we can now say let's now
+grab some sequence of text, pass it to our
+
+1053
+01:48:27,320 --> 01:48:31,670
+function to get some predictions and let's
+see what it does. After "t" it expected "h",
+
+1054
+01:48:31,670 --> 01:48:38,170
+after "t" "h", it expected "e". After "t"
+"h" "e", it expected space. After "t" "h"
+
+1055
+01:48:38,170 --> 01:48:50,840
+"e" "n" "?" it wanted a space. After "t" "he"
+"e" "n" "?" " " it wanted a "T". And so forth.
+
+1056
+01:48:50,840 --> 01:48:58,630
+You can see here that we have successfully
+built an RNN from scratch using Theano.
+
+1057
+01:48:58,630 --> 01:49:11,560
+That's been a very, very quick runthough.
+My goal tonight is to get to a point where
+
+1058
+01:49:11,560 --> 01:49:17,060
+you can start to look at this during the week
+and kind of see all the pieces, because next
+
+1059
+01:49:17,060 --> 01:49:23,580
+week we're going to try and build an LSTN
+in Theano. Which is going to mean that I want
+
+1060
+01:49:23,580 --> 01:49:28,750
+you to, by next week, kind of feel like you've
+got a good understanding of what's going on.
+
+1061
+01:49:28,750 --> 01:49:36,790
+So please ask. Post questions on the forum,
+look at the documentation and so forth.
+
+1062
+01:49:36,790 --> 01:49:43,480
+The next thing we're going to do after that
+is we're going to build an RNN without using
+
+1063
+01:49:43,480 --> 01:49:48,870
+Theano. We're going to use pure numpy, and
+that means we're not going to be able to use
+
+1064
+01:49:48,870 --> 01:49:54,820
+T.grad, we're going to have to calculate the
+gradients by hand.
+
+1065
+01:49:54,820 --> 01:50:05,710
+Hopefully that will be a useful exercise in
+really understanding what's going on in back-propogation.
+
+1066
+01:50:05,710 --> 01:50:09,170
+[Time: 1.50 hour mark]
+
+1067
+01:50:09,170 --> 01:50:14,010
+So I kind of want to make sure you feel like
+you've got information to get started with
+
+1068
+01:50:14,010 --> 01:50:23,960
+Theano this week. Does anybody want to ask
+any questions about this?
+
+1069
+01:50:23,960 --> 01:50:37,239
+Question: So maybe this is a bit too far away
+from what we did today but how would you apply
+
+1070
+01:50:37,239 --> 01:50:42,770
+an RNN to imaging something other than text?
+Is that something that's worth doing? If so,
+
+1071
+01:50:42,770 --> 01:50:44,290
+what changes about it?
+
+1072
+01:50:44,290 --> 01:50:51,350
+Answer: Yes, sure. The main way an RNN is
+applied to images is what we looked at last
+
+1073
+01:50:51,350 --> 01:50:59,980
+week, attentional models, which is where you
+basically say - given the part of the image
+
+1074
+01:50:59,980 --> 01:51:07,969
+you're currently looking at, which part does
+it make sense to look at next? This is most
+
+1075
+01:51:07,969 --> 01:51:20,860
+useful on 
+really big images where you can't really look
+
+1076
+01:51:20,860 --> 01:51:32,260
+at the whole thing at once, you can only look
+at a little bit at a time.
+
+1077
+01:51:32,260 --> 01:51:49,790
+Another way that RNNs are very useful for
+images is for captioning images. We'll talk
+
+1078
+01:51:49,790 --> 01:51:55,440
+a lot more about this in next year's course,
+but think about this in the meantime.
+
+1079
+01:51:55,440 --> 01:52:06,680
+If we've got an image, then a CNN can turn
+that into a vector representation of that
+
+1080
+01:52:06,680 --> 01:52:14,200
+image. For example, we can chuck it through
+VGG and take the penultimate layer's activations.
+
+1081
+01:52:14,200 --> 01:52:21,780
+There's a lot of things we can do. In some
+way, we can take an image and turn it into
+
+1082
+01:52:21,780 --> 01:52:26,139
+some vector representation of that.
+
+1083
+01:52:26,139 --> 01:52:30,699
+We can do the same thing to a sentence. We
+can take a sentence consisting of a number
+
+1084
+01:52:30,699 --> 01:52:38,880
+of words and we can stick that through an
+RNN and at the end of it, we will get some
+
+1085
+01:52:38,880 --> 01:52:46,159
+state. And that state is also just a vector.
+
+1086
+01:52:46,159 --> 01:52:59,100
+What we can then do is learn a neural network
+which maps the picture to the text, assuming
+
+1087
+01:52:59,100 --> 01:53:07,159
+that this sentence was originally a caption
+that had been created for this image.
+
+1088
+01:53:07,159 --> 01:53:15,530
+And so in that way if we can learn a mapping
+from some representation of an image that
+
+1089
+01:53:15,530 --> 01:53:20,410
+came out of a CNN to some representation of
+a sentence
+
+1090
+01:53:20,410 --> 01:53:29,369
+that came out of an RNN, then we could basically
+reverse that to generate captions for an image.
+
+1091
+01:53:29,369 --> 01:53:34,440
+So basically what we could then do is we could
+take some new image that we'd never seen before,
+
+1092
+01:53:34,440 --> 01:53:44,250
+send it through the CNN to get our state out,
+then we could figure out what RNN state we
+
+1093
+01:53:44,250 --> 01:53:50,199
+would expect would be attached to that based
+on this neural net that we had to learn and
+
+1094
+01:53:50,199 --> 01:53:57,639
+then we can basically do a sequence generation
+like we have been today and generate a sequence
+
+1095
+01:53:57,639 --> 01:54:09,219
+of words. And this is roughly how these image
+captioning systems work.
+
+1096
+01:54:09,219 --> 01:54:20,290
+Finally, the only other way in which I've
+seen RNNs applied to images is for like really
+
+1097
+01:54:20,290 --> 01:54:28,750
+big 3D images for example, like in medical
+imaging. So if you have some MRI that is basically
+
+1098
+01:54:28,750 --> 01:54:34,139
+a series of layers, it's too big to look at
+the whole thing.
+
+1099
+01:54:34,139 --> 01:54:43,199
+Instead you can use an RNN to start in the
+top corner, then look one pixel to the left
+
+1100
+01:54:43,199 --> 01:54:48,880
+and one pixel across and then one pixel back
+and then go down to the next layer. You can
+
+1101
+01:54:48,880 --> 01:54:55,650
+gradually look one pixel at a time. It can
+do that and gradually cover the whole thing.
+
+1102
+01:54:55,650 --> 01:55:04,170
+That way it's gradually able to generate state
+about what is contained in this 3D volume.
+
+1103
+01:55:04,170 --> 01:55:06,550
+[Time: 1.55 hour mark]
+
+1104
+01:55:06,550 --> 01:55:14,100
+This is not something which is very widely
+used, at least at this point. But I think
+
+1105
+01:55:14,100 --> 01:55:20,900
+it's worth thinking about. You could combine
+this with a CNN. Maybe you could have a CNN
+
+1106
+01:55:20,900 --> 01:55:28,760
+that looks at large chunks of this MRI at
+a time and generate state for each of these
+
+1107
+01:55:28,760 --> 01:55:33,449
+chunks and then maybe you could use an RNN
+to go through the chunks.
+
+1108
+01:55:33,449 --> 01:55:42,969
+There's all kinds of ways that you can combine
+CNNs and RNNs.
+
+1109
+01:55:42,969 --> 01:55:53,590
+Question: Can you build a custom layer in
+Theano and mix it with Keras.
+
+1110
+01:55:53,590 --> 01:55:59,010
+Answer: For sure. In fact, it's incredibly
+easy.
+
+1111
+01:55:59,010 --> 01:56:15,280
+So if you do a google search for "Keras custom
+theano layer", there's lots of examples of
+
+1112
+01:56:15,280 --> 01:56:16,280
+them.
+
+1113
+01:56:16,280 --> 01:56:26,510
+They're generally in the github for Keras
+where people will kind of show, I was trying
+
+1114
+01:56:26,510 --> 01:56:32,540
+to build this layer and I had this problem.
+But it's kindf a good way to see how to build
+
+1115
+01:56:32,540 --> 01:56:33,610
+them.
+
+1116
+01:56:33,610 --> 01:56:49,270
+The other thing I find really useful to 
+do is to actually look at the definition of
+
+1117
+01:56:49,270 --> 01:56:51,840
+the layers in Keras.
+
+1118
+01:56:51,840 --> 01:57:05,830
+One of the things I actually did was I created
+this little thing called py_path, which allow
+
+1119
+01:57:05,830 --> 01:57:18,750
+me to put in any python module, and it returns
+the directory that that module is defined
+
+1120
+01:57:18,750 --> 01:57:19,940
+in.
+
+1121
+01:57:19,940 --> 01:57:30,630
+So I can go have a look at how any particular
+layer is defined. So let's say I want to look
+
+1122
+01:57:30,630 --> 01:57:43,321
+at pooling -- here is a MaxPooling1D layer,
+and it's defined in 9 lines of code. Generally
+
+1123
+01:57:43,321 --> 01:57:52,969
+speaking, you can see that layers don't take
+very much code at all.
+
+1124
+01:57:52,969 --> 01:58:00,060
+Question: Could we, given a caption, create
+an image?
+
+1125
+01:58:00,060 --> 01:58:06,389
+Answer: Yes, you can absolutely create an
+image from a caption. There's a lot of image
+
+1126
+01:58:06,389 --> 01:58:13,530
+generation stuff going on at the moment. It's
+not at a point that it's useful for anything
+
+1127
+01:58:13,530 --> 01:58:20,349
+in practice; it's more like an interesting
+research journey.
+
+1128
+01:58:20,349 --> 01:58:27,369
+Generally speaking this is in the area called
+generative models. And we'll be looking at
+
+1129
+01:58:27,369 --> 01:58:30,800
+generative models next year because they're
+very important for us in semi-supervised learning.
+
+1130
+01:58:30,800 --> 01:58:40,040
+Question: What would give the best performance
+on a document classification - a CNN, an RNN,
+
+1131
+01:58:40,040 --> 01:58:41,040
+or both?
+
+1132
+01:58:41,040 --> 01:58:43,090
+Answer: That's a great, great question.
+
+1133
+01:58:43,090 --> 01:58:50,630
+So let's go back to sentiment analysis. To
+remind ourselves, when we looked at sentiment
+
+1134
+01:58:50,630 --> 01:58:57,860
+analysis for IMDb, the best result we got
+came from a multi-sized convolutional neural
+
+1135
+01:58:57,860 --> 01:59:03,570
+network, where we took a bunch of convolutional
+neural networks of various sizes. A simple
+
+1136
+01:59:03,570 --> 01:59:10,550
+convolutional neural network was nearly as
+good - just this simple convolutional neural
+
+1137
+01:59:10,550 --> 01:59:12,170
+network was nearly as good.
+
+1138
+01:59:12,170 --> 01:59:26,560
+I actually tried an LSTM for this and I found
+the accuracy that I got was less good than
+
+1139
+01:59:26,560 --> 01:59:35,619
+the accuracy of a CNN. And I think the reason
+for this is when you have a whole movie review
+
+1140
+01:59:35,619 --> 01:59:42,690
+(which is a few paragraphs) the information
+that you can get just by looking at a few
+
+1141
+01:59:42,690 --> 01:59:49,340
+words at a time is enough to tell you if this
+is a positive review or a negative review.
+
+1142
+01:59:49,340 --> 01:59:54,490
+If you see a sequence of 5 words like "This
+is totally shit", then you probably learn
+
+1143
+01:59:54,490 --> 02:00:00,469
+that's not a good thing. If they put "This
+is totally awesome", that's a good thing.
+
+1144
+02:00:00,469 --> 02:00:01,880
+[Time: 2 hour mark]
+
+1145
+02:00:01,880 --> 02:00:09,920
+The amount of nuance built into reading word
+by word the entire review, it just doesn't
+
+1146
+02:00:09,920 --> 02:00:20,590
+seem there's any need for that in practice.
+Once you get to a certain sized piece of text
+
+1147
+02:00:20,590 --> 02:00:30,650
+(like a paragraph or two) there doesn't seem
+to be any sign that RNNs are helpful, at least
+
+1148
+02:00:30,650 --> 02:00:32,369
+at this stage.
+
+1149
+02:00:32,369 --> 02:00:39,929
+So before I close off, I just want to show
+you 2 little tricks. I don't spend enough
+
+1150
+02:00:39,929 --> 02:00:44,409
+time showing you cool little tricks, so when
+I was working with Brad today, I realized
+
+1151
+02:00:44,409 --> 02:00:50,260
+that there were two little tricks that I realized
+other people might like to learn about.
+
+1152
+02:00:50,260 --> 02:01:09,150
+The first trick I want to point out to you
+is if you want to learn about how a function
+
+1153
+02:01:09,150 --> 02:01:18,480
+works, what would be a quick way to figure
+it out? If you've got a function and you hit
+
+1154
+02:01:18,480 --> 02:01:23,010
+[SHIFT][TAB], all of the parameters to it
+will pop up.
+
+1155
+02:01:23,010 --> 02:01:29,610
+If you hit [SHIFT][TAB] twice, the documentation
+will pop up.
+
+1156
+02:01:29,610 --> 02:01:34,849
+That was one little tip I wanted you guys
+to know about because I think it's pretty
+
+1157
+02:01:34,849 --> 02:01:35,849
+handy.
+
+1158
+02:01:35,849 --> 02:01:39,760
+The second little tip that you might not be
+aware of is that you can actually run the
+
+1159
+02:01:39,760 --> 02:01:45,270
+python debugger inside your JuPyteR notebook.
+Today we were trying to do that when we were
+
+1160
+02:01:45,270 --> 02:01:47,310
+trying to debug our pure python RNN.
+
+1161
+02:01:47,310 --> 02:02:00,969
+So you can see an example of that ... 
+let's say we were having some problem inside
+
+1162
+02:02:00,969 --> 02:02:09,830
+our loop here. Type in "import pdb", the python
+debugger. Then you can set a breakpoint anywhere,
+
+1163
+02:02:09,830 --> 02:02:14,239
+pdb.set_trace() sets a breakpoint.
+
+1164
+02:02:14,239 --> 02:02:20,659
+So now if I run that, as soon as it gets to
+here, it pops up a little dialog box. At this
+
+1165
+02:02:20,659 --> 02:02:25,160
+point, I can look at anything. For example,
+I can say what's the value of err at this
+
+1166
+02:02:25,160 --> 02:02:32,110
+point. I can say what are the lines I'm about
+to execute, I can say execute the next one
+
+1167
+02:02:32,110 --> 02:02:35,570
+line.
+
+1168
+02:02:35,570 --> 02:02:42,340
+If you want to learn about the python debugger,
+just google python debugger. Learning to use
+
+1169
+02:02:42,340 --> 02:02:48,610
+the debugger is one of the most helpful things
+because it lets you step through each step,
+
+1170
+02:02:48,610 --> 02:02:54,030
+see the values for your variables, and do
+all kinds of stuff like that.
+
+1171
+02:02:54,030 --> 02:03:00,940
+So those were two little tips that I will
+leave you with ... and leave you on a high
+
+1172
+02:03:00,940 --> 00:00:00,000
+note.
+

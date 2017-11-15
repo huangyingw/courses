@@ -1,0 +1,5509 @@
+1
+00:00:01,050 --> 00:00:05,040
+So I guess I've noticed during the week from
+some of the questions that I've been seeing
+
+2
+00:00:05,040 --> 00:00:14,040
+that the idea of a convolution is still a
+little counter-intuitive or surprising to
+
+3
+00:00:14,040 --> 00:00:19,800
+some people. I feel like the only way I know
+to teach things effectively is by creating
+
+4
+00:00:19,800 --> 00:00:23,210
+a spreadsheet, so here we are.
+
+5
+00:00:23,210 --> 00:00:30,849
+This is the famous number 7 from Lesson 0,
+and I just copied and pasted the numbers into
+
+6
+00:00:30,849 --> 00:00:39,309
+a spreadsheet. They're not all exactly 0,
+they're actually floats just rounded off.
+
+7
+00:00:39,309 --> 00:00:46,040
+As you can see, I'm using conditional coloring
+and you can see the shape of the number 7
+
+8
+00:00:46,040 --> 00:00:47,199
+here.
+
+9
+00:00:47,199 --> 00:00:52,480
+So I wanted to show you exactly what a convolution
+does, and specifically what a convolution
+
+10
+00:00:52,480 --> 00:01:02,789
+does in a deep-learning neural network. So
+we are generally using modern convolutions,
+
+11
+00:01:02,789 --> 00:01:04,750
+and that means a 3x3 convolution.
+
+12
+00:01:04,750 --> 00:01:14,020
+So here is a 3x3 convolution and I have just
+randomly generated 9 random numbers, so that
+
+13
+00:01:14,020 --> 00:01:28,380
+is a filter. Here is my second filter, 9 more
+random numbers. So this is what we do in Keras,
+
+14
+00:01:28,380 --> 00:01:34,350
+when we ask for a convolutonal layer the first
+thing we pass it is how many filters we want,
+
+15
+00:01:34,350 --> 00:01:41,170
+that is how many of these little random matrices
+do we want it to build for us. So in this
+
+16
+00:01:41,170 --> 00:01:47,170
+cass if I pass convolution2D, the first parameter
+would be 2 and the second parameter would
+
+17
+00:01:47,170 --> 00:01:49,380
+be 3,3.
+
+18
+00:01:49,380 --> 00:01:59,700
+So what happens to this little random matrix?
+In order to calculate the very first item
+
+19
+00:01:59,700 --> 00:02:11,090
+it takes the sum of the blue stuff (those
+9) times the red stuff (those 9) all added
+
+20
+00:02:11,090 --> 00:02:13,480
+together.
+
+21
+00:02:13,480 --> 00:02:18,420
+So let's go down here where it gets darker.
+How does this get calculated? This is equal
+
+22
+00:02:18,420 --> 00:02:25,640
+to these 9 times these 9. And when I say "times"
+I mean element-wise times -- the top left
+
+23
+00:02:25,640 --> 00:02:32,980
+by the top left, the middle by the middle
+and so forth, and all them all together.
+
+24
+00:02:32,980 --> 00:02:39,380
+That's all a convolution is. It's just as
+you go through, we take the corresponding
+
+25
+00:02:39,380 --> 00:02:46,350
+3x3 area in the image and we multiply each
+of these 9 things by these 9 things, and then
+
+26
+00:02:46,350 --> 00:02:55,010
+we add those 9 products together. That's it
+-- that's a convolution. So there's really
+
+27
+00:02:55,010 --> 00:03:00,130
+nothing particularly weird or confusing about
+it. And I'll make this available in class
+
+28
+00:03:00,130 --> 00:03:01,790
+so that you can have a look.
+
+29
+00:03:01,790 --> 00:03:10,069
+You can see that when I get to the top left
+corner, I can't move further left and up because
+
+30
+00:03:10,069 --> 00:03:17,040
+I've reached the edge. And this is why when
+you do a 3x3 convolution without zero padding,
+
+31
+00:03:17,040 --> 00:03:23,030
+you lose one pixel on each edge, because you
+can't push this 3x3 any further.
+
+32
+00:03:23,030 --> 00:03:31,060
+So if we go down to the bottom left, we can
+see again the same thing - gets stuck in the
+
+33
+00:03:31,060 --> 00:03:36,750
+corner. So that's why you can see that my
+resulting matrix is one row less than my starting
+
+34
+00:03:36,750 --> 00:03:39,260
+matrix.
+
+35
+00:03:39,260 --> 00:03:44,630
+So I did this for two different filters. So
+here's my second filter and you can see when
+
+36
+00:03:44,630 --> 00:03:54,560
+I calculate this one it's exactly the same
+thing, it's these 9 times each of these 9
+
+37
+00:03:54,560 --> 00:03:59,560
+added together. And these are just 9 other
+random numbers.
+
+38
+00:03:59,560 --> 00:04:07,580
+That's how we start with our 2 convolutional
+filters. And this is the output of those two
+
+39
+00:04:07,580 --> 00:04:13,040
+convolutional filters, they're just random
+at this point.
+
+40
+00:04:13,040 --> 00:04:21,539
+Now my second layer, it's no longer enough
+to have a 3x3 matrix, I now need a 3x3x2 tensor
+
+41
+00:04:21,539 --> 00:04:34,029
+because to calculate my top left of my second
+convolutional layer, I need these 9 by these
+
+42
+00:04:34,029 --> 00:04:42,479
+9 added together, plus these 9 by these 9
+added together because at this point my previous
+
+43
+00:04:42,479 --> 00:04:47,419
+layer is not just one thing, but it is two
+things.
+
+44
+00:04:47,419 --> 00:04:54,930
+Now indeed if our original picture was a 3-channel
+color picture, our very fist convolutional
+
+45
+00:04:54,930 --> 00:04:58,340
+layer would have had to have been 3x3x3 tensors.
+
+46
+00:04:58,340 --> 00:05:00,979
+[Time: 5 minute mark]
+
+47
+00:05:00,979 --> 00:05:12,569
+So all of the convolutional layers from now
+on are going to be 3 by 3 by number-of-filters-in-the-previous-layer
+
+48
+00:05:12,569 --> 00:05:21,620
+convolution matrices. So here is my first
+3x3x2 tensor -- and you can see it is taking
+
+49
+00:05:21,620 --> 00:05:30,169
+9 from here, 9 from here, and adding those
+two together. So then for my second filter
+
+50
+00:05:30,169 --> 00:05:35,990
+in my second layer, exactly the same thing.
+I've created two more random matrices or one
+
+51
+00:05:35,990 --> 00:05:48,080
+more random 3x3x2 tensor. And here again,
+I have these 9 by these 9 sum, plus those
+
+52
+00:05:48,080 --> 00:05:53,960
+9 by those 9 sum. And that gives me that one.
+
+53
+00:05:53,960 --> 00:06:03,009
+So that gives me my first two layers of my
+convolutional network. Then I do max polling.
+
+54
+00:06:03,009 --> 00:06:08,099
+Max pooling is slightly more awkward to do
+in Ecel, but that's fine, we can still handle
+
+55
+00:06:08,099 --> 00:06:09,770
+it.
+
+56
+00:06:09,770 --> 00:06:17,689
+So here's max pooling. Now max pooling is
+going to decrease the resolution of my image
+
+57
+00:06:17,689 --> 00:06:25,040
+by a factor of two on each axis. So how do
+we calculate that number? That number is simply
+
+58
+00:06:25,040 --> 00:06:34,930
+the maximum of those 4. And then that number
+is the maximum of those four, and so forth.
+
+59
+00:06:34,930 --> 00:06:41,339
+So with max polling, we started with 2 filters
+in each layers and we still have two filters
+
+60
+00:06:41,339 --> 00:06:54,370
+in each layer, but now each filter has half
+the resolution in each of the x axis and y
+
+61
+00:06:54,370 --> 00:06:56,819
+axis.
+
+62
+00:06:56,819 --> 00:07:04,529
+Question: How did you go from one matrix to
+two matrices in the second layer?
+
+63
+00:07:04,529 --> 00:07:15,539
+Answer: How did I just go from just this 1
+thing to these 2 things? The answer to that
+
+64
+00:07:15,539 --> 00:07:22,300
+is I just created two random 3x3 filters.
+This is my first random 3x3 filter, this is
+
+65
+00:07:22,300 --> 00:07:33,229
+my second random 3x3 filter. Each output then
+is simply equal to each corresponding 9-element
+
+66
+00:07:33,229 --> 00:07:39,099
+section multiplied by each other and added
+together. Because I had two random 3x3 matrices,
+
+67
+00:07:39,099 --> 00:07:53,819
+I ended up with two outputs. Two filters means
+two sets of outputs.
+
+68
+00:07:53,819 --> 00:08:00,830
+So now that we've got our max polling layer,
+let's use a dense layer to turn it into our
+
+69
+00:08:00,830 --> 00:08:10,129
+output. A dense layer means that every single
+one of our activations from our max polling
+
+70
+00:08:10,129 --> 00:08:18,580
+layer needs a random weight. So these are
+a whole bunch of random numbers. What I do
+
+71
+00:08:18,580 --> 00:08:32,950
+is take every one of these random numbers
+and multiply each one by a corresponding input
+
+72
+00:08:32,950 --> 00:08:36,830
+and add them all together, the sumproduct
+of this and this.
+
+73
+00:08:36,830 --> 00:08:44,649
+In MNIST we would have 10 activations because
+we need an activation for 0, 1, 2, 3, .. 9.
+
+74
+00:08:44,649 --> 00:08:52,910
+So for MNIST we would need 10 sets of these
+dense weight matrices so that we could calculate
+
+75
+00:08:52,910 --> 00:08:56,639
+the 10 outputs.
+
+76
+00:08:56,639 --> 00:09:02,560
+If we were only calculating one output, this
+would be a perfectly reasonable way to do
+
+77
+00:09:02,560 --> 00:09:11,300
+it. So for 1 output, it's just the sumproduct
+of everything from our final layer with a
+
+78
+00:09:11,300 --> 00:09:21,339
+weight for everything in that final layer,
+added together. That's all a dense layer is.
+
+79
+00:09:21,339 --> 00:09:33,220
+So really both dense layers and convolutional
+layers couldn't be easier mathematically.
+
+80
+00:09:33,220 --> 00:09:40,250
+I think the surprising thing is what happens
+when you then say, OK, rather than using random
+
+81
+00:09:40,250 --> 00:09:45,579
+weights, let's calulate the derivative of
+what happens if we were to change that weight
+
+82
+00:09:45,579 --> 00:09:52,560
+up by a bit or down by a bit and how would
+it impact our loss. In this case, I haven't
+
+83
+00:09:52,560 --> 00:09:56,750
+actually gotten as far as calculating a loss
+function, but we could add it over here, we
+
+84
+00:09:56,750 --> 00:10:00,440
+could add a sigmoid loss, for example.
+
+85
+00:10:00,440 --> 00:10:02,079
+[Time: 10 minute mark]
+
+86
+00:10:02,079 --> 00:10:07,360
+So we can calculate the derivative with respect
+to every single weight in the dense layer,
+
+87
+00:10:07,360 --> 00:10:15,170
+and every single weight in all of our filters
+in that layer, and every single weight in
+
+88
+00:10:15,170 --> 00:10:19,899
+all of our filters in this layer, and with
+all of these derivatives we can calculate
+
+89
+00:10:19,899 --> 00:10:25,089
+how to optimize all of these weights. And
+the surprising thing is when we optimize all
+
+90
+00:10:25,089 --> 00:10:30,839
+of these weights, we end up with these incredibly
+powerful models, like those visualizations
+
+91
+00:10:30,839 --> 00:10:34,079
+that we saw.
+
+92
+00:10:34,079 --> 00:10:39,600
+I'm not quite sure where the disconnect between
+the incredibly simple math and the outcome
+
+93
+00:10:39,600 --> 00:10:45,880
+is. I think it might be that it's so easy,
+it's hard to believe that's all it is. I'm
+
+94
+00:10:45,880 --> 00:10:53,240
+not skipping over anything, that really is
+it. So to help you really understand this,
+
+95
+00:10:53,240 --> 00:10:55,190
+I'm going to talk more about SGD.
+
+96
+00:10:55,190 --> 00:11:00,160
+Question: Why would you use a sigmoid function
+here?
+
+97
+00:11:00,160 --> 00:11:09,590
+Answer: The loss function we generally use
+is the SoftMax -- e^x.i/(sum of e^x.i). If
+
+98
+00:11:09,590 --> 00:11:20,170
+it's just binary, that's the equivalent of
+1/(1 + e^x.i). So SoftMax in the binary case
+
+99
+00:11:20,170 --> 00:11:28,730
+simplifies into a sigmoid function. Thank
+you for clarifying that question.
+
+100
+00:11:28,730 --> 00:11:35,560
+So I think this is super-fun. We're going
+to talk not just about SGD but every variant
+
+101
+00:11:35,560 --> 00:11:40,870
+of SGD, including the one invented just a
+week ago.
+
+102
+00:11:40,870 --> 00:11:48,440
+Question: Does SGD happen for all layers at
+once?
+
+103
+00:11:48,440 --> 00:11:52,730
+Answer: Yes. SGD happens for all layers at
+once. We calculate the derivative of all the
+
+104
+00:11:52,730 --> 00:11:54,639
+weights with respect to the loss.
+
+105
+00:11:54,639 --> 00:12:02,490
+Question: When have a max pool after convolution,
+versus when not to?
+
+106
+00:12:02,490 --> 00:12:10,870
+Answer: Who knows? This is a very controversial
+question and some people are now saying never
+
+107
+00:12:10,870 --> 00:12:19,790
+use max pool. Instead of using max pool when
+you're doing the convolutions, don't do a
+
+108
+00:12:19,790 --> 00:12:29,500
+convolution over every set of 9 pixels, but
+instead skip a pixel each time -- that's another
+
+109
+00:12:29,500 --> 00:12:33,740
+way of down-sampling.
+
+110
+00:12:33,740 --> 00:12:38,569
+Geoffrey Hinton, who's kind of the father
+of deep learning has gone as far as saying
+
+111
+00:12:38,569 --> 00:12:47,860
+the extremely great success of max pooling
+has been the greatest problem deep learning
+
+112
+00:12:47,860 --> 00:12:56,990
+has faced. To him, it really stops us from
+going further. I don't know whether that's
+
+113
+00:12:56,990 --> 00:13:03,240
+true or not. I assume it is because he's Geoffrey
+Hinton and I'm not.
+
+114
+00:13:03,240 --> 00:13:11,520
+For now, we use max pooling every time we're
+doing fine-tuning because we need to make
+
+115
+00:13:11,520 --> 00:13:16,089
+sure that our architecture is identical to
+the original vgg author's architecture and
+
+116
+00:13:16,089 --> 00:13:19,579
+we're going to use max pooling wherever they
+did.
+
+117
+00:13:19,579 --> 00:13:24,569
+Question: Why do we want max pooling or down-sampling
+or anything like that? Are we just trying
+
+118
+00:13:24,569 --> 00:13:26,829
+to look at bigger features of the input?
+
+119
+00:13:26,829 --> 00:13:34,509
+Answer: Why use max pooling at all? There's
+a couple of reasons. The first is that max
+
+120
+00:13:34,509 --> 00:13:39,769
+pooling helps with translation invariance.
+So it basically says that if this feature
+
+121
+00:13:39,769 --> 00:13:44,920
+is here, or here, or here -- I don't care,
+it's kind of roughly in the right spot. So
+
+122
+00:13:44,920 --> 00:13:46,300
+that seems to work well.
+
+123
+00:13:46,300 --> 00:13:50,920
+And the second is exactly what you said. Every
+time we max pool, we end up with a smaller
+
+124
+00:13:50,920 --> 00:13:55,709
+grid. Which means that our 3x3 convolutions
+are effectively covering a larger part of
+
+125
+00:13:55,709 --> 00:14:02,749
+the original image, which means that our convolutions
+can find larger, more complex features. I
+
+126
+00:14:02,749 --> 00:14:05,880
+think these would be the two main reasons.
+
+127
+00:14:05,880 --> 00:14:16,730
+Question: So is Geoffrey Hinton cool with
+the idea of skipping a pixel each time?
+
+128
+00:14:16,730 --> 00:14:25,079
+Answer: Geoffrey Hinton is not cool with that
+either, he thinks we should be using a capsule
+
+129
+00:14:25,079 --> 00:14:31,610
+architecture. The problem is that he hasn't
+invented it yet. So we don't have an answer
+
+130
+00:14:31,610 --> 00:14:33,040
+to this yet.
+
+131
+00:14:33,040 --> 00:14:43,009
+If you google for "Geoffrey Hinton capsule"
+you can learn all about the thing that he
+
+132
+00:14:43,009 --> 00:14:52,610
+thinks we ought to have but don't yet. He
+did point out that one of the key pieces of
+
+133
+00:14:52,610 --> 00:14:59,569
+deep-learning that he invented took 17 years
+from conception to working, so he is one of
+
+134
+00:14:59,569 --> 00:15:01,029
+those people who sticks with things and makes
+it work.
+
+135
+00:15:01,029 --> 00:15:03,329
+Question: Is max pooling unique to image processing?
+
+136
+00:15:03,329 --> 00:15:04,640
+[Time: 15 minute mark]
+
+137
+00:15:04,640 --> 00:15:09,270
+Answer: Max pooling is not unique to image
+processing, it is likely to be useful for
+
+138
+00:15:09,270 --> 00:15:13,139
+any kind of convolutional neural network.
+And a convolutional neural network can be
+
+139
+00:15:13,139 --> 00:15:19,170
+used for any type of data that has some kind
+of consistent ordering. Things like speech,
+
+140
+00:15:19,170 --> 00:15:25,930
+or any kind of audio, or some kind of consistent
+time series -- all of these things have some
+
+141
+00:15:25,930 --> 00:15:31,410
+kind of ordering to them and therefore you
+can use a CNN and therefore you can use max
+
+142
+00:15:31,410 --> 00:15:32,410
+pooling.
+
+143
+00:15:32,410 --> 00:15:39,449
+As we look at NLP, we will be looking more
+at CNN for other data types. Interestingly,
+
+144
+00:15:39,449 --> 00:15:47,249
+the author of Keras, last week or maybe the
+week before made the contention that perhaps
+
+145
+00:15:47,249 --> 00:15:54,269
+it will turn out that CNNs are the architecture
+that will be used for every type of ordered
+
+146
+00:15:54,269 --> 00:16:01,100
+data. This was just after one of the leading
+NLP researchers released a paper basically
+
+147
+00:16:01,100 --> 00:16:09,430
+showing a state of the art result in NLP using
+CNN. Although we'll start learning about recurrent
+
+148
+00:16:09,430 --> 00:16:16,819
+neural networks next week, I have to be open
+to the possibility that they'll become redundant
+
+149
+00:16:16,819 --> 00:16:20,380
+by the end of the year.
+
+150
+00:16:20,380 --> 00:16:28,339
+So, SGD. We looked at the SGD intro notebook,
+but I think sometimes things are a little
+
+151
+00:16:28,339 --> 00:16:32,600
+more clear when you can see it all in front
+of you. So here is the identical thing that
+
+152
+00:16:32,600 --> 00:16:38,180
+we saw in the SGD notebook in Excel.
+
+153
+00:16:38,180 --> 00:16:47,410
+We are going to start by creating a line.
+We created 29 random numbers and they we say
+
+154
+00:16:47,410 --> 00:17:06,760
+let's create something that is equal to (2
+* x) + 30. So here is 2 * x + 30, that's my
+
+155
+00:17:06,760 --> 00:17:07,760
+input data.
+
+156
+00:17:07,760 --> 00:17:15,079
+I'm trying to create something that can find
+the parameters of a line. The important thing,
+
+157
+00:17:15,079 --> 00:17:24,019
+this is the link which requires not thinking
+too hard lest you realize how surprising and
+
+158
+00:17:24,020 --> 00:17:30,590
+amazing this is. Everything we learned about
+how to fit a line is identical to how to fit
+
+159
+00:17:30,590 --> 00:17:34,290
+filters and weights in a convolutional neural
+network.
+
+160
+00:17:34,290 --> 00:17:39,040
+So everything we've learned about calculating
+the slope and the intercept, we will then
+
+161
+00:17:39,040 --> 00:17:47,850
+use to let computers see. And so the answer
+to any question which is basically "Why?"
+
+162
+00:17:47,850 --> 00:17:53,350
+is "Why not?" This is a function that takes
+some inputs and calculates some output, this
+
+163
+00:17:53,350 --> 00:17:58,930
+is a function that take some inputs and calculates
+some output, so why not?
+
+164
+00:17:58,930 --> 00:18:03,570
+The only reason it wouldn't work would be
+it was too slow, for example. We know it's
+
+165
+00:18:03,570 --> 00:18:09,190
+not too slow, because we tried it and it works
+pretty well. Everything we are about to learn
+
+166
+00:18:09,190 --> 00:18:18,130
+works for any kind of function which has the
+appropriate types of gradients, and we can
+
+167
+00:18:18,130 --> 00:18:23,470
+talk more about that later. But neural nets
+have the appropriate kind of gradients.
+
+168
+00:18:23,470 --> 00:18:29,460
+So, SGD. We start with a guess, what do we
+think the parameters of our function are.
+
+169
+00:18:29,460 --> 00:18:34,160
+In this case, the intercept and the slope.
+With Keras, they will be randomized using
+
+170
+00:18:34,160 --> 00:18:42,930
+the floor initiation procedure we learned
+about, which is 6/(N-in + N-out) random numbers.
+
+171
+00:18:42,930 --> 00:18:47,610
+Let's assume they're both 1.
+
+172
+00:18:47,610 --> 00:18:52,980
+We are going to use very, very small mini-batches
+here. Our mini-batches will be of size 1,
+
+173
+00:18:52,980 --> 00:18:58,290
+basically because it is easier to do in Excel
+and it is easier to see. Everything we're
+
+174
+00:18:58,290 --> 00:19:04,080
+going to see would work equally well for a
+mini-batch of size 4 or of size 64, 128, or
+
+175
+00:19:04,080 --> 00:19:05,080
+whatever.kk
+
+176
+00:19:05,080 --> 00:19:10,310
+So here's our first row, or our first mini-batch.
+Our input is 14 and our desired output is
+
+177
+00:19:10,310 --> 00:19:18,210
+58, and our guess as to our parameters are
+1 and 1. And therefore our predicted y value
+
+178
+00:19:18,210 --> 00:19:32,650
+is equal to 1 + 1*14 (which = 15). We're doing
+RMS, so our error squaed is (prediction - actual)^2.
+
+179
+00:19:32,650 --> 00:19:35,330
+[Time: 20 minute mark]
+
+180
+00:19:35,330 --> 00:19:39,380
+The next thing we want todo is calculate the
+derivative with respect to each of our two
+
+181
+00:19:39,380 --> 00:19:47,870
+inputs. One really easy way to do this is
+to add a tiny amount to each of the two inputs
+
+182
+00:19:47,870 --> 00:19:59,050
+and see how the output varies. So let's start
+by doing that -- let's add 0.01 to our intercept
+
+183
+00:19:59,050 --> 00:20:05,990
+and calculate the line and calculate the loss
+squared, the error. So this is the error if
+
+184
+00:20:05,990 --> 00:20:12,900
+y is increased by 0.01, and let's calculate
+the difference between that error and the
+
+185
+00:20:12,900 --> 00:20:20,660
+actual error and then divide that by our change
+(which is 0.01), and that gives us our estimated
+
+186
+00:20:20,660 --> 00:20:25,420
+gradient (I'm using de/db for d-error/db,
+should have probably been dl/db for d-loss/db
+
+187
+00:20:25,420 --> 00:20:32,710
+for the error. So the change in loss with
+respect to b is -85.99. We can do the same
+
+188
+00:20:32,710 --> 00:20:34,180
+thing for a.
+
+189
+00:20:34,180 --> 00:20:43,990
+We can add 0.01 to a, then calculate our line,
+subtract our actual, take the square, and
+
+190
+00:20:43,990 --> 00:20:53,360
+so there is our value for the estimated d-loss/da,
+subtract it from the actual loss divided by
+
+191
+00:20:53,360 --> 00:20:56,460
+0.01. And so there are two estimates of the
+derivative.
+
+192
+00:20:56,460 --> 00:21:01,790
+This approach to estimating the derivative
+is called finite differencing. Any time you
+
+193
+00:21:01,790 --> 00:21:06,120
+calculate a derivate by hand, you should use
+finite differecing to make sure your calculation
+
+194
+00:21:06,120 --> 00:21:07,660
+is correct.
+
+195
+00:21:07,660 --> 00:21:11,610
+You're not very likely to ever have to do
+that, however, because all of the libraries
+
+196
+00:21:11,610 --> 00:21:18,180
+do derivatives for you. And they do them analytically,
+not using finite derivatives. And so here
+
+197
+00:21:18,180 --> 00:21:24,070
+are the derivatives calculated analytically,
+which you can do by going to WolframAlpha
+
+198
+00:21:24,070 --> 00:21:28,230
+and typing in your formula and getting the
+derivative back. So this is the analytical
+
+199
+00:21:28,230 --> 00:21:33,470
+derivative of the loss with respect to b and
+the analytical derivative with the loss with
+
+200
+00:21:33,470 --> 00:21:38,710
+respect to a. And you can see that our analytical
+and our finite difference are very similar
+
+201
+00:21:38,710 --> 00:21:45,340
+for b, and they are very simiilar for a, so
+that makes me feel comforable that we got
+
+202
+00:21:45,340 --> 00:21:47,160
+the calculation correct.
+
+203
+00:21:47,160 --> 00:21:55,970
+So all SGD does is it says this tells us that
+if we change our weights by a litle bit, this
+
+204
+00:21:55,970 --> 00:22:01,801
+is the change in our loss function. We know
+that increasing our value of b by a little
+
+205
+00:22:01,801 --> 00:22:08,470
+bit will decrease our loss function and increasing
+the value of a by a little bit will decrease
+
+206
+00:22:08,470 --> 00:22:12,900
+the loss funtion. So therefore let's decrease
+both of them by a little bit. And the way
+
+207
+00:22:12,900 --> 00:22:18,540
+we do that is to multiply the derivative times
+our learning rate (that's the value of our
+
+208
+00:22:18,540 --> 00:22:25,440
+little bit), and subtract that from our previous
+guess. So we do that for a and we do that
+
+209
+00:22:25,440 --> 00:22:35,220
+for b and here are our new guesses. Now we're
+at 1.12 and 1.01. And so let's copy them over
+
+210
+00:22:35,220 --> 00:22:44,580
+here. And we do the same thing, and this gives
+us a new a and a new b. And we keep doing
+
+211
+00:22:44,580 --> 00:22:49,990
+that again and again and again, until we've
+gone through the entire data set, at the end
+
+212
+00:22:49,990 --> 00:22:59,600
+of which we have a guess of 2.61 for a and
+a guess of 1.07 for b. So that's one epoch.
+
+213
+00:22:59,600 --> 00:23:05,030
+In real life, we would be having shuffle=true,
+which means that these would be randomized,
+
+214
+00:23:05,030 --> 00:23:11,260
+so this isn't quite perfect. But apart from
+that, this is SGD with a mini-batch size of
+
+215
+00:23:11,260 --> 00:23:12,710
+1.
+
+216
+00:23:12,710 --> 00:23:24,540
+So at the end of the epoch, you say this is
+our new slope, let's copy 2.61 over here.
+
+217
+00:23:24,540 --> 00:23:34,551
+And this is our new intercept, so let's copy
+1.06 over here. So now, it starts again. So
+
+218
+00:23:34,551 --> 00:23:42,261
+we can keep doing that again and again and
+again - copy this stuff from the bottom, stick
+
+219
+00:23:42,261 --> 00:23:45,410
+it back at the top, and each one of these
+is going to be an epoch.
+
+220
+00:23:45,410 --> 00:23:50,660
+So I recorded a macro with me copying this
+from the bottom and pasting it at the top
+
+221
+00:23:50,660 --> 00:23:55,960
+and added something that says for i=1 to 5
+around it. So now if I click run, it would
+
+222
+00:23:55,960 --> 00:24:04,270
+copy and paste it 5 times. So you can see
+it's gradually getting closer. And we know
+
+223
+00:24:04,270 --> 00:24:18,660
+that our goal is that it should be a=2 and
+b=30. So we've got as far as a=2.5 and b=1.3,
+
+224
+00:24:18,660 --> 00:24:25,010
+so it's better than our starting point. And
+you can see our gradually improving loss function.
+
+225
+00:24:25,010 --> 00:24:28,090
+But it's going to take a long time.
+
+226
+00:24:28,090 --> 00:24:34,090
+Question: Can we still do analytic derivatives
+when we are using non-linear activation functions?
+
+227
+00:24:34,090 --> 00:24:40,340
+Answer: Yes, we can use analytical derivatives
+as long as we're using a function that has
+
+228
+00:24:40,340 --> 00:24:47,310
+an analytical derivative, which is pretty
+much every useful function you can think of.
+
+229
+00:24:47,310 --> 00:24:51,910
+Except, you can't have something that has
+like an if-then statement in it because it
+
+230
+00:24:51,910 --> 00:24:54,730
+jumps from here to here. But even those you
+can approximate.
+
+231
+00:24:54,730 --> 00:24:55,780
+[Time: 25 minute mark]
+
+232
+00:24:55,780 --> 00:25:06,900
+Like a good example would be ReLU. ReLU, which
+is max(0,x) strictly speaking does not have
+
+233
+00:25:06,900 --> 00:25:20,450
+a derivative at every point, or at least not
+a well-defined one, because this is what ReLU
+
+234
+00:25:20,450 --> 00:25:32,370
+looks like. So, it's derivative here is 0,
+and its derivative is 1 if x > 0. What is
+
+235
+00:25:32,370 --> 00:25:39,230
+its derivative exactly here, when x=0 ? Who
+knows. The thing is mathematicians care about
+
+236
+00:25:39,230 --> 00:25:45,380
+that kind of thing but we don't. Like in real
+life, this is a computer and computers are
+
+237
+00:25:45,380 --> 00:25:50,980
+never exactly anything. We can either assume
+it's an infinte amount to this side, or an
+
+238
+00:25:50,980 --> 00:25:57,000
+infinite amount to this side. Who cares? As
+long as it has a derivative that you can calculate
+
+239
+00:25:57,000 --> 00:26:06,980
+in a meaningful way in practice on a computer,
+then you'll be fine.
+
+240
+00:26:06,980 --> 00:26:10,561
+One thing you might have noticed is that it's
+going to take an awfully long time to get
+
+241
+00:26:10,561 --> 00:26:17,260
+anywhere. So you might think, let's increase
+the learning rate. Fine, let's increase the
+
+242
+00:26:17,260 --> 00:26:24,120
+learning rate, so we get rid of one of these
+0's. Oh, dear. Something went crazy. What
+
+243
+00:26:24,120 --> 00:26:29,240
+went crazy? I'll tell you what went crazy.
+The values for a and b go out to like about
+
+244
+00:26:29,240 --> 00:26:34,420
+11 million, which is not the correct answer.
+So how did it go ahead and do that?
+
+245
+00:26:34,420 --> 00:26:40,490
+Here's the problem. Let's say this was the
+shape of our original loss function, and this
+
+246
+00:26:40,490 --> 00:26:49,040
+was our initial guess. And we figure out the
+derivative positive, so we want to go in the
+
+247
+00:26:49,040 --> 00:26:58,210
+opposite direction, so we step a little bit
+to the right, and we step a little bit over
+
+248
+00:26:58,210 --> 00:27:04,390
+here, and this looks good. Then we increase
+the learning rate, so rather than stepping
+
+249
+00:27:04,390 --> 00:27:11,410
+a little bit, we stepped a long way, and that
+put us here. And then we stepped a long way
+
+250
+00:27:11,410 --> 00:27:18,030
+again. And that put us here. If your learning
+rate is too high, you're going to get worse
+
+251
+00:27:18,030 --> 00:27:26,760
+and worse, and that's what happened here.
+So getting your learning rate right is critical
+
+252
+00:27:26,760 --> 00:27:27,980
+to getting trainable.
+
+253
+00:27:27,980 --> 00:27:30,630
+Question: Is this sometimes called "exploding
+gradients"?
+
+254
+00:27:30,630 --> 00:27:36,010
+Answer: Yes. Or you could even have gradients
+that do the opposite. Exploding gradients
+
+255
+00:27:36,010 --> 00:27:40,350
+are something a little bit different, but
+it is a similar idea.
+
+256
+00:27:40,350 --> 00:27:46,630
+So it looks like 0.0001 is the best we can
+do. And that's a bit sad because this is really
+
+257
+00:27:46,630 --> 00:28:01,170
+slow. So let's try 
+and improve it.
+
+258
+00:28:01,170 --> 00:28:08,790
+Let's say we have a 3-dimensional set of axes
+now, and we have a loss function that looks
+
+259
+00:28:08,790 --> 00:28:15,621
+like this kind of valley. And let's say our
+initial guess was somewhere over here, so
+
+260
+00:28:15,621 --> 00:28:22,740
+over here the gradient is pointing in this
+direction, so we might make a step and end
+
+261
+00:28:22,740 --> 00:28:31,440
+up there, and we might make another step which
+would put us there. This is actually the most
+
+262
+00:28:31,440 --> 00:28:37,950
+common thing that happens in neural networks.
+Something that is kind of flat in one dimension
+
+263
+00:28:37,950 --> 00:28:40,560
+like this is called a saddle point.
+
+264
+00:28:40,560 --> 00:28:45,980
+It has actually been proved that the vast
+majority of the space in the loss function
+
+265
+00:28:45,980 --> 00:28:50,490
+of a neural network is pretty much all saddle
+points. You can also think of it as looking
+
+266
+00:28:50,490 --> 00:28:55,360
+like a valley.
+
+267
+00:28:55,360 --> 00:29:00,680
+When you look at this, it's pretty obvious
+what should be done -- if you go to here,
+
+268
+00:29:00,680 --> 00:29:06,180
+and then to here, we can say that on average
+we're kind of obviously heading in this direction.
+
+269
+00:29:06,180 --> 00:29:10,230
+Especially when we do it again, we're obviously
+heading in this direction. So let's take the
+
+270
+00:29:10,230 --> 00:29:16,800
+average of how we've been going so far and
+do a bit of that. And that's exactly what
+
+271
+00:29:16,800 --> 00:29:18,000
+momentum does.
+
+272
+00:29:18,000 --> 00:29:27,260
+Question: If ReLU isn't the cost function,
+why are we concerned with its differentiability?
+
+273
+00:29:27,260 --> 00:29:34,450
+Answer: We care about the derivate of the
+output with respect to the inputs. The inputs
+
+274
+00:29:34,450 --> 00:29:40,530
+are the filters. And remember the loss function
+consists of a function of a function of a
+
+275
+00:29:40,530 --> 00:29:49,880
+function of a function. So it is Categorical
+Cross-Entropy Loss applied to SoftMax applied
+
+276
+00:29:49,880 --> 00:29:57,630
+to ReLU applied to Dense Layer applied to
+MaxPolling applied to ReLU applied to Convolutions,
+
+277
+00:29:57,630 --> 00:30:03,070
+etc., etc., So in other words, to calculate
+the derivative of a loss with respect to the
+
+278
+00:30:03,070 --> 00:30:07,870
+inputs, you have to calculate them through
+that whole function. And this is what's called
+
+279
+00:30:07,870 --> 00:30:08,970
+back propogation.
+
+280
+00:30:08,970 --> 00:30:10,180
+[Time: 30 minute mark]
+
+281
+00:30:10,180 --> 00:30:14,530
+With back propogation, it is easy to calculate
+that derivative since we know that from the
+
+282
+00:30:14,530 --> 00:30:20,300
+chain rule, a derivative of a function of
+a function is simply equal to the product
+
+283
+00:30:20,300 --> 00:30:24,970
+of the derivatives of those functions. So
+in practice, what we do is calculate the derivative
+
+284
+00:30:24,970 --> 00:30:31,000
+of every layer with respect to its inputs
+and we just multiply them all together. So
+
+285
+00:30:31,000 --> 00:30:37,700
+that's why we need to know the derivative
+of the activation layers as well as the loss
+
+286
+00:30:37,700 --> 00:30:43,750
+layer, and everything else.
+
+287
+00:30:43,750 --> 00:30:53,660
+So here's the trick ... We're going to say
+that every time 
+
+288
+00:30:53,660 --> 00:31:01,200
+we take a step, we're going to also calculate
+the average of the last few steps. So after
+
+289
+00:31:01,200 --> 00:31:05,970
+these two steps, the average is this direction.
+So the next step, we're going to take our
+
+290
+00:31:05,970 --> 00:31:14,740
+gradient step as usual and we're going to
+add on our average of the last few steps.
+
+291
+00:31:14,740 --> 00:31:19,890
+And that means that we end up over here. And
+then we do the same thing again. We find the
+
+292
+00:31:19,890 --> 00:31:24,960
+average of the last few steps and it's now
+even further in this direction.
+
+293
+00:31:24,960 --> 00:31:27,020
+Question: What is that surface?
+
+294
+00:31:27,020 --> 00:31:34,100
+Answer: This is the surface of the loss function
+with respect to some of the parameters. In
+
+295
+00:31:34,100 --> 00:31:38,060
+this case, just a couple of the parameters,
+it's an example of what a loss function might
+
+296
+00:31:38,060 --> 00:31:54,470
+look like. So this is the loss, and this is
+some weight W1, and this is some weight W2.
+
+297
+00:31:54,470 --> 00:31:57,490
+If you can imagine, it's like gravity, we're
+trying to get this little ball to travel down
+
+298
+00:31:57,490 --> 00:32:04,510
+this valley as far down to the bottom as possible.
+So the trick is that we're going to keep taking
+
+299
+00:32:04,510 --> 00:32:12,060
+a step, not just the gradient step, but also
+the average of the last few steps. And so
+
+300
+00:32:12,060 --> 00:32:22,110
+in practice, this is going to end up going
+zigzag for a while and then settle down.
+
+301
+00:32:22,110 --> 00:32:29,010
+To do that in Excel is pretty straightforward.
+To make things simpler I have removed the
+
+302
+00:32:29,010 --> 00:32:32,790
+finite differencing based derivatives here
+so we just have the analytical derivatives.
+
+303
+00:32:32,790 --> 00:32:38,650
+But other than that, this is identical to
+the previous spreadsheet, same data, same
+
+304
+00:32:38,650 --> 00:32:44,910
+predictions, same derivatives. Except we've
+done one extra thing, when we calculate our
+
+305
+00:32:44,910 --> 00:32:56,330
+new b, we say it's our previous b minus our
+learning rate times not our gradient, but
+
+306
+00:32:56,330 --> 00:33:08,370
+times this cell. What is that cell That cell
+is equal to our gradient, times .1 plus the
+
+307
+00:33:08,370 --> 00:33:17,280
+thing just above it times .9. And the thing
+just above it is equal to its gradient plus
+
+308
+00:33:17,280 --> 00:33:30,030
+.1 times - 
+
+309
+00:33:30,030 --> 00:33:35,210
+which is exactly what we want. And we are
+going to do that for both of our two parameters.
+
+310
+00:33:35,210 --> 00:33:44,990
+So this .9 is our momentum parameter. In Keras,
+when you use momentum, you say momentum= and
+
+311
+00:33:44,990 --> 00:33:47,020
+you say how much momentum you want.
+
+312
+00:33:47,020 --> 00:33:49,600
+Question: Where did that momentum parameter
+come from?
+
+313
+00:33:49,600 --> 00:33:59,581
+Answer: You just pick it. Just like your learning
+rate, you pick your momemtum factor. You choose
+
+314
+00:33:59,581 --> 00:34:03,410
+it by trying a few and finding out what works
+best.
+
+315
+00:34:03,410 --> 00:34:15,571
+So let's try running this. As you can see,
+it is still not exactly zipping along. Why
+
+316
+00:34:15,571 --> 00:34:20,590
+is it not exactly zipping along? The reason
+is that when we look at it we know that the
+
+317
+00:34:20,590 --> 00:34:28,900
+constant term needs to get all the way up
+to 30 and it's still way down at 1.5, it's
+
+318
+00:34:28,900 --> 00:34:35,690
+not moving fast enough. Whereas the slope
+term moved very quickly to where we wanted
+
+319
+00:34:35,690 --> 00:34:36,690
+it to be.
+
+320
+00:34:36,690 --> 00:34:43,469
+So what we really want is different learning
+rates for different parameters, this is called
+
+321
+00:34:43,469 --> 00:34:45,859
+dynamic learning rates.
+
+322
+00:34:45,860 --> 00:34:51,330
+The first really effective dynamic learning
+rate approaches have just appeared in the
+
+323
+00:34:51,330 --> 00:34:57,850
+last three years or so. One very popular one
+is called AdaGrad.
+
+324
+00:34:57,850 --> 00:34:59,610
+[Time: 35 minute mark]
+
+325
+00:34:59,610 --> 00:35:05,550
+All these dynamic learning rate approaches
+have the same insight, which is this, if the
+
+326
+00:35:05,550 --> 00:35:13,430
+parameter that I'm changing, the derivative
+of that parameter is consistently of a very
+
+327
+00:35:13,430 --> 00:35:20,610
+low magnitude, then if the derivative of this
+mini-batch is higher than that than what I
+
+328
+00:35:20,610 --> 00:35:26,540
+really care about is the relative difference
+between how much this variable tends to change
+
+329
+00:35:26,540 --> 00:35:31,600
+and how much it's going to change this time
+around. So in other words, we don't just care
+
+330
+00:35:31,600 --> 00:35:38,770
+about what is the gradient, but is the magnitude
+of the gradient much more or a lot less than
+
+331
+00:35:38,770 --> 00:35:45,550
+it has tended to be recently. So the easy
+way to calculate the overall amount of change
+
+332
+00:35:45,550 --> 00:35:51,160
+of the gradient recently is to keep track
+of the square of the gradient.
+
+333
+00:35:51,160 --> 00:35:58,841
+So what we do with AdaGrad is, as you can
+see at the bottom of my epoch here I have
+
+334
+00:35:58,841 --> 00:36:07,640
+got a sum of squares of all my gradients,
+and then I have taken the square root divided
+
+335
+00:36:07,640 --> 00:36:11,790
+by the count to give me the average. This
+is the average of the root sum of squares
+
+336
+00:36:11,790 --> 00:36:17,070
+of my gradients, so this number here will
+be high if the magnitudes of my gradients
+
+337
+00:36:17,070 --> 00:36:22,751
+are high. And because it's squared, it will
+be particularly high if sometimes they are
+
+338
+00:36:22,751 --> 00:36:23,751
+really high.
+
+339
+00:36:23,751 --> 00:36:29,200
+Question: So why is it okay to just use a
+mini-batch, since the surface is going to
+
+340
+00:36:29,200 --> 00:36:32,440
+depend on the points in the mini-batch?
+
+341
+00:36:32,440 --> 00:36:37,150
+Answer: It's not idea to just use a mini-batch
+and we will learn about a better approach
+
+342
+00:36:37,150 --> 00:36:38,150
+in a moment.
+
+343
+00:36:38,150 --> 00:36:43,310
+But for now, let's look at this. In fact,
+there are two approaches that are very related,
+
+344
+00:36:43,310 --> 00:36:51,290
+AdaGrad and AdaDelta, and one of them does
+this for all of the gradients so far and one
+
+345
+00:36:51,290 --> 00:36:56,810
+of them uses a slightly more sophisticated
+approach. The approach on a epoch by epoch
+
+346
+00:36:56,810 --> 00:37:05,360
+basis is slightly different for either, but
+it is similar enough to explain the concept.
+
+347
+00:37:05,360 --> 00:37:14,100
+Question: For a CNN, does dynamic learning
+rates mean that each filter would have its
+
+348
+00:37:14,100 --> 00:37:15,640
+own learning rate?
+
+349
+00:37:15,640 --> 00:37:30,930
+Answer: It would mean that every parameter
+has its own learning rate. This is 
+
+350
+00:37:30,930 --> 00:37:34,980
+a parameter, that is a parameter.
+
+351
+00:37:34,980 --> 00:37:40,100
+When you go model.summary in Keras, it shows
+you for every layer how many parameters there
+
+352
+00:37:40,100 --> 00:37:44,590
+are. Any time you're unclear about how many
+parameters there are, you can go back and
+
+353
+00:37:44,590 --> 00:37:50,930
+have a look at these spreadsheets and do a
+model.summary in Keras and make sure you understand
+
+354
+00:37:50,930 --> 00:37:53,280
+how they turn out.
+
+355
+00:37:53,280 --> 00:38:02,820
+For the first layer it is going to be the
+size of your filter times the number of filters,
+
+356
+00:38:02,820 --> 00:38:08,590
+and after that the number of parameters will
+be equal to the size of your filter times
+
+357
+00:38:08,590 --> 00:38:13,740
+the number of filters coming in times the
+number of filters coming out.
+
+358
+00:38:13,740 --> 00:38:19,120
+For your dense layers, every input goes to
+every output, so it would be the number of
+
+359
+00:38:19,120 --> 00:38:26,590
+inputs times the number of outputs, a parameter
+to the function that is calculating whether
+
+360
+00:38:26,590 --> 00:38:33,610
+it is a cat or a dog.
+
+361
+00:38:33,610 --> 00:38:38,430
+What we do now is we say this number here,
+look at this number here, 1857. This is saying
+
+362
+00:38:38,430 --> 00:38:45,800
+that the derivative of the loss with respect
+to the slope varies a lot, whereas the derviative
+
+363
+00:38:45,800 --> 00:38:51,240
+of the loss with respect to the intercept
+doesn't vary much at all. So at the end of
+
+364
+00:38:51,240 --> 00:39:01,980
+every epoch, I copy that up to here and I
+take my learning rate and I divide it by that.
+
+365
+00:39:01,980 --> 00:39:08,730
+So now, for each of my parameters, I have
+an adjusted learning rate, which is the learning
+
+366
+00:39:08,730 --> 00:39:16,360
+rate divided by the recent sum-of-squares
+average gradient. So you can see that one
+
+367
+00:39:16,360 --> 00:39:21,820
+of my learning rates is 100X faster than the
+other. And so let's see what happens when
+
+368
+00:39:21,820 --> 00:39:24,310
+I run this.
+
+369
+00:39:24,310 --> 00:39:29,640
+Question: Is it a relationship with normalizing
+the input data?
+
+370
+00:39:29,640 --> 00:39:40,370
+Answer: No, there's not really a relationship
+with normalizing the input data. It can help,
+
+371
+00:39:40,370 --> 00:39:48,070
+but still if your inputs are of very different
+scales, it's still a lot more work for it
+
+372
+00:39:48,070 --> 00:39:54,320
+to do so. So, yes it helps, but it doesn't
+help so much that it makes it useless. In
+
+373
+00:39:54,320 --> 00:40:01,020
+fact, in turns out that even with dynamic
+learning rates having not just normalized
+
+374
+00:40:01,020 --> 00:40:05,130
+inputs but batch normalized activations is
+extremely helpful.
+
+375
+00:40:05,130 --> 00:40:07,550
+[Time: 40 minute mark]
+
+376
+00:40:07,550 --> 00:40:12,170
+The thing about when you're using AdaGrad
+or any kind of dynamic learning rate is that
+
+377
+00:40:12,170 --> 00:40:15,790
+generally you'll set the learning rate quite
+a lot higher because you're dividing it by
+
+378
+00:40:15,790 --> 00:40:26,980
+the recent average. So if I set it to .1,
+that's too far, no good. So let's try .05
+
+379
+00:40:26,980 --> 00:40:37,670
+and run that, you can see that after just
+5 steps I'm already halfway there. Another
+
+380
+00:40:37,670 --> 00:40:47,230
+5 steps, getting very close. Another 5 steps,
+it explodes.
+
+381
+00:40:47,230 --> 00:40:57,640
+Now why did that happen? Because as we get
+closer and closer to where we want to be,
+
+382
+00:40:57,640 --> 00:41:02,900
+you need to take smaller and smaller steps.
+By keeping the learning rate the same, it
+
+383
+00:41:02,900 --> 00:41:12,630
+meant eventually we went too far. So this
+is still something you have to be very careful
+
+384
+00:41:12,630 --> 00:41:14,080
+of.
+
+385
+00:41:14,080 --> 00:41:20,690
+A more elegant (in my opinion) approach to
+the same thing that AdaGrad is doing is something
+
+386
+00:41:20,690 --> 00:41:28,150
+called RMSprop. RMSprop was first introduced
+in Geoffrey Hinton's Coursera course. So if
+
+387
+00:41:28,150 --> 00:41:37,290
+you go to Coursera and search for Geoffrey
+Hinton, Neural Networks, you'll find it. In
+
+388
+00:41:37,290 --> 00:41:42,170
+one of those classes, he introduces RMSprop.
+It's quite funny, nowadays because this comes
+
+389
+00:41:42,170 --> 00:41:47,350
+up in academic papers a lot, when people cite
+it they have to cite Coursera Course, Chapter
+
+390
+00:41:47,350 --> 00:41:53,720
+6, at minute 14 and 30 seconds. But Hinton
+has asked that this be the official way that
+
+391
+00:41:53,720 --> 00:41:59,740
+it is cited, so there you go.
+
+392
+00:41:59,740 --> 00:42:06,150
+Here's what RMSprop does -- RMSprop does exactly
+the same thing as momentum, but instead of
+
+393
+00:42:06,150 --> 00:42:12,330
+keeping track of the weighted running average
+of the gradients, we keep track of the weighted
+
+394
+00:42:12,330 --> 00:42:18,580
+running average of the square of the gradients.
+Here it is -- everything here is the same
+
+395
+00:42:18,580 --> 00:42:30,990
+as momentum so far except I take my gradient
+squared, multiply it by .1 and add it to my
+
+396
+00:42:30,990 --> 00:42:40,100
+previous cell times .9. So this is keeping
+track of the recent running average of the
+
+397
+00:42:40,100 --> 00:42:44,141
+squares of the gradients. And when I have
+that, I thendo exactly the same thing that
+
+398
+00:42:44,141 --> 00:42:50,390
+I do with AdaGrad, which is to divide the
+learning rate by it. So I take my previous
+
+399
+00:42:50,390 --> 00:42:57,800
+guess as to b, and then I subtract from it
+the derivatie times the learning rate, then
+
+400
+00:42:57,800 --> 00:43:05,140
+divide it by the square root of the recent
+running average of the squares of the gradients.
+
+401
+00:43:05,140 --> 00:43:10,340
+So it's doing basically the same thing as
+AdaGrad but it's doing it continuously.
+
+402
+00:43:10,340 --> 00:43:14,470
+Question: So these are all different types
+of learning rate optimization?
+
+403
+00:43:14,470 --> 00:43:23,500
+Answer: These last two are types of different
+types of dynamic learning rate operations.
+
+404
+00:43:23,500 --> 00:43:28,951
+So let's try this one. If we run it for a
+few steps, first we guess what learning rate
+
+405
+00:43:28,951 --> 00:43:50,480
+to start with - say .1, that's a little slow,
+so maybe we try .2, and as you can see this
+
+406
+00:43:50,480 --> 00:43:51,870
+is going pretty well.
+
+407
+00:43:51,870 --> 00:43:56,600
+And I'll show you something really nice about
+RMSprop, which is what happens as we get very
+
+408
+00:43:56,600 --> 00:44:01,570
+close. We know the right answer is 2 and 30
+(and we are at 1.6569 and 29.8358), are we
+
+409
+00:44:01,570 --> 00:44:05,970
+about to explode? RMSgrad doesn't explode,
+and the reason it doesn't explode is that
+
+410
+00:44:05,970 --> 00:44:12,290
+it's recalculating that running average every
+single mini-batch. And so rather than waiting
+
+411
+00:44:12,290 --> 00:44:16,700
+til the end of the epoch, at which point it's
+gone so far that it can't come back again,
+
+412
+00:44:16,700 --> 00:44:21,750
+it just jumps a little too far and then it
+recalculates the dynamic learning rates and
+
+413
+00:44:21,750 --> 00:44:23,100
+tries again.
+
+414
+00:44:23,100 --> 00:44:27,961
+So what happens with RMSprop, is if your learning
+rate is too high, it doesn't explode, it just
+
+415
+00:44:27,961 --> 00:44:34,350
+ends up going around the right answer. So
+when you use RMSprop, as soon as you see your
+
+416
+00:44:34,350 --> 00:44:41,130
+validation scores flatten out, you know this
+is what's going on, so therefore you should
+
+417
+00:44:41,130 --> 00:44:44,910
+probably divide your learning rate by 10.
+And you see me doing this all the time. When
+
+418
+00:44:44,910 --> 00:44:49,150
+I'm running Keras stuff you'll see me run
+a few steps then divide the learning rate
+
+419
+00:44:49,150 --> 00:44:54,650
+by 10, run a few steps. You don't see my loss
+function explode, you just see that it flattens
+
+420
+00:44:54,650 --> 00:44:55,650
+out.
+
+421
+00:44:55,650 --> 00:44:58,350
+Question: Do you want your learning rates
+to get smaller and smaller?
+
+422
+00:44:58,350 --> 00:45:00,050
+[Time: 45 minute mark]
+
+423
+00:45:00,050 --> 00:45:04,750
+Answer: Yes. Your very first learning rate
+often has to start small (and we'll talk about
+
+424
+00:45:04,750 --> 00:45:10,270
+that in a moment), but once you've kind of
+got started, you generally have to gradually
+
+425
+00:45:10,270 --> 00:45:12,619
+decrease the learning rate. And that's called
+learning rate annealing.
+
+426
+00:45:12,619 --> 00:45:18,360
+Question: Can you repeat what you said earlier
+that something does the same thing as AdaGrad?
+
+427
+00:45:18,360 --> 00:45:24,911
+Answer: RMSprop, which we're looking at now,
+does exactly the same thing as AdaGrad, which
+
+428
+00:45:24,911 --> 00:45:33,260
+is divide the learning rate by the root sum-of-squares
+of the gradients, but rather than doing it
+
+429
+00:45:33,260 --> 00:45:41,470
+since the beginning of time, or every mini-batch
+or every epoch, RMSprop does it continuously,
+
+430
+00:45:41,470 --> 00:45:46,360
+using the same technique that we learned from
+momentum, which is take the square of this
+
+431
+00:45:46,360 --> 00:45:55,000
+gradient, multiply it by .1 and add it to
+.9 times the last calculation.
+
+432
+00:45:55,000 --> 00:46:03,770
+Question: And that's called a moving average?
+Answer: It's a weighted moving average, where
+
+433
+00:46:03,770 --> 00:46:09,510
+we're weighting it such that the more recent
+squared gradients are weighted higher. I think
+
+434
+00:46:09,510 --> 00:46:15,320
+it's an exponentially weighted moving average,
+to be more precise.
+
+435
+00:46:15,320 --> 00:46:19,490
+So there's something pretty obvious we could
+do here, which is momentum seems like a good
+
+436
+00:46:19,490 --> 00:46:28,680
+idea. RMSprop seems like a good idea. Why
+not do both? And that is called Adam.
+
+437
+00:46:28,680 --> 00:46:35,300
+Adam was invented like last year, 18 months
+ago. Hopefully one of the things you see from
+
+438
+00:46:35,300 --> 00:46:42,390
+these spreadsheets is that these recently
+invented things are still at the ridiculously
+
+439
+00:46:42,390 --> 00:46:48,290
+simple end of the spectrum. The stuff that
+people are discovering in deep-learning are
+
+440
+00:46:48,290 --> 00:46:55,590
+a long way from being complex or sophisticated.
+Hopefully you'll find this encouraging - if
+
+441
+00:46:55,590 --> 00:47:02,010
+you want to play at the state-of-the-art of
+deep-learning, that's not at all hard to do.
+
+442
+00:47:02,010 --> 00:47:10,160
+Let's look at Adam. I remember it coming out
+12 or 18 months ago and everybody became very
+
+443
+00:47:10,160 --> 00:47:15,619
+excited because suddenly it became so much
+easier and faster to train neural nets. But
+
+444
+00:47:15,619 --> 00:47:20,340
+once I tried to create an Excel spreadsheet
+out of it, I realized that it's just RMSprop
+
+445
+00:47:20,340 --> 00:47:26,830
+plus momentum. So literally all I did was
+I copied my momentum page, and then I copied
+
+446
+00:47:26,830 --> 00:47:35,280
+across my RMSprop columns and combined them.
+So you can see here, I have my exponentially
+
+447
+00:47:35,280 --> 00:47:43,350
+weighted moving average of the gradients (that's
+what these two columns are), here is my exponetially
+
+448
+00:47:43,350 --> 00:47:49,170
+weighted moving average of the squares of
+the gradients, and so then when I calculate
+
+449
+00:47:49,170 --> 00:48:00,200
+my new parameters, I take my old parameter
+and I subtract, not my derivative times the
+
+450
+00:48:00,200 --> 00:48:06,410
+learning rate, but my momentum factor. So
+in other words, the recent weighted moving
+
+451
+00:48:06,410 --> 00:48:14,520
+average of the gradients, multiplied by the
+learning rate, divided by the recent moving
+
+452
+00:48:14,520 --> 00:48:20,080
+average of the root of the squares of the
+derivatives. So it's literally just combining
+
+453
+00:48:20,080 --> 00:48:26,640
+momentum plus RMSprop.
+
+454
+00:48:26,640 --> 00:48:33,320
+And so let's see how that goes. Let's run
+5 epochs, and we can use a pretty high learning
+
+455
+00:48:33,320 --> 00:48:39,930
+rate now because it's really handling a lot
+of stuff for us. After 5 epochs, we're almost
+
+456
+00:48:39,930 --> 00:48:46,190
+perfect. And after another 5 epochs, it does
+exactly the same thing that RMSprop does,
+
+457
+00:48:46,190 --> 00:48:50,690
+which is it goes too far and tries to come
+back. So we need to do the same thing when
+
+458
+00:48:50,690 --> 00:48:57,440
+we use Adam. And Adam's what I use all the
+time now. I just divide by 10 every time I
+
+459
+00:48:57,440 --> 00:49:00,830
+see it flatten out.
+
+460
+00:49:00,830 --> 00:49:09,820
+So, a week ago, somebody came out with something
+that they called not Adam, but Eve. And Eve
+
+461
+00:49:09,820 --> 00:49:19,330
+is an addition to Adam which attempts to deal
+with this learning rate annealing automatically.
+
+462
+00:49:19,330 --> 00:49:26,090
+And so all of this is exactly the same as
+my Adam page. But at the bottom, I've added
+
+463
+00:49:26,090 --> 00:49:34,690
+some extra stuff. I've kept track of the root-mean-squared
+error, this is just my loss function, and
+
+464
+00:49:34,690 --> 00:49:42,650
+then I copy across my loss function from my
+previous epoch and from the epoch before that.
+
+465
+00:49:42,650 --> 00:49:48,890
+And what Eve does is it says, how much has
+the loss function changed? And so, it's got
+
+466
+00:49:48,890 --> 00:49:55,990
+this ratio between the previous loss function
+and the loss function before that. So you
+
+467
+00:49:55,990 --> 00:50:00,760
+can see it's the absolute value of the last
+one, minus the one before divided by whichever
+
+468
+00:50:00,760 --> 00:50:09,430
+one is smaller. And what it says is, okay,
+let's then just adjust the learning rate so
+
+469
+00:50:09,430 --> 00:50:24,460
+that instead of just using the learning rate
+we're given, let's 
+
+470
+00:50:24,460 --> 00:50:30,250
+adjust the learning rate that we're given
+by taking the exponentially weighted moving
+
+471
+00:50:30,250 --> 00:50:43,840
+average of these ratios. So you can see this
+thing here is equal to our last ratio times
+
+472
+00:50:43,840 --> 00:50:48,220
+.9 plus our new ratio times .1.
+
+473
+00:50:48,220 --> 00:50:50,180
+[Time: 50 minute mark]
+
+474
+00:50:50,180 --> 00:51:04,710
+And so then for our learning rate, we divide
+the learning rate from Adam by this [cell-F38].
+
+475
+00:51:04,710 --> 00:51:12,080
+So what this says if the learning rate is
+moving around a lot, it's very bumpy, we should
+
+476
+00:51:12,080 --> 00:51:16,950
+probably decrease the learning rate because
+it's going all over the place. Remember how
+
+477
+00:51:16,950 --> 00:51:22,840
+we saw before if we've gone past where we
+want to get to, it just jumps up and down.
+
+478
+00:51:22,840 --> 00:51:27,940
+On the other hand, if the loss function is
+staying pretty constant, then we probably
+
+479
+00:51:27,940 --> 00:51:29,710
+want to increase the learning rate.
+
+480
+00:51:29,710 --> 00:51:43,400
+That all seems like a good idea, so again,
+let's try it. Not bad. After 5 epochs, it's
+
+481
+00:51:43,400 --> 00:51:48,430
+kind of gone a little too far. After a week
+of playing with it (I used this on State Farm
+
+482
+00:51:48,430 --> 00:51:52,301
+a lot during the week - I grabbed the Keras
+implementation that somebody wrote like a
+
+483
+00:51:52,301 --> 00:52:01,550
+day after the paper came out), the problem
+is that since it can both decrease and increase
+
+484
+00:52:01,550 --> 00:52:08,420
+the learning rate, sometimes as it gets down
+to the flat bottom point where it's pretty
+
+485
+00:52:08,420 --> 00:52:18,570
+much optimal, it may often be the case that
+the loss gets pretty constant at that point
+
+486
+00:52:18,570 --> 00:52:23,410
+and so therefore Eve will try to increase
+the learning rate. What I tend to find happens
+
+487
+00:52:23,410 --> 00:52:28,230
+is that you very quickly get close to the
+answer, then suddenly it will jump to somewhere
+
+488
+00:52:28,230 --> 00:52:31,600
+really awful. And then it will start to get
+the answer again and then jump to somewhere
+
+489
+00:52:31,600 --> 00:52:32,650
+really awful.
+
+490
+00:52:32,650 --> 00:52:42,510
+Question: Could there be an exit condition
+delta which would change the gradient, when
+
+491
+00:52:42,510 --> 00:52:47,200
+we hit a certain delta then we just stop.
+
+492
+00:52:47,200 --> 00:52:52,270
+Answer: We have not done any such thing, no.
+We have always said run for a specific number
+
+493
+00:52:52,270 --> 00:53:00,770
+of epochs. We have not defined any kind of
+stopping criteria. It is possible to define
+
+494
+00:53:00,770 --> 00:53:06,280
+such a stopping criterion, but nobody has
+come up with one that is remotely reliable.
+
+495
+00:53:06,280 --> 00:53:14,190
+And the reason why is that when you look at
+the graph of loss over time, it doesn't tend
+
+496
+00:53:14,190 --> 00:53:23,660
+to look like that, it tends to look like this,
+so in practice it is very hard to know when
+
+497
+00:53:23,660 --> 00:53:27,220
+to stop. It's kind of still a human judgement
+thing.
+
+498
+00:53:27,220 --> 00:53:29,450
+Question: Can't it also have lots of plateaus?
+
+499
+00:53:29,450 --> 00:53:33,720
+Answer: Oh, yes that's true. Particularly
+with an architecture called ResNet, which
+
+500
+00:53:33,720 --> 00:53:43,710
+we'll look at next week. The authors show
+that it tends to go like this. In practice,
+
+501
+00:53:43,710 --> 00:53:50,210
+you kind of have to run your training for
+as long as you have patience for at the best
+
+502
+00:53:50,210 --> 00:53:53,910
+learning rate you can come up with.
+
+503
+00:53:53,910 --> 00:54:02,390
+Something I came up with 6 or 12 months ago
+that kind of restimulated my interest after
+
+504
+00:54:02,390 --> 00:54:10,000
+this Adam paper is something which dynamically
+updates learning rates in such a way so that
+
+505
+00:54:10,000 --> 00:54:15,690
+they only go down. And rather than using the
+loss function (which I just said is incredibly
+
+506
+00:54:15,690 --> 00:54:24,300
+bumpy) there's something which is less bumpy,
+which is the average sum-of-square gradients.
+
+507
+00:54:24,300 --> 00:54:29,200
+So I actually created a spreadsheet of my
+idea and I hope to prototype it in Python
+
+508
+00:54:29,200 --> 00:54:36,310
+either this week or next week. And the idea
+is basically this -- keep track of the sum-of-squares
+
+509
+00:54:36,310 --> 00:54:44,660
+of the derivatives and compare the sum-of-squares
+of the derivatives from the last epoch to
+
+510
+00:54:44,660 --> 00:54:50,470
+the sum-of-squares of the derivatives of this
+epoch, and look at the ratio of the two. The
+
+511
+00:54:50,470 --> 00:54:57,200
+derivatives should keep going down. If they
+ever go up by too much, that would strongly
+
+512
+00:54:57,200 --> 00:55:03,050
+suggest that you jumped out of the good part
+of the function. And so any time they go up
+
+513
+00:55:03,050 --> 00:55:05,510
+too much, you should decrease the learning
+rate.
+
+514
+00:55:05,510 --> 00:55:07,240
+[Time: 55 minute mark]
+
+515
+00:55:07,240 --> 00:55:16,160
+So I literally added two lines of code to
+my simple VBA, Adam with Annealing (adam_ann).
+
+516
+00:55:16,160 --> 00:55:21,250
+If the gradient ratio is greater than two
+(so if it doubles), divide the learning rate
+
+517
+00:55:21,250 --> 00:55:39,381
+by 4. And here is what happens when I run
+that. 5 steps, another 5 steps, and you can
+
+518
+00:55:39,381 --> 00:55:47,440
+see it is automatically changing it. So I
+don't have to do anything, I just keep running.
+
+519
+00:55:47,440 --> 00:55:52,510
+So I'm pretty interested in this idea, I think
+it's going to work super-well. It allows me
+
+520
+00:55:52,510 --> 00:55:58,050
+to focus on just running stuff without ever
+worrying about setting learning rates. So
+
+521
+00:55:58,050 --> 00:56:02,740
+I'm hopeful that this approach to automatic
+learning rate annealing is something that
+
+522
+00:56:02,740 --> 00:56:06,860
+we can have in our toolbox by the end of this
+course.
+
+523
+00:56:06,860 --> 00:56:18,650
+Question: One thing that happened to me today
+was that I tried a lot of different learning
+
+524
+00:56:18,650 --> 00:56:26,490
+rates and I didn't get anywhere. But I was
+working with a whole dataset. If I try with
+
+525
+00:56:26,490 --> 00:56:40,710
+a sample and I find something, would that
+apply to the whole data set, or how would
+
+526
+00:56:40,710 --> 00:56:43,340
+I go about it?
+
+527
+00:56:43,340 --> 00:56:52,500
+Answer: Great question. The question was,
+it takes a long time to figure out the optimal
+
+528
+00:56:52,500 --> 00:56:57,590
+learning rate. Can we calculate it using just
+a sample?
+
+529
+00:56:57,590 --> 00:57:06,111
+To answer that question, I'm going to show
+you how I entered State Farm. And indeed,
+
+530
+00:57:06,111 --> 00:57:15,130
+when I started entering State Farm, I started
+by using a sample. So Step 1 was to think
+
+531
+00:57:15,130 --> 00:57:21,800
+what insights can we gain from using a sample
+which can still apply when we move to the
+
+532
+00:57:21,800 --> 00:57:27,890
+wole data set? Running stuff in a sample took
+10 or 20 seconds, running stuff on the full
+
+533
+00:57:27,890 --> 00:57:42,770
+data set took 2-10 minutes per epoch. So after
+I created my sample (created randomly), I
+
+534
+00:57:42,770 --> 00:57:47,320
+first of all wanted to find out what it would
+take to create a better than random model
+
+535
+00:57:47,320 --> 00:57:56,570
+here. So I always start with the simplest
+possible model, and so the simplest possible
+
+536
+00:57:56,570 --> 00:58:02,080
+model has a single dense layer.
+
+537
+00:58:02,080 --> 00:58:06,460
+Now here's a handy trick. Rather than worry
+about calculating the average and standard
+
+538
+00:58:06,460 --> 00:58:12,160
+deviation of the input and subtracting it
+all out in order to normalize your input layer,
+
+539
+00:58:12,160 --> 00:58:16,970
+you can just start with a batchnorm layer.
+If you start with a batchnorm layer, it's
+
+540
+00:58:16,970 --> 00:58:22,140
+going to do that for you. So anytime you create
+a Keras model from scratch, I would recommend
+
+541
+00:58:22,140 --> 00:58:27,960
+making your first layer a batchnorm layer.
+And so this is going to normalize the data
+
+542
+00:58:27,960 --> 00:58:32,290
+for me. That's a cool little trick which I
+haven't actually seen anybody use elsewhere.
+
+543
+00:58:32,290 --> 00:58:37,330
+And I think it's a good default starting point
+all the time.
+
+544
+00:58:37,330 --> 00:58:44,450
+If I'm going to use a dense layer, then I
+have to flatten everything into a single vector
+
+545
+00:58:44,450 --> 00:58:59,770
+first. So this is really a most minimal model.
+I tried fitting it, compiled it, fit it -- and
+
+546
+00:58:59,770 --> 00:59:04,910
+nothing happened. Not only did nothing happen
+to my validation, but nothing happened to
+
+547
+00:59:04,910 --> 00:59:12,750
+my training. It's only taking 7 seconds per
+epoch to find this out, so that's okay.
+
+548
+00:59:12,750 --> 00:59:18,640
+So what's going on? I look at model.summary
+and I see that there's 1.5 million parameters
+
+549
+00:59:18,640 --> 00:59:23,720
+and that makes me think it's probably not
+underfitting. It's unlikely with 1.5 million
+
+550
+00:59:23,720 --> 00:59:29,770
+parameters that there's really nothing useful
+whatsoever. It is a linear model, but I still
+
+551
+00:59:29,770 --> 00:59:33,620
+think it should be able to do something. So
+that makes me think that what must be going
+
+552
+00:59:33,620 --> 00:59:40,360
+on is it must be doing that thing where it
+jumps too far. And it's particularly easy
+
+553
+00:59:40,360 --> 00:59:44,170
+to jump too far at the very start of training.
+
+554
+00:59:44,170 --> 00:59:45,470
+[Time: 1 hour mark]
+
+555
+00:59:45,470 --> 00:59:57,710
+Let me explain why. It turns out that there
+are often reasonably good answers that are
+
+556
+00:59:57,710 --> 01:00:06,590
+way too easy to find. So one reasonably good
+answer would be to always predict zero. Because
+
+557
+01:00:06,590 --> 01:00:14,109
+there are 10 output classes in the State Farm
+competion (there's 10 different types of distracted
+
+558
+01:00:14,109 --> 01:00:22,240
+driving), and you are scored based on the
+cross-entropy loss and what that's looking
+
+559
+01:00:22,240 --> 01:00:26,000
+at is how accurate are each of your 10 predictions?
+
+560
+01:00:26,000 --> 01:00:32,480
+So rather than trying to predict something
+well, what if we always just predict 0, or
+
+561
+01:00:32,480 --> 01:00:39,040
+0.01. Nine times out of ten you're going to
+be right because 9 out of the 10 categories
+
+562
+01:00:39,040 --> 01:00:43,190
+it is not that, it's only 1 of the 10 categories.
+
+563
+01:00:43,190 --> 01:00:49,590
+So always predicting .01 would be pretty good.
+Turns out it's not possible to do that because
+
+564
+01:00:49,590 --> 01:00:59,720
+we have a SoftMax layer (and a SoftMax layer
+is e^x.i/sumOf(e^x.i) ), so in a SoftMax layer
+
+565
+01:00:59,720 --> 01:01:07,030
+everything has to add to 1. So therefore it
+it makes one of the classes really high and
+
+566
+01:01:07,030 --> 01:01:13,370
+all of the other ones really low, then 9 times
+out of 10 it is going to be right 9 times
+
+567
+01:01:13,370 --> 01:01:21,291
+out of 10. So in other words, it is a pretty
+good answer for it to always predict one random
+
+568
+01:01:21,291 --> 01:01:30,150
+class (class 8) close to 100% certainty. And
+that's what happened -- I saw a lot of people
+
+569
+01:01:30,150 --> 01:01:35,950
+this week on the forums saying, "I tried to
+train it and nothing happened." The folks
+
+570
+01:01:35,950 --> 01:01:41,820
+who got the interesting insight were those
+who went on to say "Then I looked at my predictions,
+
+571
+01:01:41,820 --> 01:01:51,160
+and it kept predicting the same class with
+great confidence again and again and again."
+
+572
+01:01:51,160 --> 01:02:05,780
+Our next step then is to try decreasing the
+learning rate. Here is exactly the same model,
+
+573
+01:02:05,780 --> 01:02:17,020
+but I'm now using a much lower learning rate,
+and when I run that it's actually moving.
+
+574
+01:02:17,020 --> 01:02:22,960
+Took only 12 seconds of compute time to figure
+out that I'm going to have to start with a
+
+575
+01:02:22,960 --> 01:02:24,640
+low learning rate.
+
+576
+01:02:24,640 --> 01:02:32,839
+Once we've got to a point where the accuracy
+is reasonably better than random, we're well
+
+577
+01:02:32,839 --> 01:02:38,260
+away from the part of the loss function that
+says always predict everything as the same
+
+578
+01:02:38,260 --> 01:02:43,490
+class, and therefore we can now increase the
+learning rate back up again.
+
+579
+01:02:43,490 --> 01:02:47,330
+Generally speaking for these harder problems,
+we need to start (for an epoch or two) at
+
+580
+01:02:47,330 --> 01:02:53,762
+a generally low learning rate and then you
+can increase it back up again. So now you
+
+581
+01:02:53,762 --> 01:03:00,880
+can see I can put it back up and very quickly
+increasing my accuracy.
+
+582
+01:03:00,880 --> 01:03:07,951
+So you can see here my accuracy on my validation
+set is .5 using a linear model. And this is
+
+583
+01:03:07,951 --> 01:03:13,230
+a good starting point because this says to
+me any time that my validation accuracy is
+
+584
+01:03:13,230 --> 01:03:18,710
+worse than about .5, this is no better than
+a linear model, so it is not work spending
+
+585
+01:03:18,710 --> 01:03:21,300
+any more time on.
+
+586
+01:03:21,300 --> 01:03:26,400
+One obvious question would be how do you decide
+how big of a sample to use? And what I did
+
+587
+01:03:26,400 --> 01:03:34,060
+was I tried a few different sizes of samples
+in my validation set and I then said, evaluate
+
+588
+01:03:34,060 --> 01:03:40,790
+the model with calculated loss function on
+the validation set, but do it with a whole
+
+589
+01:03:40,790 --> 01:03:47,790
+bunch of randomly sampled batches, do it 10
+times. And then I looked and I saw how the
+
+590
+01:03:47,790 --> 01:03:55,860
+accuracy changed. So with the validation set
+set at 1000 images, my accuracy changed from
+
+591
+01:03:55,860 --> 01:04:02,910
+.48 to .47 to .51. So it's not changing too
+much. It's small enough so that I think I
+
+592
+01:04:02,910 --> 01:04:09,970
+can make valid insights using a sample size
+of this size.
+
+593
+01:04:09,970 --> 01:04:20,930
+So what else can we learn from a sample? One
+thing would be, are there any other architectures
+
+594
+01:04:20,930 --> 01:04:25,660
+that work well? So the obvious thing to do
+with a computer vision problem is to try a
+
+595
+01:04:25,660 --> 01:04:28,030
+convolutional neural network.
+
+596
+01:04:28,030 --> 01:04:33,790
+Here's one of the most simple convolutional
+neural networks -- 2 Convolutional layers,
+
+597
+01:04:33,790 --> 01:04:43,480
+each with a MaxPooling layer and one Dense
+layer, followed by my Dense output layer.
+
+598
+01:04:43,480 --> 01:04:52,260
+So I tried that and found that very quickly
+it got to an accuracy of 100% on the training
+
+599
+01:04:52,260 --> 01:04:58,320
+set, but only 24% on the validation set. And
+that's because I was very careful to make
+
+600
+01:04:58,320 --> 01:05:04,180
+sure that my validation set included different
+drivers from my training set because on Kaggle
+
+601
+01:05:04,180 --> 01:05:09,780
+it told us that the test set has different
+drivers. It is much harder to recognize what
+
+602
+01:05:09,780 --> 01:05:12,420
+a driver is doing if we've never seen that
+driver before.
+
+603
+01:05:12,420 --> 01:05:13,420
+[Time: 1.05 hour mark]
+
+604
+01:05:13,420 --> 01:05:19,630
+So I can see that Convolutional Neural Networks
+clearly are a great way to model this kind
+
+605
+01:05:19,630 --> 01:05:24,060
+of data, but I'm going to have to think very
+carefully about over-fitting.
+
+606
+01:05:24,060 --> 01:05:36,060
+So Step 1 to avoid over-fitting is data augmentation.
+So here's the exact same model, and I tried
+
+607
+01:05:36,060 --> 01:05:42,540
+every type of data augmentation. I tried shifting
+it left and right a bit, I tried shifting
+
+608
+01:05:42,540 --> 01:05:51,730
+it up and down a bit, I tried shearing it
+a bit, I tried rotating it a bit, I tried
+
+609
+01:05:51,730 --> 01:05:58,109
+shifting the channels of the colors a bit,
+and for each of those I tried 4 different
+
+610
+01:05:58,109 --> 01:06:06,401
+levels. I found in each case what was the
+best and I combined them together. So here
+
+611
+01:06:06,401 --> 01:06:10,170
+are my best data augmentation amounts.
+
+612
+01:06:10,170 --> 01:06:18,190
+So on 15,060 images (a very small set, it
+was just my sample), I then ran my very simple
+
+613
+01:06:18,190 --> 01:06:25,570
+two convolutional layer model with the data
+augmentation with the optimized parameters,
+
+614
+01:06:25,570 --> 01:06:31,250
+and it didn't look very good. After 5 epochs,
+I only have .1 accuracy on my validation set.
+
+615
+01:06:31,250 --> 01:06:38,120
+But I can see that my training set is continuing
+to improve, so that makes me think don't give
+
+616
+01:06:38,120 --> 01:06:44,190
+up yet, try decreasing the learning rate and
+do a few more. Lo and behold, it started improving.
+
+617
+01:06:44,190 --> 01:06:49,670
+This is where you've got to be careful not
+to jump to conclusions too soon. So I ran
+
+618
+01:06:49,670 --> 01:06:55,200
+a few more and it's improving well, so I ran
+a few more, another 25.
+
+619
+01:06:55,200 --> 01:07:07,710
+Look at what happened -- it kept getting better
+and better and better, until we were getting
+
+620
+01:07:07,710 --> 01:07:19,620
+67% accuracy. So this 1.15 validation loss
+is well within the top 50% in this competition.
+
+621
+01:07:19,620 --> 01:07:25,609
+So using an incredibly simple model on just
+a sample, we can get in the top half of a
+
+622
+01:07:25,609 --> 01:07:30,400
+Kaggle competition simply by using the right
+kind of data augmentation.
+
+623
+01:07:30,400 --> 01:07:38,430
+So I think this is a very interesting insight
+about the power of this incredibly tool.
+
+624
+01:07:38,430 --> 01:07:51,320
+Question: With 10 classes, would a class imbalance
+affect it?
+
+625
+01:07:51,320 --> 01:07:58,370
+Answer: It is unlikely that there's going
+to be a class imbalance in my sample unless
+
+626
+01:07:58,370 --> 01:08:04,270
+there was an equivalent class imbalance in
+the real data because I've got 1000 samples,
+
+627
+01:08:04,270 --> 01:08:09,599
+so just statistically speaking that's unlikely.
+If there's a class imbalance in my original
+
+628
+01:08:09,599 --> 01:08:17,620
+data then I want my sample to have that class
+imbalance too.
+
+629
+01:08:17,620 --> 01:08:24,779
+At this point, I felt pretty good that I knew
+we should be using a convolutional neural
+
+630
+01:08:24,779 --> 01:08:30,799
+network, which is a obviously a very strong
+hypothesis to start with anyway, and also
+
+631
+01:08:30,799 --> 01:08:38,250
+pretty confident we knew what kind of learning
+rate to start with, and how to change it,
+
+632
+01:08:38,250 --> 01:08:44,309
+and also what kind of data augmentation we
+needed to do.
+
+633
+01:08:44,309 --> 01:08:49,639
+The next thing I wanted to wonder about was
+how else do I handle over-fitting, because
+
+634
+01:08:49,639 --> 01:08:57,599
+although I'm getting pretty good results,
+I'm still overfitting hugely - .6 vs .9.
+
+635
+01:08:57,599 --> 01:09:03,569
+So the next thing on our list to avoid over-fitting,
+and I hope you guys all remember that we had
+
+636
+01:09:03,569 --> 01:09:14,049
+that list in Lesson 3, the 5 steps. Let's
+go take a look at it now to remind ourselves.
+
+637
+01:09:14,049 --> 01:09:20,209
+Approaches to reducing overfitting, these
+are the 5 steps. Can't add more data, we've
+
+638
+01:09:20,209 --> 01:09:26,259
+tried using data augmentation, we're already
+using batchnorm and conv nets, so the next
+
+639
+01:09:26,259 --> 01:09:36,779
+step is to add regularization and drop out
+is the favored regularization technique.
+
+640
+01:09:36,779 --> 01:09:42,279
+Before we do that, I'd like to mention one
+more thing about this data augmentation approach.
+
+641
+01:09:42,279 --> 01:09:51,029
+I have literally never seen anyone write down
+a process as to how to figure out what kind
+
+642
+01:09:51,029 --> 01:09:57,380
+of data augmentation to use and the amount.
+The only posts I've seen on it always rely
+
+643
+01:09:57,380 --> 01:10:02,650
+on intuition, which is basically like look
+at the images and think about how much they
+
+644
+01:10:02,650 --> 01:10:05,070
+should be able to move around or rotate.
+
+645
+01:10:05,070 --> 01:10:06,280
+[Time: 1.10 hour mark]
+
+646
+01:10:06,280 --> 01:10:12,110
+I really tried this week to come up with a
+rigorous repeatable process that you could
+
+647
+01:10:12,110 --> 01:10:21,469
+use and that process is go to each data augmentation
+type one at a time, try three or four levels
+
+648
+01:10:21,469 --> 01:10:29,469
+of it on a sample with a big enough validation
+set that it's pretty stable to find the best
+
+649
+01:10:29,469 --> 01:10:40,530
+value of each of the data augmentation parameters
+and then try combining them altogether.
+
+650
+01:10:40,530 --> 01:10:50,440
+So I hope you can come away with this as a
+practical message, which probably your colleagues,
+
+651
+01:10:50,440 --> 01:10:54,829
+even if some of them claim to be deep-learning
+experts, I doubt that they're doing this.
+
+652
+01:10:54,829 --> 01:10:59,760
+So this is something that you can hopefully
+get people into the practice of doing.
+
+653
+01:10:59,760 --> 01:11:08,659
+Regularization, however, we cannot do on a
+sample. And the reason why is that Step 1
+
+654
+01:11:08,659 --> 01:11:17,929
+(Add more data) that step is very correlated
+with add regularization. As we add more data,
+
+655
+01:11:17,929 --> 01:11:24,119
+we need less regularization. So as we move
+from a sample to the full dataset, we're going
+
+656
+01:11:24,119 --> 01:11:25,989
+to need less regularization.
+
+657
+01:11:25,989 --> 01:11:30,440
+So to figure out how much regularization to
+use, we have to use the whole data set. So
+
+658
+01:11:30,440 --> 01:11:38,400
+at this point, I changed it to use the whole
+dataset, not the sample and I started using
+
+659
+01:11:38,400 --> 01:11:45,330
+dropout. So you can see that I started with
+my data augmentation amounts that you've already
+
+660
+01:11:45,330 --> 01:11:52,099
+seen and I started adding in some dropout,
+and ran it for a few epochs to see what would
+
+661
+01:11:52,099 --> 01:12:00,199
+happen, and you can see it's worked pretty
+well. So we're getting up into the 75% now,
+
+662
+01:12:00,199 --> 01:12:02,219
+and before we were in the 64%.
+
+663
+01:12:02,219 --> 01:12:10,849
+We haven't added clipping, which is very important
+for getting the best cross-entropy loss function.
+
+664
+01:12:10,849 --> 01:12:16,610
+I haven't checked where that would get us
+on the Kaggle leaderboard, but I'm pretty
+
+665
+01:12:16,610 --> 01:12:26,429
+sure that it would be in at least the top
+third, based on this accuracy.
+
+666
+01:12:26,429 --> 01:12:36,239
+I ran a few more epochs with an even lower
+learning rate and got .78% and .79%. So this
+
+667
+01:12:36,239 --> 01:12:42,070
+is going to be well up into the top third,
+maybe even the top quarter of the leaderboard.
+
+668
+01:12:42,070 --> 01:12:49,389
+So I got to this point by just trying out
+a couple of different levels of dropout, and
+
+669
+01:12:49,389 --> 01:12:51,370
+I just put them in my dense layers.
+
+670
+01:12:51,370 --> 01:12:58,030
+There's no rule of thumb here. A lot of people
+put small amounts of drop out in their convolutional
+
+671
+01:12:58,030 --> 01:12:59,030
+layers as well.
+
+672
+01:12:59,030 --> 01:13:08,100
+All I can say is to try these. What VGG does
+is to put 50% dropout after each of its dense
+
+673
+01:13:08,100 --> 01:13:11,780
+layers, and that doesn't seem like a bad rule
+of thumb - so that's what I was doing here
+
+674
+01:13:11,780 --> 01:13:16,679
+-- and then trying out a few different sizes
+of dense layers to try and find something
+
+675
+01:13:16,679 --> 01:13:20,979
+reasonable. I didn't spend a heap of time
+on this, so there's probably better architectures,
+
+676
+01:13:20,979 --> 01:13:26,059
+but so as you can see this is still a pretty
+good one. So that was my Step 2.
+
+677
+01:13:26,059 --> 01:13:37,019
+Now so far we have not used a pre-trained
+network at all. So this is getting into the
+
+678
+01:13:37,019 --> 01:13:42,469
+top third of the leaderboard without even
+using any ImageNet features, so that's pretty
+
+679
+01:13:42,469 --> 01:13:43,469
+damn cool.
+
+680
+01:13:43,469 --> 01:13:48,409
+But we're pretty sure that ImageNet features
+would be helpful. So that is the next step
+
+681
+01:13:48,409 --> 01:13:56,400
+- to use ImageNet features or VGG features.
+Specifically I was reasonably confident tha
+
+682
+01:13:56,400 --> 01:14:01,869
+all of the convolutional layers of VGG are
+probably pretty much good enough. I didn't
+
+683
+01:14:01,869 --> 01:14:06,150
+expect that I would have to fine-tune them
+much, if at all, because the convolutional
+
+684
+01:14:06,150 --> 01:14:11,199
+layers are the thing which really look at
+the shape and the structure of things, rather
+
+685
+01:14:11,199 --> 01:14:17,030
+than how things fit together, and these are
+photos of the real world, just like ImageNet
+
+686
+01:14:17,030 --> 01:14:18,630
+is photos of the real world.
+
+687
+01:14:18,630 --> 01:14:23,510
+So I really felt like most of the time, if
+not all of it, was likely to be spent on the
+
+688
+01:14:23,510 --> 01:14:29,300
+dense layers. So therefore because calculating
+convolutional layers takes nearly all of the
+
+689
+01:14:29,300 --> 01:14:35,929
+time because that's where all the computation
+is, I pre-computed the output of the convolutional
+
+690
+01:14:35,929 --> 01:14:36,929
+layers.
+
+691
+01:14:36,929 --> 01:14:37,929
+[Time: 1.15 hour mark]
+
+692
+01:14:37,929 --> 01:14:50,900
+And we've done this before, you might remember
+when we looked at droput, we did exactly this.
+
+693
+01:14:50,900 --> 01:14:57,730
+We figured out what was the last convolutional
+layer's ID, we grabbed all of the layers up
+
+694
+01:14:57,730 --> 01:15:04,980
+to that ID, we built a model out of them,
+and then we calculated the output of that
+
+695
+01:15:04,980 --> 01:15:12,130
+model. And that told us the values from those
+features, those activations, from VGG's last
+
+696
+01:15:12,130 --> 01:15:16,390
+convolutional layer. So I did exactly the
+same thing. I basically copied and pasted
+
+697
+01:15:16,390 --> 01:15:23,440
+that code. So I said, okay grab VGG16, find
+the last convolutional layer, build a model
+
+698
+01:15:23,440 --> 01:15:34,390
+that contains everything up to and including
+that layer, predict the output of that model.
+
+699
+01:15:34,390 --> 01:15:38,309
+So predicting the output of that model (that
+means calculate the activations of that last
+
+700
+01:15:38,309 --> 01:15:46,469
+convulational layer) and since that takes
+some time, then save that so I don't have
+
+701
+01:15:46,469 --> 01:15:59,030
+to do it again. So then in the future, I can
+just load that array 
+
+702
+01:15:59,030 --> 01:16:08,650
+I'm not going to calculate those, I'm simply
+going to load them.
+
+703
+01:16:08,650 --> 01:16:15,400
+Think about what you would expect the shape
+of this to be? And you could figure out what
+
+704
+01:16:15,400 --> 01:16:25,969
+you expect the shape to be by looking at model.summary
+and finding the last convolutional layer.
+
+705
+01:16:25,969 --> 01:16:39,980
+We can see it is 512 filters by 14 by 14.
+So let's have a look. And running conv_val_feat.shape
+
+706
+01:16:39,980 --> 01:16:52,349
+returns 512 by 14 by 14, as expected.
+
+707
+01:16:52,349 --> 01:16:59,639
+Question: Is there a reason why you chose
+to leave out the MaxPooling and Flatten layers?
+
+708
+01:16:59,639 --> 01:17:06,119
+Answer: Why did I leave out the MaxPooling
+and Flatten layers? Basically because it takes
+
+709
+01:17:06,119 --> 01:17:15,639
+zero time to calculate them and the MaxPooling
+layer loses information. Given that I might
+
+710
+01:17:15,639 --> 01:17:23,239
+want to play around with other types of pooling
+or other types of convolutions, I felt pre-calculating
+
+711
+01:17:23,239 --> 01:17:29,360
+this layer is the last one that takes a lot
+of computation time. Having said that, the
+
+712
+01:17:29,360 --> 01:17:40,979
+first thing that I did with it in my new model
+was to MaxPool it and flatten it.
+
+713
+01:17:40,979 --> 01:17:48,510
+Now that I have the output of VGG for the
+last conv layer, I can now build a model that
+
+714
+01:17:48,510 --> 01:17:53,690
+has dense layers on top of that. And so the
+input to the model will be the output of those
+
+715
+01:17:53,690 --> 01:17:56,860
+conv layers. And the nice thing is that it
+won't take much time to run this, even on
+
+716
+01:17:56,860 --> 01:18:01,600
+the whole dataset, because the dense layers
+don't take much computation time.
+
+717
+01:18:01,600 --> 01:18:11,239
+So here's my model. By making p a parameter,
+I can try a wide range of dropout amounts.
+
+718
+01:18:11,239 --> 01:18:18,440
+I fit it, and one epoch takes 5 seconds on
+the entire dataset, so this is a super good
+
+719
+01:18:18,440 --> 01:18:35,289
+way to play around. As you can see, one epoch
+gets me .65, three epochs gets me .75.
+
+720
+01:18:35,289 --> 01:18:40,011
+So this is pretty cool. I have something that
+in 15 seconds can get me .75 accuracy. And
+
+721
+01:18:40,011 --> 01:18:47,180
+notice here, I'm not using any data augmentation.
+Why aren't not using data augmentation? Because
+
+722
+01:18:47,180 --> 01:18:52,489
+you cannot pre-compute the output of convolutional
+layers if you're using data augmentation.
+
+723
+01:18:52,489 --> 01:19:01,949
+With data augmentation, your convolutional
+layers give you a different output every time.
+
+724
+01:19:01,949 --> 01:19:12,900
+You can't use data augmentation if you are
+pre-computing the output of a layer because
+
+725
+01:19:12,900 --> 01:19:20,469
+every time it sees the same cat photo it is
+rotating it by a different amount, or shearing
+
+726
+01:19:20,469 --> 01:19:23,159
+it by a different amount, or moving it by
+a different amount. So it gives a different
+
+727
+01:19:23,159 --> 01:19:28,249
+output of the convolutional layer, so you
+can't pre-compute it.
+
+728
+01:19:28,249 --> 01:19:35,739
+There is something you can do (which I played
+with a little bit) which is that you could
+
+729
+01:19:35,739 --> 01:19:43,809
+pre-compute something that's like 10x bigger
+than your dataset, consisting of 10 different
+
+730
+01:19:43,809 --> 01:19:46,909
+data-augmented versions of it.
+
+731
+01:19:46,909 --> 01:19:53,449
+[Time: 1.20 hour mark]
+
+732
+01:19:53,449 --> 01:19:57,570
+Which is what I was actually doing here when
+I brought in this data generator with augmentations,
+
+733
+01:19:57,570 --> 01:20:04,929
+and I created something called data augmented
+convolutional features, which I calculated
+
+734
+01:20:04,929 --> 01:20:14,280
+5 times the amount of data. And so that basically
+gave me a dataset 5 times bigger, and that
+
+735
+01:20:14,280 --> 01:20:19,360
+actually worked pretty well. It's not as good
+as having a whole new sample every time, but
+
+736
+01:20:19,360 --> 01:20:22,249
+it's kind of a compromise.
+
+737
+01:20:22,249 --> 01:20:34,119
+So once I played around with these dense layers
+and did some more fine tuning. I then tried
+
+738
+01:20:34,119 --> 01:20:42,239
+going through all of the layers in my model
+from 16 onwards and set them to trainable
+
+739
+01:20:42,239 --> 01:20:48,309
+and see what happens. So I tried fine-tuning
+some of the convolutional layers as well.
+
+740
+01:20:48,309 --> 01:20:54,479
+It basically didn't help. So I eperimented
+with my hypothesis and found it was correct,
+
+741
+01:20:54,479 --> 01:21:01,449
+which is for this particular model, coming
+up with the right set of dense layers is what
+
+742
+01:21:01,449 --> 01:21:03,619
+it's all about.
+
+743
+01:21:03,619 --> 01:21:09,650
+Question: If we want rotational invariance,
+should we keep the MaxPooling or can another
+
+744
+01:21:09,650 --> 01:21:13,739
+layer do it as well.
+
+745
+01:21:13,739 --> 01:21:19,599
+Answer: MaxPooling doesn't really have anything
+to do with rotational invariance. MaxPooling
+
+746
+01:21:19,599 --> 01:21:27,340
+does translation invariance.
+
+747
+01:21:27,340 --> 01:21:31,269
+So I'm going to show you one more cool trick.
+I'm going to show you a little bit of State
+
+748
+01:21:31,269 --> 01:21:36,429
+Farm every week from now on because there's
+so many cool things to try. And I want to
+
+749
+01:21:36,429 --> 01:21:42,550
+keep reviewing CNNs because Convolutional
+Neural Networks are becoming what deep learning
+
+750
+01:21:42,550 --> 01:21:43,550
+is all about.
+
+751
+01:21:43,550 --> 01:21:48,590
+I'm going to show you a really cool trick.
+The one cool trick is actually two tricks,
+
+752
+01:21:48,590 --> 01:21:59,929
+called Pseudo Labeling and Knowledge Distillation.
+So if you google for "pseudo labeling semi
+
+753
+01:21:59,929 --> 01:22:13,159
+supervised learning" you can see the original
+paper (from 2013), and then "knowledge distillation",
+
+754
+01:22:13,159 --> 01:22:19,330
+this is a Geoffrey Hinton paper "Distilling
+the Knowledge in a Neural Network" from 2015.
+
+755
+01:22:19,330 --> 01:22:32,610
+There's a couple of realy cool techniques,
+we're going to combine them together ... and
+
+756
+01:22:32,610 --> 01:22:34,699
+they're kind of crazy.
+
+757
+01:22:34,699 --> 01:22:40,050
+What we are going to do is we are going to
+use the test set to give us more information.
+
+758
+01:22:40,050 --> 01:22:48,099
+In State Farm, the test set has 80,000 images
+in it, and the training set has 20,000 images
+
+759
+01:22:48,099 --> 01:23:01,829
+in it. So what could we do with those 80,000
+images which we don't have labels for? It
+
+760
+01:23:01,829 --> 01:23:05,760
+seems a shame to waste them. It seems like
+we ought to be able to do something with them.
+
+761
+01:23:05,760 --> 01:23:12,199
+There's a great little picture here ... imagine
+we only had two points, and we knew their
+
+762
+01:23:12,199 --> 01:23:18,309
+labels, White and Black. And then somebody
+asked how would you label this? And then they
+
+763
+01:23:18,309 --> 01:23:26,050
+told you that there's a whole lot of other
+unlabeled data. Notice this is all grey -- it
+
+764
+01:23:26,050 --> 01:23:34,709
+is unlabeled. But it has helped us, it's helped
+us because it's told us how the data is structured.
+
+765
+01:23:34,709 --> 01:23:39,039
+This is what semi-supervised learning is all
+about, it's about using the unlabeled data
+
+766
+01:23:39,039 --> 01:23:44,290
+to try and understand something about the
+structure of it, and use that to help you,
+
+767
+01:23:44,290 --> 01:23:52,389
+just like in this picture. Pseudo-labeling
+and knowledge distillation are a way to do
+
+768
+01:23:52,389 --> 01:23:57,440
+this. I'm not going to do it on the test set,
+I'm going to do it on the validation set because
+
+769
+01:23:57,440 --> 01:24:05,010
+it's a little bit easier to see the impact
+of it; maybe next week we'll look at on the
+
+770
+01:24:05,010 --> 01:24:06,800
+test set.
+
+771
+01:24:06,800 --> 01:24:12,380
+It's this simple. What we do is we take out
+our model, some model we'e already built and
+
+772
+01:24:12,380 --> 01:24:18,389
+we predict the outputs from that model for
+our unlabeled set (in this case I'm using
+
+773
+01:24:18,389 --> 01:24:24,769
+the validation set) as if it were unlabed
+- I'm ignoring labels. Those things we call
+
+774
+01:24:24,769 --> 01:24:26,539
+the pseudo-labels.
+
+775
+01:24:26,539 --> 01:24:31,610
+Now that we have predictions for the test
+set or the validation set, it's not that they're
+
+776
+01:24:31,610 --> 01:24:37,489
+true, but we can pretend they're true. We
+can say they're some labels -- they're not
+
+777
+01:24:37,489 --> 01:24:43,969
+correct labels, but they're labels nonetheless.
+So what we then do is take our training labels
+
+778
+01:24:43,969 --> 01:24:50,510
+and we concatenate them with our validation
+or test set pseudo labels. And so we now have
+
+779
+01:24:50,510 --> 01:24:52,780
+a bunch of labels for all of our data.
+
+780
+01:24:52,780 --> 01:24:53,909
+[Time: 1.25 hour mark]
+
+781
+01:24:53,909 --> 01:25:00,079
+And so we can now concatenate our convolutional
+features with the convolutional features of
+
+782
+01:25:00,079 --> 01:25:10,010
+the test set or validation set, and we now
+use these to train a model. So the model we
+
+783
+01:25:10,010 --> 01:25:16,639
+use is exactly the same model we had before
+and we train it in exactly the same way as
+
+784
+01:25:16,639 --> 01:25:28,039
+before, and our loss goes up from .75 to .82,
+so our error has dropped by 25%. And the reason
+
+785
+01:25:28,039 --> 01:25:35,619
+why is just because we used this additional
+unlabeled data to try to figure out the structure
+
+786
+01:25:35,619 --> 01:25:37,820
+of it.
+
+787
+01:25:37,820 --> 01:25:43,590
+Question: How do learn how to design a model
+and when to stop messing with them. It seems
+
+788
+01:25:43,590 --> 01:25:48,340
+like you've take a few initial ideas, tweaked
+them to get higher accuracy, but unless your
+
+789
+01:25:48,340 --> 01:25:53,459
+initial guesses are amazing there should be
+plenty of architectures that would also work.
+
+790
+01:25:53,459 --> 01:25:59,300
+Answer: If and when you figure out how to
+find an architecture and stop messing with
+
+791
+01:25:59,300 --> 01:26:08,019
+it, please tell me. We all want to know this.
+
+792
+01:26:08,019 --> 01:26:15,449
+I look back at these models I'm showing you
+and I'm thinking I bet there's something twice
+
+793
+01:26:15,449 --> 01:26:24,159
+as good, I don't know what it is. There are
+all kinds of ways of optimizing other hyperparameters
+
+794
+01:26:24,159 --> 01:26:27,369
+of deep-learning.
+
+795
+01:26:27,369 --> 01:26:36,420
+For example, there's somethign called Spearmint,
+which is a Bayesian optimization hyperparameter
+
+796
+01:26:36,420 --> 01:26:43,900
+tuning. In fact, just last week a paper came
+out on hyperparameter tuning. This is all
+
+797
+01:26:43,900 --> 01:27:00,670
+about tuning things like the learning rate
+and stuff like that.
+
+798
+01:27:00,670 --> 01:27:06,010
+There are some people who have tried to come
+up with more general architectures, and we're
+
+799
+01:27:06,010 --> 01:27:14,789
+going to look at one next week called ResNet,
+which seem to be pretty encouraging in that
+
+800
+01:27:14,789 --> 01:27:18,760
+direction.
+
+801
+01:27:18,760 --> 01:27:23,829
+ResNet (which we're going to look at next
+week) is the architecture which won ImageNet
+
+802
+01:27:23,829 --> 01:27:35,360
+in 2015, and the author of ResNet, Kaiming
+He, super smart guy, said the reason ResNet
+
+803
+01:27:35,360 --> 01:27:41,329
+is so good is that it lets us build very very
+deep networks. He showed a network with over
+
+804
+01:27:41,329 --> 01:27:47,730
+1000 layers, and it was totally state of the
+art. Somebody else came along a few months
+
+805
+01:27:47,730 --> 01:27:57,869
+ago and built wide resnets with like 50 layers
+and easily beat Kaiming He's results.
+
+806
+01:27:57,869 --> 01:28:06,239
+The very author of the ImageNet winner completly
+got wrong why his invention was good. The
+
+807
+01:28:06,239 --> 01:28:13,489
+idea that any of us have any idea how to create
+optimal architectures is totally wrong. That's
+
+808
+01:28:13,489 --> 01:28:19,059
+why I'm trying to show you what we know so
+far -- the processes you can use to build
+
+809
+01:28:19,059 --> 01:28:21,409
+them without waiting forever.
+
+810
+01:28:21,409 --> 01:28:27,030
+In this case, doing your data augmentation
+on a small sample in a rigorous way. Figuring
+
+811
+01:28:27,030 --> 01:28:32,510
+out that the dense layers are where the action
+is at and precomputing the input to them.
+
+812
+01:28:32,510 --> 01:28:39,030
+These are the kind of things that can keep
+you sane. I'm showing you the outcome of my
+
+813
+01:28:39,030 --> 01:28:44,380
+last week's playing with this. I can tell
+you that during this time I continually fell
+
+814
+01:28:44,380 --> 01:28:53,340
+into the trap of running stuff on the whole
+network and playing around with hyperparameters.
+
+815
+01:28:53,340 --> 01:28:57,030
+I had to stop myself and have a cup of tea
+and ask myself is this really a good idea,
+
+816
+01:28:57,030 --> 01:29:02,539
+is this really a good use of my time. So we
+all do it. But not you anymore because you've
+
+817
+01:29:02,539 --> 01:29:06,689
+been to this class.
+
+818
+01:29:06,689 --> 01:29:14,969
+Question: Can you run us through this one
+more time -- I'm just a little confused, it
+
+819
+01:29:14,969 --> 01:29:21,699
+feels like we're using our validation set
+as part of our training program?
+
+820
+01:29:21,699 --> 01:29:30,939
+Answer: We're not using the validation labels.
+Nowhere here does it say val_labels. So yes,
+
+821
+01:29:30,939 --> 01:29:37,349
+we are absolutly using our validation set,
+but we are using our validation set's inputs.
+
+822
+01:29:37,349 --> 01:29:41,139
+And for our test set, we have the inputs.
+
+823
+01:29:41,139 --> 01:29:47,380
+So next week I will show you this page again,
+but with using the test set, didn't have enough
+
+824
+01:29:47,380 --> 01:29:51,659
+time to do it this time around. Hopefully,
+we're going to see some great results. And
+
+825
+01:29:51,659 --> 01:29:55,179
+when we use it on the test set, you'll be
+really convinced that we're not using labels
+
+826
+01:29:55,179 --> 01:30:00,999
+because we don't have any labels. You can
+see here, all it's doing is creating pseudo-labels
+
+827
+01:30:00,999 --> 01:30:08,439
+by calculating what it thinks it ought to
+be, based on the model we just built with
+
+828
+01:30:08,439 --> 01:30:16,689
+75% accuracy. And so then it's then able to
+use the input data in an intelligent way and
+
+829
+01:30:16,689 --> 01:30:19,820
+therefore improve the accuracy.
+
+830
+01:30:19,820 --> 01:30:24,400
+[Time: 1.30 hour mark]
+
+831
+01:30:24,400 --> 01:30:33,979
+Question: Are the labels the same as what
+they are in the training set? The val_pseudo,
+
+832
+01:30:33,979 --> 01:30:40,969
+the contents of that would be based on what
+the model has learned by training on the training
+
+833
+01:30:40,969 --> 01:30:41,969
+set?
+
+834
+01:30:41,969 --> 01:30:47,420
+Answer: val_pseudo uses bn_model and bn_model
+is the thing we just fitted by using the training
+
+835
+01:30:47,420 --> 01:30:54,030
+labels. So this is bn_model, the thing that
+is .755 accuracy.
+
+836
+01:30:54,030 --> 01:31:02,199
+Question: So if we were to look at supervised
+and unsupervised learning (and in this case
+
+837
+01:31:02,199 --> 01:31:08,289
+semi-supervised learning), and semi-supervised
+works because you're giving it a model which
+
+838
+01:31:08,289 --> 01:31:17,349
+already knows about a bunch of labels - unsupervised
+wouldn't know, unsupervised has nothing.
+
+839
+01:31:17,349 --> 01:31:25,260
+Answer: Unsupervised learning is where you're
+trying to build a model where you have no
+
+840
+01:31:25,260 --> 01:31:31,030
+labels at all. How many people here would
+be interested to hear about unsupervised learning
+
+841
+01:31:31,030 --> 01:31:41,489
+during this class? Okay, enough people so
+I should do that. I will add it.
+
+842
+01:31:41,489 --> 01:31:46,639
+During the week, perhaps we can create a forum
+thread about unsupervised learning and I can
+
+843
+01:31:46,639 --> 01:31:51,320
+learn about what you're interested in doing
+with it because many things that people think
+
+844
+01:31:51,320 --> 01:31:57,909
+about as unsupervised learning problems actually
+aren't.
+
+845
+01:31:57,909 --> 01:32:14,940
+Question: Earlier you talked about learning
+the structure of the data that you've learned
+
+846
+01:32:14,940 --> 01:32:18,039
+from the dataset. Could you talk more about
+that?
+
+847
+01:32:18,039 --> 01:32:22,570
+Answer: I don't know. Not really, other than
+that picture I showed you before with the
+
+848
+01:32:22,570 --> 01:32:24,099
+two little spiral-y things.
+
+849
+01:32:24,099 --> 01:32:32,039
+Comment: And that picture was showing how
+they cluster in higher dimension.
+
+850
+01:32:32,039 --> 01:32:37,039
+Think about that Max Welling paper we saw
+or the Jason Yosinski Visualization for Bots
+
+851
+01:32:37,039 --> 01:32:47,959
+that we saw - the layers learn shapes and
+textures and concepts. In that 80,000 test
+
+852
+01:32:47,959 --> 01:32:54,329
+images we saw about people driving in distracted
+ways, there are lots of concepts there to
+
+853
+01:32:54,329 --> 01:32:59,770
+learn about ways in which people drive in
+distracted ways, even though they are not
+
+854
+01:32:59,770 --> 01:33:08,949
+labeled. So what we're doing is we're trying
+to learn better convolutional or dense features.
+
+855
+01:33:08,949 --> 01:33:11,130
+That's what I mean by learning more.
+
+856
+01:33:11,130 --> 01:33:17,439
+The structure of the data here is what do
+these pictures tend to look like, and more
+
+857
+01:33:17,439 --> 01:33:23,820
+importantly, in what ways to they differ.
+It's the ways that they differ that must be
+
+858
+01:33:23,820 --> 01:33:27,560
+related to how they are labeled.
+
+859
+01:33:27,560 --> 01:33:32,380
+Question: Can you use your updated model to
+make new labels for the validation set?
+
+860
+01:33:32,380 --> 01:33:39,239
+Answer: Yes, you can absolutely do pseudo-labeling
+on pseduo-labeling. And you should. And if
+
+861
+01:33:39,239 --> 01:33:44,479
+I don't get sick of running this code, I will
+try it next week.
+
+862
+01:33:44,479 --> 01:33:48,050
+Question: Can that introduce bias towards
+your validation set?
+
+863
+01:33:48,050 --> 01:33:53,150
+Answer: No, because we don't have any validation
+labels.
+
+864
+01:33:53,150 --> 01:34:01,380
+One of the tricky parameters in pseudo-labeling
+is in each batch, how much do I make it a
+
+865
+01:34:01,380 --> 01:34:05,130
+mix of training vs pseudo.
+
+866
+01:34:05,130 --> 01:34:11,150
+One of the big things that stopped me from
+getting the test set in this week is Keras
+
+867
+01:34:11,150 --> 01:34:19,260
+doesn't have a way of creating batches which
+have like 80% of this set and 20% of that
+
+868
+01:34:19,260 --> 01:34:25,469
+set, which is what I want. Because if I just
+pseudo label the whole test set and then concatenated
+
+869
+01:34:25,469 --> 01:34:32,059
+it, then 80% of my batches are going to be
+pseudo labels. And generally speaking, the
+
+870
+01:34:32,059 --> 01:34:37,469
+rule of thumb I've read is that somewhere
+between 1/4 to 1/3 of your min-batches should
+
+871
+01:34:37,469 --> 01:34:45,599
+be pseduo labels. So I need to write some
+code to get Keras to generate batches which
+
+872
+01:34:45,599 --> 01:34:50,650
+are a mix from two different places before
+I can do this properly.
+
+873
+01:34:50,650 --> 01:34:56,780
+Question: Are your pseudo labels only as good
+as the initial model you're beginning from,
+
+874
+01:34:56,780 --> 01:34:59,840
+or do you need to have a particular accuracy?
+
+875
+01:34:59,840 --> 01:35:01,199
+[Time: 1.35 hour mark]
+
+876
+01:35:01,199 --> 01:35:06,150
+Answer: Pseudo-labels are indeed as good as
+the model you're starting from. People have
+
+877
+01:35:06,150 --> 01:35:12,389
+not studied this enough to know how sensitive
+it is to those initial labels.
+
+878
+01:35:12,389 --> 01:35:19,070
+Question: Is there a rule of thumb about what
+accuracy level?
+
+879
+01:35:19,070 --> 01:35:28,590
+Answer: No, it's too new. Just try it. My
+guess is that pseudo-labels will be useful
+
+880
+01:35:28,590 --> 01:35:32,809
+regardless of what accuracy level you're at
+because it will make it better, as long as
+
+881
+01:35:32,809 --> 01:35:40,110
+you're in a semi-supervised learning context,
+i.e., you have a lot of unlabeled data that
+
+882
+01:35:40,110 --> 01:35:49,190
+you want to take advantage of.
+
+883
+01:35:49,190 --> 01:35:57,300
+It turns out that the path to NLP starts with
+collaborative filtering. You will learn why
+
+884
+01:35:57,300 --> 01:36:03,050
+next week. This week we are going to learn
+about collaboraive filtering. Collaborative
+
+885
+01:36:03,050 --> 01:36:10,019
+filtering is a way of doing recommender systems.
+I sent you guys an email today with a link
+
+886
+01:36:10,019 --> 01:36:16,579
+to more information about collaborative filtering
+and recommender systems, so read those links
+
+887
+01:36:16,579 --> 01:36:19,709
+if you haven't already so that you can get
+an idea of what the problem we're solving
+
+888
+01:36:19,709 --> 01:36:22,219
+here is.
+
+889
+01:36:22,219 --> 01:36:34,550
+In short, what we're trying to do is to learn
+to predict is who is going to like what and
+
+890
+01:36:34,550 --> 01:36:43,959
+how much. For example, the $1,000,000 Netflix
+prize, what rating level will this person
+
+891
+01:36:43,959 --> 01:36:46,670
+give this movie.
+
+892
+01:36:46,670 --> 01:36:52,300
+If you're writing Amazon's recommender system
+to show you what's on their home page. Which
+
+893
+01:36:52,300 --> 01:36:58,019
+products is this person likely to rank highly.
+
+894
+01:36:58,019 --> 01:37:03,159
+If you're trying to figure out what stuff
+to show on a newsfeed, which articles is this
+
+895
+01:37:03,159 --> 01:37:05,419
+person likely to enjoy reading.
+
+896
+01:37:05,419 --> 01:37:10,960
+There's a lot of different ways of doing this,
+but broadly speaking there are two main classifications
+
+897
+01:37:10,960 --> 01:37:13,030
+of recommender systems.
+
+898
+01:37:13,030 --> 01:37:20,539
+One is based on meta-data, which is this guy
+filled out a survey in which he said he liked
+
+899
+01:37:20,539 --> 01:37:26,599
+Action Movies and SciFi, and we also have
+taken all of our movies and put them into
+
+900
+01:37:26,599 --> 01:37:32,459
+genres and here are all of our Action/SciFi
+movies, so we'll use them. Broadly speaking,
+
+901
+01:37:32,459 --> 01:37:36,070
+that would be a meta-data based approach.
+
+902
+01:37:36,070 --> 01:37:42,429
+A collaborative filtering based approach is
+very different. It says let's find other people
+
+903
+01:37:42,429 --> 01:37:50,320
+like you, find out what they liked and assume
+that you will like the same stuff. And specifically
+
+904
+01:37:50,320 --> 01:37:55,829
+when we say people like you, we mean people
+who rated the same movies you've watched in
+
+905
+01:37:55,829 --> 01:38:00,110
+a similar way. And that's called collaborative
+filtering.
+
+906
+01:38:00,110 --> 01:38:05,869
+It turns out that in a large enough dataset
+that collaborative filtering is so much bette
+
+907
+01:38:05,869 --> 01:38:11,429
+than the metadata based approaches, that adding
+metadata doesn't even improve it at all. So
+
+908
+01:38:11,429 --> 01:38:17,340
+when people in the Netflix prize actually
+went out to IMDb and sucked in additional
+
+909
+01:38:17,340 --> 01:38:23,909
+data and tried to use that to make it better,
+at a certain point it didn't help.
+
+910
+01:38:23,909 --> 01:38:26,679
+Once their collaborative filtering models
+were good enough it didn't help. And that's
+
+911
+01:38:26,679 --> 01:38:31,760
+because (something I learned about 20 years
+ago when I used to a lot of surveys and consulting),
+
+912
+01:38:31,760 --> 01:38:36,729
+it turns out that asking people about their
+behavior is krap compared to actually looking
+
+913
+01:38:36,729 --> 01:38:37,820
+at people's behavior.
+
+914
+01:38:37,820 --> 01:38:43,949
+Let me show you what collaborative filtering
+looks like. We're going to use a database
+
+915
+01:38:43,949 --> 01:38:49,570
+called MovieLens, and you guys will hopefully
+be able to play around with this this week.
+
+916
+01:38:49,570 --> 01:38:56,800
+Unfortunately, Rachel and I could not find
+any Kaggle competitions that were about recommender
+
+917
+01:38:56,800 --> 01:39:01,830
+systems and where the competitions were still
+open for entries.
+
+918
+01:39:01,830 --> 01:39:14,309
+However, there is something called MovieLens
+which is a widely studied dataset in academia.
+
+919
+01:39:14,309 --> 01:39:21,440
+Perhaps surprisingly, beating an academic
+state-of-the-art is way easier than winning
+
+920
+01:39:21,440 --> 01:39:26,230
+a Kaggle competition, because in Kaggle competitions,
+lots and lots and lots of people look at tht
+
+921
+01:39:26,230 --> 01:39:31,340
+data and they try lots and lots of things
+and they use a really pragmatic approach,
+
+922
+01:39:31,340 --> 01:39:36,030
+whereas academic state-of-the-arts are done
+by academics.
+
+923
+01:39:36,030 --> 01:39:42,510
+With that said, the MovieLens benchmarks are
+going to be much easier to beat than any Kaggle
+
+924
+01:39:42,510 --> 01:39:51,909
+competition. You can download the MovieLens
+dataset from the MovieLens website (grouplens.org/datasets/movielens),
+
+925
+01:39:51,909 --> 01:39:56,300
+and you'll see that there's one here recommended
+to do research with 20 million items in it.
+
+926
+01:39:56,300 --> 01:40:01,760
+Also, conveniently, they have a small one
+with only 100 thousand ratings. So you don't
+
+927
+01:40:01,760 --> 01:40:04,679
+have to build a sample, they have already
+built a sample for you.
+
+928
+01:40:04,679 --> 01:40:05,679
+[Time: 1.40 hour mark]
+
+929
+01:40:05,679 --> 01:40:12,469
+I, of course, am going to use a sample. So
+what I do is I read in ratings.csv.
+
+930
+01:40:12,469 --> 01:40:19,969
+As you can see, I've already started using
+Pandas, pd is for Pandas. How many people
+
+931
+01:40:19,969 --> 01:40:25,530
+here have tried Pandas? Awesome! Hopefully
+for those of you that don't, the peer group
+
+932
+01:40:25,530 --> 01:40:30,210
+pressure is kicking in. Pandas is a great
+way of dealing with structured data, and you
+
+933
+01:40:30,210 --> 01:40:35,889
+should use it. Reading a csv file is this
+easy, showing the first few items is this
+
+934
+01:40:35,889 --> 01:40:40,880
+easy, finding out how big it is, finding out
+how many users there are, finding out how
+
+935
+01:40:40,880 --> 01:40:46,030
+many movies there are, are all this easy.
+
+936
+01:40:46,030 --> 01:40:52,210
+I want to show you this in Excel, because
+that's the only way I know how to teach. What
+
+937
+01:40:52,210 --> 01:41:03,869
+I did was I grabbed the userID by rating,
+grabbed the 15 busiest movie-watching users,
+
+938
+01:41:03,869 --> 01:41:13,360
+and then I grabbed the 15 most watched movies,
+and then I created a crosstab of the two and
+
+939
+01:41:13,360 --> 01:41:16,409
+then I copied that into Excel.
+
+940
+01:41:16,409 --> 01:41:27,440
+Here is the table I downloaded from MovieLens
+for the 15 busiest movie-watching users and
+
+941
+01:41:27,440 --> 01:41:33,730
+the 15 most widely watched movies. And here
+are the ratings, here is the rating for User14
+
+942
+01:41:33,730 --> 01:41:38,679
+for Movie27 [rating=3]. Look at these guys
+-- these three users have watched every single
+
+943
+01:41:38,679 --> 01:41:49,669
+one of these movies. I'm probably one of them,
+I love movies.
+
+944
+01:41:49,669 --> 01:42:05,269
+So User14 kind of liked Movie27 [rating=3],
+loved Movie49 [rating=5], hated Movie57 [rating=1].
+
+945
+01:42:05,269 --> 01:42:10,249
+So this guy User623 really liked Movie49 [rating=5],
+didn't much like Movie57 [rating=3], so they
+
+946
+01:42:10,249 --> 01:42:15,159
+may feel the same way about Movie27 as that
+user. That's the basic essence of collaborative
+
+947
+01:42:15,159 --> 01:42:16,159
+filtering.
+
+948
+01:42:16,159 --> 01:42:19,650
+We're going to try and automate it a little
+bit. The way we are going to automate it is
+
+949
+01:42:19,650 --> 01:42:28,130
+that we are going to pretend for each movie
+we had 5 characteristics - is it SciFi, Action,
+
+950
+01:42:28,130 --> 01:42:38,630
+DialogHeavy, is it new and does it have Bruce
+Willis?
+
+951
+01:42:38,630 --> 01:42:52,349
+We could have those 5 things for every user
+as well -- which is is this user someone who
+
+952
+01:42:52,349 --> 01:42:57,360
+likes SF, Action, Dialog, New, BruceWillis
+movies?
+
+953
+01:42:57,360 --> 01:43:07,360
+What we can then do is 
+matrix product (or dot product) that set of
+
+954
+01:43:07,360 --> 01:43:13,320
+user features with that set of movie features.
+If this person likes SciFi, and it's SciFi,
+
+955
+01:43:13,320 --> 01:43:18,780
+if this person likes Action and it is Action,
+and so forth, then a high number will appear
+
+956
+01:43:18,780 --> 01:43:30,110
+here for the dot product of these two vectors.
+And so this would be a cool way to build up
+
+957
+01:43:30,110 --> 01:43:38,280
+a collaborative filtering system if only we
+could create these 5 items for every movie
+
+958
+01:43:38,280 --> 01:43:40,989
+and for every user.
+
+959
+01:43:40,989 --> 01:43:45,889
+Now because we don't actually know what 5
+things are most important to users and what
+
+960
+01:43:45,889 --> 01:43:51,189
+5 things are most important for movies, we're
+going to learn them. And the way we learn
+
+961
+01:43:51,189 --> 01:43:57,909
+them is the way we learn everything - which
+is we randomize them and then use gradient
+
+962
+01:43:57,909 --> 01:44:06,800
+descent. So here are 5 random numbers for
+every movie and 5 random numbers for every
+
+963
+01:44:06,800 --> 01:44:14,869
+movie, and in the middle is the dot product
+of that movie with that user.
+
+964
+01:44:14,869 --> 01:44:22,179
+Once we have a good set of user factors and
+movie factors for each one, then each of these
+
+965
+01:44:22,179 --> 01:44:28,800
+ratings will be similar to each of the observed
+ratings, and therefore this sum-of-square
+
+966
+01:44:28,800 --> 01:44:37,440
+errors will be low. Currently, it is high.
+
+967
+01:44:37,440 --> 01:44:45,179
+With our random numbers, we start with a loss
+function of 40, and we now want to use gradient
+
+968
+01:44:45,179 --> 01:44:51,019
+descent, and it turns out that every copy
+of Excel has a gradient descent solver (called
+
+969
+01:44:51,019 --> 01:44:56,550
+Solver) in it, so we're going to go ahead
+and use it. We're going to have to tell it
+
+970
+01:44:56,550 --> 01:45:02,119
+what thing to minimize, which is this, and
+we tell it all of the things we are going
+
+971
+01:45:02,119 --> 01:45:09,539
+to change and we set that to our factors,
+and we set it to a minimum, and we say Solve.
+
+972
+01:45:09,539 --> 01:45:14,419
+And we can see in the bottom left it is trying
+to make this better and better and better
+
+973
+01:45:14,419 --> 01:45:15,429
+using gradient Descent.
+
+974
+01:45:15,429 --> 01:45:16,639
+[Time: 1.45 hour mark]
+
+975
+01:45:16,639 --> 01:45:21,360
+Notice I'm not saying Stocastic Gradient Descent.
+Stocastic Gradient Descent means that it's
+
+976
+01:45:21,360 --> 01:45:26,239
+doing it mini-batch by mini-batch at a time.
+Gradient Descent means using the whole dataset
+
+977
+01:45:26,239 --> 01:45:34,389
+every time. Excel using Gradient Descent,
+not Stocastic Gradient Descent, but you get
+
+978
+01:45:34,389 --> 01:45:35,389
+the same answer.
+
+979
+01:45:35,389 --> 01:45:40,050
+You might wonder why is it so slow? It's slow
+because it doesn't know how to calculate analytical
+
+980
+01:45:40,050 --> 01:45:44,269
+derivates so it's having to calculate the
+derivatives with finite differencing, which
+
+981
+01:45:44,269 --> 01:45:45,429
+is slow.
+
+982
+01:45:45,429 --> 01:45:55,269
+So here we have a solution - we got it down
+to 5, which is pretty good. We can see here
+
+983
+01:45:55,269 --> 01:46:01,840
+it predicted 5.14 and it was actually 5; it
+predicted 3.05 and it was actually 3. So it's
+
+984
+01:46:01,840 --> 01:46:10,690
+done a really, really good job. It's a little
+bit too easy because there are 5 x 14 (the
+
+985
+01:46:10,690 --> 01:46:17,639
+number of columns of factors) movie factors
+and 5 x the number of rows user factors - we've
+
+986
+01:46:17,639 --> 01:46:26,559
+got nearly as many factors as we've have things
+to calculate, but the idea is there.
+
+987
+01:46:26,559 --> 01:46:33,219
+There's one piece missing. The piece we're
+missing is that some users probably just like
+
+988
+01:46:33,219 --> 01:46:39,510
+movies more than others, and some movies are
+more liked than others.
+
+989
+01:46:39,510 --> 01:46:46,619
+This dot product does not allow us in any
+way to say "This is an enthusiastic user"
+
+990
+01:46:46,619 --> 01:46:53,489
+or "This is a popular movie." To do that,
+we have to add bias terms. So here is exactly
+
+991
+01:46:53,489 --> 01:47:03,459
+the same spreadsheet, but I have added one
+more row to the movies part and one more column
+
+992
+01:47:03,459 --> 01:47:11,749
+to the users part for our biases and I have
+updated the formula so as well as the matrix
+
+993
+01:47:11,749 --> 01:47:19,219
+multiplication, it also is adding the user
+bias and the movie bias. So this is saying
+
+994
+01:47:19,219 --> 01:47:30,939
+"This is a very popular movie" and "This is
+a very enthusiastic user".
+
+995
+01:47:30,939 --> 01:47:39,519
+So now that we have a collaborative filtering
+plus bias, we can do gradient descent on that.
+
+996
+01:47:39,519 --> 01:47:46,820
+Previously our gradient descent loss function
+was 5.6. We would expect it to be better with
+
+997
+01:47:46,820 --> 01:47:52,760
+bias because we could better specify what's
+going on. Let's try it. Once again we run
+
+998
+01:47:52,760 --> 01:47:57,650
+Solver - Solve.
+
+999
+01:47:57,650 --> 01:48:09,219
+These things we're calculating are called
+Latent Factors. A latent factor is some factor
+
+1000
+01:48:09,219 --> 01:48:15,199
+that is implemented in outcome, but we don't
+know what it is, we're just assuming it is
+
+1001
+01:48:15,199 --> 01:48:16,199
+there.
+
+1002
+01:48:16,199 --> 01:48:22,300
+What happens when people do collaborative
+filtering, then then go back and say here
+
+1003
+01:48:22,300 --> 01:48:28,230
+are the movies that have scored high on this
+latent factor and that latent factor, and
+
+1004
+01:48:28,230 --> 01:48:34,239
+in doing so you'll discover the Bruce Willis
+Factor, and the SciFi factor, and so forth.
+
+1005
+01:48:34,239 --> 01:48:40,090
+And so if you look at the Netflix prize visualizations,
+you'll see these graphs people do. And the
+
+1006
+01:48:40,090 --> 01:48:46,179
+way they do them is they literally do this
+(not in Excel, because they're not that cool),
+
+1007
+01:48:46,179 --> 01:48:50,829
+but they calculate these latent factors, and
+then they draw pictures of them and then they
+
+1008
+01:48:50,829 --> 01:48:53,639
+write the name of the movie on them.
+
+1009
+01:48:53,639 --> 01:49:06,969
+Solver now came up with 4.6, even better.
+That's interesting, in fact, I also have an
+
+1010
+01:49:06,969 --> 01:49:13,800
+error here, I have parantheses in the wrong
+place. Anytime that my rating is empty, I
+
+1011
+01:49:13,800 --> 01:49:22,679
+really want to be setting the dot product
+to empty as well. So I am going to recalculate
+
+1012
+01:49:22,679 --> 01:49:37,500
+this with my error fixed up and see if we
+get a better answer. No, not really - now
+
+1013
+01:49:37,500 --> 01:49:38,939
+it's 4.58.
+
+1014
+01:49:38,939 --> 01:49:51,849
+Question: I may have forgotten or missed this
+-- where did the movie factors come from?
+
+1015
+01:49:51,849 --> 01:49:58,030
+Answer: They're random. They're randomly generated
+and then optimized with gradient descent.
+
+1016
+01:49:58,030 --> 01:49:59,119
+[Time: 1.50 hour mark]
+
+1017
+01:49:59,119 --> 01:50:05,400
+Question: For some reason this seems even
+crazier than what we were doing with CNNs.
+
+1018
+01:50:05,400 --> 01:50:15,070
+I think it is because movies I understand
+more than features of images. I just don't
+
+1019
+01:50:15,070 --> 01:50:17,320
+intuitively understand.
+
+1020
+01:50:17,320 --> 01:50:24,289
+Answer: We can look at some pictures next
+week, but during the week google for Netflix
+
+1021
+01:50:24,289 --> 01:50:31,820
+prize visualizations and you'll see these
+pictures. It really does work the way I described
+
+1022
+01:50:31,820 --> 01:50:32,860
+it.
+
+1023
+01:50:32,860 --> 01:50:40,909
+It figures out what are the most interesting
+dimensions on which we can rate a movie, and
+
+1024
+01:50:40,909 --> 01:50:46,800
+things like level of action, and SciFi, and
+dialog-driven are very important features,
+
+1025
+01:50:46,800 --> 01:50:50,329
+it turns out.
+
+1026
+01:50:50,329 --> 01:50:56,189
+Rather than pre-specifying those features,
+we have definitely learned from this class
+
+1027
+01:50:56,189 --> 01:51:01,280
+that calculating features using gradient descent
+is going to give us better features than trying
+
+1028
+01:51:01,280 --> 01:51:14,849
+to engineer them by hand. Tell me next week
+if you find some interesting things. If it
+
+1029
+01:51:14,849 --> 01:51:19,230
+still feels crazy we can try to de-crazify
+it a little bit.
+
+1030
+01:51:19,230 --> 01:51:29,079
+Now let's do this in Keras. There's really
+only one main new concept we have to learn
+
+1031
+01:51:29,079 --> 01:51:36,749
+which is we started out with data not in a
+crosstab form, but in this form - we have
+
+1032
+01:51:36,749 --> 01:51:40,989
+userId, movieId, rating, timestamp triplets,
+and I cross-tabed them.
+
+1033
+01:51:40,989 --> 01:51:55,829
+Question: So the rows above and the columns
+to the side, are they the variations in features
+
+1034
+01:51:55,829 --> 01:51:58,469
+in the movies and features inthe users?
+
+1035
+01:51:58,469 --> 01:52:04,710
+Answer: Yes. Each of these rows is one feature
+of a movie and each of these columns is one
+
+1036
+01:52:04,710 --> 01:52:12,510
+feature of a user. So one of these sets of
+5 is one set of features for a user, this
+
+1037
+01:52:12,510 --> 01:52:14,369
+user's latent factors.
+
+1038
+01:52:14,369 --> 01:52:21,869
+Comment: I think it's interesting that you
+can take random data and generate the features
+
+1039
+01:52:21,869 --> 01:52:27,429
+out of people that you don't know and movies
+that you're not looking at.
+
+1040
+01:52:27,429 --> 01:52:34,260
+Answer: Yes. This is the thing I said at the
+start of class, there's nothing mathematically
+
+1041
+01:52:34,260 --> 01:52:43,199
+complex about gradient descent. The hard part
+is unlearning the idea that this should be
+
+1042
+01:52:43,199 --> 01:52:53,170
+hard. Gradient descent just figures it out.
+
+1043
+01:52:53,170 --> 01:53:03,389
+Comment: You can think of this as a smaller,
+more concise way to represent the users and
+
+1044
+01:53:03,389 --> 01:53:04,389
+the movies.
+
+1045
+01:53:04,389 --> 01:53:09,570
+Answer: In math, there's the concept of a
+matrix factorization. SVD, for example, is
+
+1046
+01:53:09,570 --> 01:53:15,449
+where you take a big matrix and turn it into
+a small narrow one and a small thin one and
+
+1047
+01:53:15,449 --> 01:53:17,670
+multiply the two together. Exactly what we're
+doing.
+
+1048
+01:53:17,670 --> 01:53:23,050
+Comment: Instead of having how User14 rated
+every single movie, we just have 5 numbers
+
+1049
+01:53:23,050 --> 01:53:26,919
+that represent it, which is pretty cool.
+
+1050
+01:53:26,919 --> 01:53:35,039
+Question: So did you say earlier that both
+the user features were random as well as the
+
+1051
+01:53:35,039 --> 01:53:47,189
+movie features. I'm having trouble, usually
+we run gradient descent on something that
+
+1052
+01:53:47,189 --> 01:54:00,510
+has inputs that you know. Here, what is it
+you know? And what would happen if you flipped
+
+1053
+01:54:00,510 --> 01:54:06,030
+the feature for a user and a movie.
+
+1054
+01:54:06,030 --> 01:54:20,900
+Answer: What we know is the resulting ratings.
+If one of the numbers was in the wrong spot,
+
+1055
+01:54:20,900 --> 01:54:26,460
+our loss function would be less good and therefore
+there would be a gradient from that weight,
+
+1056
+01:54:26,460 --> 01:54:31,729
+saying we should make this weight a little
+higher or a little lower.
+
+1057
+01:54:31,729 --> 01:54:36,369
+So all that gradient descent is doing is saying,
+okay for every weight, if we make it a bit
+
+1058
+01:54:36,369 --> 01:54:39,929
+higher does it get better or if we make it
+a little lower does it get better? And then
+
+1059
+01:54:39,929 --> 01:54:47,749
+we keep making them higher and lower until
+we can't get any better.
+
+1060
+01:54:47,749 --> 01:54:54,070
+We had to decide how to combine the weights
+-- this was our architecture. Our architecture
+
+1061
+01:54:54,070 --> 01:55:01,320
+was let's take a dot product of some assumed
+user feature and some assumed movie feature.
+
+1062
+01:55:01,320 --> 01:55:07,989
+And let's add (in the second case) some assumed
+bias term. So we had to build an architecture
+
+1063
+01:55:07,989 --> 01:55:12,869
+and we built the architecture using common
+sense, this seems like a reasonable way of
+
+1064
+01:55:12,869 --> 01:55:18,230
+thinking about this. I'm going to show you
+a better architecture in a moment.
+
+1065
+01:55:18,230 --> 01:55:21,849
+[Time: 1.55 hour mark]
+
+1066
+01:55:21,849 --> 01:55:25,860
+I wanted to point out that there is something
+new we're going to have to learn here, how
+
+1067
+01:55:25,860 --> 01:55:33,599
+do you start with a numeric userId and look
+up to find what is their five-element latent
+
+1068
+01:55:33,599 --> 01:55:34,769
+factor matrix.
+
+1069
+01:55:34,769 --> 01:55:43,130
+Now remember, when we have userIds (like 1,
+2, 3), one way to specify them is by using
+
+1070
+01:55:43,130 --> 01:55:53,030
+one-hot encoding.
+
+1071
+01:55:53,030 --> 01:56:03,110
+One way to handle this situation would be
+if this was our user matrix which was one-hot
+
+1072
+01:56:03,110 --> 01:56:23,020
+encoded, and then we had a factor matrix containing
+a whole bunch of random numbers, one way to
+
+1073
+01:56:23,020 --> 01:56:27,530
+do it would be to take a dot product of the
+one-hot encoded matrix and the factor matrix
+
+1074
+01:56:27,530 --> 01:56:36,400
+of random numbers. What that would do is the
+first row of the one-hot encoded userId matrix
+
+1075
+01:56:36,400 --> 01:56:44,210
+would grab the first column of the factor
+matrix, the second row would grab the second
+
+1076
+01:56:44,210 --> 01:56:49,340
+column, and the third row would grab the third
+column of the matrix.
+
+1077
+01:56:49,340 --> 01:56:57,389
+One way to do this in Keras is to represent
+our userIds as one-hot encodings and to create
+
+1078
+01:56:57,389 --> 01:57:11,550
+a user factor matrix, and then take a matrix
+product. That's horribly slow because if we
+
+1079
+01:57:11,550 --> 01:57:16,110
+have 10,000 users and the one-hot encoded
+userId matrix is 10,000 wide then that's a
+
+1080
+01:57:16,110 --> 01:57:21,929
+really big matrix multiplication. All we're
+actually saying is for userId #1 take the
+
+1081
+01:57:21,929 --> 01:57:26,769
+first column, for userI #2 take the second
+column, for userid #3 take the third column.
+
+1082
+01:57:26,769 --> 01:57:34,139
+Keras has something that does this for us,
+called an Embedding Layer. Embedding takes
+
+1083
+01:57:34,139 --> 01:57:40,269
+an integer as an input and looks up and grabs
+the corresponding column as output. So it's
+
+1084
+01:57:40,269 --> 01:57:44,610
+doing exactly what we're seeing in this spreadsheet.
+
+1085
+01:57:44,610 --> 01:57:51,510
+Question: How do you deal with missing values?
+If a user has not rated a particular movie?
+
+1086
+01:57:51,510 --> 01:57:55,050
+Answer: That's no problem. Missing values
+are just ignored. If it's missing, I just
+
+1087
+01:57:55,050 --> 01:57:58,329
+set the loss to 0.
+
+1088
+01:57:58,329 --> 01:58:01,239
+Question: How do you break up a training and
+test set?
+
+1089
+01:58:01,239 --> 01:58:08,969
+Answer: I broke up this training and test
+set randomly by grabbing random numbers and
+
+1090
+01:58:08,969 --> 01:58:13,630
+just saying are they greater or less than
+.8, and split my ratings into groups.
+
+1091
+01:58:13,630 --> 01:58:19,599
+Question: And your choosing that from the
+ratings so you have some ratings for all users
+
+1092
+01:58:19,599 --> 01:58:23,330
+and you have some ratings for all movies.
+
+1093
+01:58:23,330 --> 01:58:27,739
+Answer: Yes.
+
+1094
+01:58:27,739 --> 01:58:34,050
+Here it is ... here's our dot product.
+
+1095
+01:58:34,050 --> 01:58:40,099
+I'm going to stop using the sequential model
+in Keras and start using the functional model
+
+1096
+01:58:40,099 --> 01:58:46,940
+in Keras. I'll talk more about this next week.
+There are two ways of creating models in Keras,
+
+1097
+01:58:46,940 --> 01:58:52,429
+sequential and functional. They do similar
+things, but the functional is much more flexible
+
+1098
+01:58:52,429 --> 01:58:55,920
+and it's going to be what we're going to use
+from now on. So this is going to look slightly
+
+1099
+01:58:55,920 --> 01:58:59,510
+unfamiliar, but the idea is the same.
+
+1100
+01:58:59,510 --> 01:59:09,829
+So we create an input layer for a user, and
+then create an Embedding layer for n-Users
+
+1101
+01:59:09,829 --> 01:59:18,360
+(671), and we want to create how many latent
+factors. I decided not to create 5, but to
+
+1102
+01:59:18,360 --> 01:59:19,399
+create 50.
+
+1103
+01:59:19,399 --> 01:59:28,289
+And then I create a movie input and a movie
+embedding with 50 factors, and then take the
+
+1104
+01:59:28,289 --> 01:59:37,999
+dot product of those, and that's our model.
+So now please compile the model and now train
+
+1105
+01:59:37,999 --> 01:59:46,010
+it, taking the userId and movieId as input,
+the rating as the target, and run it for 6
+
+1106
+01:59:46,010 --> 01:59:55,340
+epochs and I get a 1.27 loss (an RMSE loss).
+Notice that I'm not doing anything else clever,
+
+1107
+01:59:55,340 --> 01:59:57,030
+it's just that simple dot product.
+
+1108
+01:59:57,030 --> 01:59:59,830
+[Time: 2 hour mark]
+
+1109
+01:59:59,830 --> 02:00:04,810
+Here's how I add the bias. I use exactly the
+same kind of embedding inputs as before, and
+
+1110
+02:00:04,810 --> 02:00:11,280
+I've encapsulated them in a function, and
+my user and movie inputs are the same. Then
+
+1111
+02:00:11,280 --> 02:00:19,570
+I create bias by just simply creating an embedding
+with just a single output. So then my new
+
+1112
+02:00:19,570 --> 02:00:29,820
+model is do a dot product, and add the user
+bias, and add the movie bias. And try fitting
+
+1113
+02:00:29,820 --> 02:00:33,170
+that, it takes me to a validation loss of
+1.1.
+
+1114
+02:00:33,170 --> 02:00:40,669
+How is that going? There are lots of sites
+on the Internet where you can find out benchmarks
+
+1115
+02:00:40,669 --> 02:00:51,539
+for MovieLens. And on the 100 thousand dataset
+we're generally looking for a RMSE of .9 - the
+
+1116
+02:00:51,539 --> 02:01:16,389
+best one here is .89. So high .89's, low .9's
+would be state-of-the-art according to these
+
+1117
+02:01:16,389 --> 02:01:20,999
+benchmarks. So we're on the right track, but
+we're not there yet.
+
+1118
+02:01:20,999 --> 02:01:25,519
+So let's try something better. Let's create
+a neural net, and a neural net does the same
+
+1119
+02:01:25,519 --> 02:01:30,969
+thing. We create a movie embedding and a user
+embedding, again with 50 factors.
+
+1120
+02:01:30,969 --> 02:01:35,169
+And this time we don't take a dot product,
+we just concatenate the vectors together - stick
+
+1121
+02:01:35,169 --> 02:01:41,080
+one on top of hte other. And because we now
+have one big vector, we can create a neural
+
+1122
+02:01:41,080 --> 02:01:51,159
+net - create a dense layer, add dropout, create
+an activation, compile it, and fit it.
+
+1123
+02:01:51,159 --> 02:01:58,340
+And after 5 epochs, we get something way better
+than state-of-the-art (we couldn't find anything
+
+1124
+02:01:58,340 --> 02:02:05,809
+better than about .9). This whole notebook
+took me like 1/2 hour to write and I don't
+
+1125
+02:02:05,809 --> 02:02:10,239
+claim to be a collaborative filtering expert.
+But I think it's really cool that these things
+
+1126
+02:02:10,239 --> 02:02:22,449
+that were written by people who write collaborative
+filters for a living, places like LensKit,
+
+1127
+02:02:22,449 --> 02:02:29,139
+a piece of software recommender systems - we
+have just killed their benchmark. It took
+
+1128
+02:02:29,139 --> 02:02:51,110
+us 10 seconds to train, so I think it's pretty
+neat.
+
+1129
+02:02:51,110 --> 02:02:59,849
+That was a very quick introduction to embeddings.
+As per usual in this class, I kind of stick
+
+1130
+02:02:59,849 --> 02:03:07,010
+the new stuff in at the end and say "Go study
+it." Your job this week is to keep improving
+
+1131
+02:03:07,010 --> 02:03:10,919
+State Farm, hopefully win the new fishieries
+competition.
+
+1132
+02:03:10,919 --> 02:03:17,320
+By the way, in the last half hour I just created
+this notebook where I copied the dogs and
+
+1133
+02:03:17,320 --> 02:03:24,559
+cats redux competition into something which
+does the same thing with the fish data and
+
+1134
+02:03:24,559 --> 02:03:33,699
+I quickly submitted it and we have one of
+us in 18th place. Hopefully you can beat that
+
+1135
+02:03:33,699 --> 02:03:39,610
+tomorrow. Most importantly, download the MovieLens
+data and play with it and we'll talk more
+
+1136
+02:03:39,610 --> 00:00:00,000
+about embeddings next week.
+
