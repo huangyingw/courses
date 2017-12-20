@@ -1,10 +1,6 @@
 from __future__ import division, print_function
 import numpy as np
-import utils
-reload(utils)
 from utils import plots
-import vgg16
-reload(vgg16)
 from vgg16 import Vgg16
 
 path = "data/dogscats/"
