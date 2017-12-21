@@ -6,10 +6,7 @@ cd "$SCRIPTPATH"
 server="$1"
 dir="$2"
 
-rsync -aHvn --progress --delete \
-    --include='*.py' \
-    --include='*.sh' \
-    --include='*/' \
-    --exclude='*' \
+rsync -aHv --progress --delete \
+    --exclude-from=./excludeFile \
     ./ \
     "$server":"$dir"

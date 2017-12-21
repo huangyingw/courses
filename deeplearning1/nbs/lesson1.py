@@ -1,6 +1,3 @@
-
-# coding: utf-8
-
 # # Using Convolutional Neural Networks
 
 # Welcome to the first week of the first deep learning certificate! We're
@@ -25,8 +22,6 @@
 #
 # This shows plots in the web page itself - we always wants to use this
 # when using jupyter notebook:
-
-get_ipython().magic(u'matplotlib inline')
 
 
 # Define path to data: (It's a good idea to put it in a subdirectory of
