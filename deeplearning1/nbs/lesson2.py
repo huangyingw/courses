@@ -1,11 +1,10 @@
-
+from __future__ import division, print_function
 # coding: utf-8
 
 # # Linear models with CNN features
 
 # Rather than importing everything manually, we'll make things easy
 #   and load them all in utils.py, and just import them from there.
-get_ipython().magic(u'matplotlib inline')
 import utils
 reload(utils)
 from utils import *
@@ -27,8 +26,6 @@ from utils import *
 # model that is trained using the 1,000 predictions from the imagenet
 # model for each image as input, and the dog/cat label as target.
 
-get_ipython().magic(u'matplotlib inline')
-from __future__ import division, print_function
 import os
 import json
 from glob import glob
@@ -168,15 +165,12 @@ batches = get_batches(path + 'train', shuffle=False, batch_size=1)
 import bcolz
 
 
-def save_array(
-    fname,
-    arr): c = bcolz.carray(
+def save_array(fname, arr):
+    c = bcolz.carray(
         arr,
         rootdir=fname,
-    mode='w')
-
-
-c.flush()
+        mode='w')
+    c.flush()
 
 
 def load_array(fname): return bcolz.open(fname)[:]
@@ -447,7 +441,7 @@ for layer in model.layers:
 model.add(Dense(2, activation='softmax'))
 
 
-get_ipython().magic(u'pinfo2 vgg.finetune')
+vgg.finetune
 
 
 # ...and compile our updated model, and set up our batches to use the preprocessed images (note that now we will also *shuffle* the training batches, to add more randomness when using multiple epochs):
