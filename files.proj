@@ -1680,7 +1680,6 @@
 "./pandas/pandas/tests/io/sas/data/DRXFCD_G.csv"
 "./pandas/pandas/tests/io/sas/data/SSHSV1_A.csv"
 "./pandas/pandas/tests/io/sas/data/airline.csv"
-"./pandas/pandas/tests/io/sas/data/paxraw_d_short.csv"
 "./pandas/pandas/tests/io/sas/data/productsales.csv"
 "./pandas/pandas/tests/io/sas/data/test_12659.csv"
 "./pandas/pandas/tests/io/sas/data/test_sas7bdat_1.csv"
