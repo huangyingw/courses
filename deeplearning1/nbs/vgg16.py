@@ -1,18 +1,12 @@
-
-import json
-import numpy as np
-
 from keras import backend as K
-from keras.utils.data_utils import get_file
-from keras.models import Sequential
-from keras.layers.core import Flatten, Dense, Dropout, Lambda
 from keras.layers.convolutional import Convolution2D, MaxPooling2D, ZeroPadding2D
+from keras.layers.core import Flatten, Dense, Dropout, Lambda
+from keras.models import Sequential
 from keras.optimizers import Adam
 from keras.preprocessing import image
-
-# In case we are going to use the TensorFlow backend we need to explicitly
-# set the Theano image ordering
-from keras import backend as K
+from keras.utils.data_utils import get_file
+import json
+import numpy as np
 K.set_image_dim_ordering('th')
 
 
