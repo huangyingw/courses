@@ -60,7 +60,6 @@ from vgg16 import Vgg16
 # Instantiate plotting tool
 # In Jupyter notebooks, you will need to run this command before doing any
 # plotting
-get_ipython().magic(u'matplotlib inline')
 
 
 # ## Action Plan

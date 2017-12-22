@@ -1,10 +1,8 @@
 
 # coding: utf-8
 
-from theano.sandbox import cuda
 
 
-get_ipython().magic(u'matplotlib inline')
 import utils
 reload(utils)
 from utils import *

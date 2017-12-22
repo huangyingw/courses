@@ -1,19 +1,11 @@
 
 # coding: utf-8
 
-get_ipython().magic(u'matplotlib inline')
-import math
-import sys
-import os
 import numpy as np
-from numpy.linalg import norm
-from PIL import Image
 from matplotlib import pyplot as plt, rcParams, rc
-from scipy.ndimage import imread
 from skimage.measure import block_reduce
-import cPickle as pickle
 from scipy.ndimage.filters import correlate, convolve
-from ipywidgets import interact, interactive, fixed
+from ipywidgets import interactive
 from ipywidgets.widgets import *
 rc('animation', html='html5')
 rcParams['figure.figsize'] = 3, 6

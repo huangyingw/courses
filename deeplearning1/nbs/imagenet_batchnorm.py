@@ -8,10 +8,8 @@
 # batch norm called ``vgg_ft_bn`` in
 # [utils.py](https://github.com/fastai/courses/blob/master/deeplearning1/nbs/utils.py).
 
-from theano.sandbox import cuda
 
 
-get_ipython().magic(u'matplotlib inline')
 import utils
 reload(utils)
 from utils import *

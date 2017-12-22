@@ -25,13 +25,10 @@
 # ## 代码解释
 # 本文只对课程内核心代码进行解释，完整的代码可以点击这里下载。
 
-from theano.sandbox import cuda
 
 
-get_ipython().magic(u'matplotlib inline')
 import utils
 reload(utils)
-from utils import *
 from __future__ import division, print_funtion
 
 
@@ -115,7 +112,7 @@ len(trn), len(val)
 
 # ## 点乘 Dot Product
 
-from keras.layers import Input, Dense, merge, Flatten, Activation, Dropout
+from keras.layers import Dense, Dropout, Flatten, Input, merge
 from keras.models import Model
 from keras.layers import Embedding
 from keras import regularizers
