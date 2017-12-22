@@ -3,7 +3,6 @@
 
 # # Babi End to End MemNN
 
-get_ipython().magic(u'matplotlib inline')
 import importlib
 import utils2
 importlib.reload(utils2)

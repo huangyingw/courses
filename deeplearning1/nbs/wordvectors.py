@@ -1,7 +1,6 @@
 
 # coding: utf-8
 
-get_ipython().magic(u'matplotlib inline')
 import utils
 reload(utils)
 from utils import *

@@ -94,7 +94,6 @@ from theano.sandbox import cuda
 cuda.use('gpu0')
 
 
-get_ipython().magic(u'matplotlib inline')
 from __future__ import print_function, division
 #path = "data/state/"
 #path = "/home/ubuntu/statefarm/data/state/sample/"

@@ -5,7 +5,6 @@ from theano.sandbox import cuda
 cuda.use('gpu1')
 
 
-get_ipython().magic(u'matplotlib inline')
 import utils
 reload(utils)
 from utils import *
@@ -726,7 +725,6 @@ def dist(a, b): return pow(a - b, 2)
 def dist_d(a, b): return 2 * (a - b)
 
 
-import pdb
 
 
 eps = 1e-7

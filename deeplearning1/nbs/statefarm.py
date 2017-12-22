@@ -4,12 +4,10 @@
 # # Enter State Farm
 
 from theano.sandbox import cuda
-from keras import callbacks
 from keras.models import load_model
 cuda.use('gpu0')
 
 
-get_ipython().magic(u'matplotlib inline')
 from __future__ import print_function, division
 path = "data/state/"
 #path = "data/state/sample/"

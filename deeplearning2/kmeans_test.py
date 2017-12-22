@@ -1,12 +1,9 @@
 
 # coding: utf-8
 
-get_ipython().magic(u'matplotlib inline')
 import math
 import numpy as np
 import tensorflow as tf
-import matplotlib.pyplot as plt
-import operator
 from importlib import reload
 
 
@@ -253,7 +250,7 @@ kmeans.plot_data(centroids + 2, X, n_samples)
 
 # TO-DO: Needs notes?
 
-from sklearn.neighbors import LSHForest, KDTree, BallTree
+from sklearn.neighbors import BallTree, KDTree
 
 
 n_clusters = 6

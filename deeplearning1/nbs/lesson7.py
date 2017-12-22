@@ -13,10 +13,8 @@
 # and an additional method ``vgg_ft_bn()`` (which is already in utils.py)
 # which we use in this notebook.
 
-from theano.sandbox import cuda
 
 
-get_ipython().magic(u'matplotlib inline')
 import utils
 reload(utils)
 from utils import *

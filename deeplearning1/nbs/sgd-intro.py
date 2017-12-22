@@ -4,15 +4,10 @@
 # # Table of Contents
 #  <p>
 
-get_ipython().magic(u'matplotlib inline')
-import math
-import sys
-import os
 import numpy as np
 from numpy.random import random
 from matplotlib import pyplot as plt, rcParams, animation, rc
 from __future__ import print_function, division
-from ipywidgets import interact, interactive, fixed
 from ipywidgets.widgets import *
 rc('animation', html='html5')
 rcParams['figure.figsize'] = 3, 3

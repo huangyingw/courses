@@ -7,7 +7,6 @@
 # This notebook contains implementation of a super-resolution network
 # trained on Imagenet.
 
-get_ipython().magic(u'matplotlib inline')
 import importlib
 import utils2
 importlib.reload(utils2)

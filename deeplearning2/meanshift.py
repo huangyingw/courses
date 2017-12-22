@@ -9,7 +9,6 @@
 # generate some data and show them in action. We'll start off by importing
 # the libraries we'll be using today.
 
-get_ipython().magic(u'matplotlib inline')
 import math
 import numpy as np
 import matplotlib.pyplot as plt

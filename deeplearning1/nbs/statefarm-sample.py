@@ -7,14 +7,12 @@ from theano.sandbox import cuda
 cuda.use('gpu1')
 
 
-get_ipython().magic(u'matplotlib inline')
 from __future__ import print_function, division
 #path = "data/state/"
 path = "data/state/sample/"
 import utils
 reload(utils)
 from utils import *
-from IPython.display import FileLink
 
 
 batch_size = 64
