@@ -4,7 +4,6 @@
 # # Requirements
 
 import unicodedata
-import string
 import re
 import random
 import time
@@ -14,7 +13,6 @@ import torch.nn as nn
 from torch.autograd import Variable
 from torch import optim
 import torch.nn.functional as F
-import keras
 import numpy as np
 
 
@@ -459,7 +457,6 @@ def attn_train(input_variable, target_variable, encoder, decoder, encoder_optimi
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 import numpy as np
-get_ipython().magic(u'matplotlib inline')
 
 
 def showPlot(points):
@@ -481,7 +478,7 @@ def showPlot(points):
 
 def evaluate(encoder, decoder, sentence, max_length=MAX_LENGTH):
     input_variable = variableFromSentence(input_lang, sentence).cuda()
-    input_length = input_variable.size()[0]
+    input_variable.size()[0]
     encoder_hidden = encoder.initHidden(1).cuda()
     encoder_output, encoder_hidden = encoder(input_variable, encoder_hidden)
 

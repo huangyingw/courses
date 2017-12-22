@@ -11,7 +11,6 @@
 # We take our data set from [The CMU pronouncing
 # dictionary](https://en.wikipedia.org/wiki/CMU_Pronouncing_Dictionary)
 
-get_ipython().magic(u'matplotlib inline')
 import importlib
 import utils2
 importlib.reload(utils2)

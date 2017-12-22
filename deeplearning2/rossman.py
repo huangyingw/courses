@@ -11,11 +11,8 @@
 # time-series data. Here we explore the end-to-end process of using neural
 # networks with practical structured data problems.
 
-get_ipython().magic(u'matplotlib inline')
-
 
 import math
-import keras
 import datetime
 import pandas as pd
 import numpy as np
@@ -99,7 +96,6 @@ tables = [pd.read_csv(fname + '.csv', low_memory=False)
           for fname in table_names]
 
 
-from IPython.display import HTML
 
 
 # We can use `head()` to get a quick look at the contents of each table:
@@ -475,7 +471,7 @@ joined.columns
 # normal, etc...
 
 from sklearn_pandas import DataFrameMapper
-from sklearn.preprocessing import LabelEncoder, Imputer, StandardScaler
+from sklearn.preprocessing import LabelEncoder, StandardScaler
 
 
 # This dictionary maps categories to embedding dimensionality. In
@@ -963,7 +959,7 @@ def train_pkl(bs=128, ne=10):
 
 
 def get_model_pkl():
-    conts = [get_contin_pkl(feat) for feat in contin_map_fit.features]
+    [get_contin_pkl(feat) for feat in contin_map_fit.features]
     embs = [get_emb_pkl(feat) for feat in cat_map_fit.features]
     x = merge([emb for inp, emb in embs] + [contin_out], mode='concat')
 

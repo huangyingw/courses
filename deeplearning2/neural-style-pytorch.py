@@ -5,7 +5,6 @@
 
 # Style transfer/ super resolution implementation in pytorch.
 
-get_ipython().magic(u'matplotlib inline')
 import importlib
 import utils2
 importlib.reload(utils2)
@@ -22,8 +21,7 @@ import torch.nn.functional as F
 import torch.optim as optim
 from torch.autograd import Variable
 from torch.utils.serialization import load_lua
-from torch.utils.data import DataLoader
-from torchvision import transforms, models, datasets
+from torchvision import models
 
 
 # ### Setup

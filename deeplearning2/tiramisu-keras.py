@@ -6,7 +6,6 @@
 # Layers Tiramisu: Fully Convolutional DenseNets for Semantic
 # Segmentation](https://arxiv.org/abs/1611.09326).
 
-get_ipython().magic(u'matplotlib inline')
 import importlib
 import utils2
 importlib.reload(utils2)

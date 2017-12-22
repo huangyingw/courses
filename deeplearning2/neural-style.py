@@ -7,7 +7,6 @@
 # * Text: neural translation, text to speech, image captioning
 # * Image: Segmentation, artistic filters, image sharpening and cleaning
 
-get_ipython().magic(u'matplotlib inline')
 import importlib
 import utils2
 importlib.reload(utils2)

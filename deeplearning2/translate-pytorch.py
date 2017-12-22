@@ -3,14 +3,11 @@
 
 # # Translating French to English with Pytorch
 
-get_ipython().magic(u'matplotlib inline')
 import re
 import pickle
 import collections
 import bcolz
 import numpy as np
-import keras
-import sklearn
 import math
 import operator
 

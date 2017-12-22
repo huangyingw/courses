@@ -3,7 +3,6 @@
 
 # # Wasserstein GAN in Pytorch
 
-get_ipython().magic(u'matplotlib inline')
 import importlib
 import utils2
 importlib.reload(utils2)
@@ -163,12 +162,12 @@ def train(niter, first=True):
                 fake = netG(create_noise(real.size()[0]))
                 input.data.resize_(real.size()).copy_(fake.data)
                 errD_fake = step_D(input, mone)
-                errD = errD_real - errD_fake
+                errD_real - errD_fake
                 optimizerD.step()
 
             make_trainable(netD, False)
             netG.zero_grad()
-            errG = step_D(netG(create_noise(bs)), one)
+            step_D(netG(create_noise(bs)), one)
             optimizerG.step()
             gen_iterations += 1
 

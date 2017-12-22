@@ -1,7 +1,6 @@
 
 # coding: utf-8
 
-get_ipython().magic(u'matplotlib inline')
 import torch
 from torch.autograd import Variable
 from torch import nn, optim
