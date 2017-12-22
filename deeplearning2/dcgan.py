@@ -3,6 +3,7 @@
 
 # # Generative Adversarial Networks in Keras
 
+get_ipython().magic(u'matplotlib inline')
 import importlib
 import utils2
 importlib.reload(utils2)
