@@ -1,11 +1,6 @@
-from __future__ import division, print_function
 
-import os
 import json
-from glob import glob
 import numpy as np
-from scipy import misc, ndimage
-from scipy.ndimage.interpolation import zoom
 
 from keras import backend as K
 from keras.layers.normalization import BatchNormalization
@@ -13,8 +8,7 @@ from keras.utils.data_utils import get_file
 from keras.models import Sequential
 from keras.layers.core import Flatten, Dense, Dropout, Lambda
 from keras.layers.convolutional import Convolution2D, MaxPooling2D, ZeroPadding2D
-from keras.layers.pooling import GlobalAveragePooling2D
-from keras.optimizers import SGD, Adam
+from keras.optimizers import Adam
 from keras.preprocessing import image
 
 # In case we are going to use the TensorFlow backend we need to explicitly
