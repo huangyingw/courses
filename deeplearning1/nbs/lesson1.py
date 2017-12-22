@@ -1,3 +1,4 @@
+from __future__ import division, print_function
 # # Using Convolutional Neural Networks
 
 # Welcome to the first week of the first deep learning certificate! We're
@@ -34,7 +35,6 @@ path = "data/dogscats/"
 
 # A few basic libraries that we'll need for the initial exercises:
 
-from __future__ import division, print_function
 
 import os
 import json
