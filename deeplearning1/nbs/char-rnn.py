@@ -8,7 +8,6 @@ cuda.use('gpu2')
 import utils
 reload(utils)
 from utils import *
-from __future__ import division, print_function
 
 
 from keras.layers import TimeDistributed, Activation

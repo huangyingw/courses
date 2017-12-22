@@ -26,10 +26,8 @@
 # 本文只对课程内核心代码进行解释，完整的代码可以点击这里下载。
 
 
-
 import utils
 reload(utils)
-from __future__ import division, print_funtion
 
 
 import pandas as pd

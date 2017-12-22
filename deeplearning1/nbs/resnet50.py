@@ -1,17 +1,10 @@
-from __future__ import division, print_function
 
-import os
 import json
-from glob import glob
 import numpy as np
-from scipy import misc, ndimage
-from scipy.ndimage.interpolation import zoom
 
-import keras
-from keras import backend as K
-from keras.models import Sequential, Model
-from keras.layers.core import Flatten, Dense, Dropout, Lambda
-from keras.layers import Input, Activation, merge
+from keras.models import Model
+from keras.layers.core import Dense, Flatten, Lambda
+from keras.layers import Activation, Input
 from keras.optimizers import RMSprop
 from keras.layers.normalization import BatchNormalization
 from keras.layers.convolutional import Convolution2D, MaxPooling2D, ZeroPadding2D, AveragePooling2D

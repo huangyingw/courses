@@ -2,11 +2,9 @@
 # coding: utf-8
 
 
-
 import utils
 reload(utils)
 from utils import *
-from __future__ import division, print_function
 
 
 model_path = 'data/imdb/models/'

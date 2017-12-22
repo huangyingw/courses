@@ -14,11 +14,9 @@
 # which we use in this notebook.
 
 
-
 import utils
 reload(utils)
 from utils import *
-from __future__ import division, print_function
 
 
 #path = "data/fish/sample/"

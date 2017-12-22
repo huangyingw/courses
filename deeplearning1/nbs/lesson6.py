@@ -8,7 +8,6 @@ cuda.use('gpu1')
 import utils
 reload(utils)
 from utils import *
-from __future__ import division, print_function
 
 
 # ## Setup
@@ -723,8 +722,6 @@ def dist(a, b): return pow(a - b, 2)
 
 
 def dist_d(a, b): return 2 * (a - b)
-
-
 
 
 eps = 1e-7

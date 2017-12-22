@@ -8,7 +8,6 @@ cuda.use('gpu0')
 import utils
 reload(utils)
 from utils import *
-from __future__ import division, print_function
 
 
 # ## Setup
