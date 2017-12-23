@@ -7,7 +7,6 @@
 # run this script from the same dir that your test and train data live in
 
 import os
-import glob
 import random
 import pandas as pd
 import shutil
@@ -29,8 +28,7 @@ val_dir = '/home/ubuntu/nbs/data/StateFarm/valid'
 # subdirs, one for each class.
 
 directory = 'valid'
-if not os.path.exists(directory):
-    os.makedirs(directory)
+makedirs(directory)
 cwd = os.getcwd()
 # path = cwd + '/' + directory
 path = val_dir

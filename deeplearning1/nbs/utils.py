@@ -11,9 +11,9 @@ import bcolz
 import itertools
 import math
 import numpy as np
+import os
+
 np.set_printoptions(precision=4, linewidth=100)
-
-
 to_bw = np.array([0.299, 0.587, 0.114])
 
 def gray(img):
@@ -223,3 +223,7 @@ class MixIterator(object):
             n0 = np.concatenate([n[0] for n in nexts])
             n1 = np.concatenate([n[1] for n in nexts])
             return (n0, n1)
+
+def makedirs(path):
+    if not os.path.exists(path):
+        os.makedirs(path)

@@ -1,15 +1,21 @@
-
-# coding: utf-8
-
-
-import utils
-reload(utils)
+from keras.layers import Embedding, Input, LSTM
+from keras.layers.convolutional import *
+from keras.layers.core import Dense, Dropout, Flatten
+from keras.models import Sequential, Model
+from keras.optimizers import Adam
+from keras.preprocessing import sequence
+from keras.regularizers import l2
+from keras.utils.data_utils import get_file
+from numpy.random import normal
 from utils import *
-
+from vgg16 import *
+from vgg16bn import *
+import cPickle as pickle
+import numpy as np
+import re
 
 model_path = 'data/imdb/models/'
-get_ipython().magic(u'mkdir -p $model_path')
-
+makedirs(model_path)
 
 # ## Setup data
 
