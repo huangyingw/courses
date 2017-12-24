@@ -364,8 +364,7 @@ def get_annotations():
     cache_subdir = os.path.abspath(os.path.join(path, 'annos'))
     url_prefix = 'https://kaggle2.blob.core.windows.net/forum-message-attachments/147157/'
 
-    if not os.path.exists(cache_subdir):
-        os.makedirs(cache_subdir)
+    makedirs(cache_subdir)
 
     for url_suffix, md5_hash in annot_urls.iteritems():
         fname = url_suffix.rsplit('/', 1)[-1]

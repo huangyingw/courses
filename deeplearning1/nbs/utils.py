@@ -1,57 +1,19 @@
-import math, os, json, sys, re
-import cPickle as pickle
-from glob import glob
-import numpy as np
-from matplotlib import pyplot as plt
-from operator import itemgetter, attrgetter, methodcaller
-from collections import OrderedDict
-import itertools
-from itertools import chain
-
-import pandas as pd
-import PIL
-from PIL import Image
-from numpy.random import random, permutation, randn, normal, uniform, choice
-from numpy import newaxis
-import scipy
-from scipy import misc, ndimage
-from scipy.ndimage.interpolation import zoom
-from scipy.ndimage import imread
-from sklearn.metrics import confusion_matrix
-import bcolz
-from sklearn.preprocessing import OneHotEncoder
-from sklearn.manifold import TSNE
-
-from IPython.lib.display import FileLink
-
-import theano
-from theano import shared, tensor as T
-from theano.tensor.nnet import conv2d, nnet
-from theano.tensor.signal import pool
-
-import keras
 from keras import backend as K
-from keras.utils.data_utils import get_file
-from keras.utils import np_utils
-from keras.utils.np_utils import to_categorical
-from keras.models import Sequential, Model
-from keras.layers import Input, Embedding, Reshape, merge, LSTM, Bidirectional
-from keras.layers import TimeDistributed, Activation, SimpleRNN, GRU
-from keras.layers.core import Flatten, Dense, Dropout, Lambda
-from keras.regularizers import l2, activity_l2, l1, activity_l1
-from keras.layers.normalization import BatchNormalization
-from keras.optimizers import SGD, RMSprop, Adam
-from keras.utils.layer_utils import layer_from_config
-from keras.metrics import categorical_crossentropy, categorical_accuracy
 from keras.layers.convolutional import *
-from keras.preprocessing import image, sequence
-from keras.preprocessing.text import Tokenizer
-
+from keras.models import Sequential
+from keras.preprocessing import image
+from keras.utils.layer_utils import layer_from_config
+from keras.utils.np_utils import to_categorical
+from matplotlib import pyplot as plt
 from vgg16 import *
 from vgg16bn import *
+import bcolz
+import itertools
+import math
+import numpy as np
+import os
+
 np.set_printoptions(precision=4, linewidth=100)
-
-
 to_bw = np.array([0.299, 0.587, 0.114])
 
 def gray(img):
@@ -75,15 +37,15 @@ def floor(x):
 def ceil(x):
     return int(math.ceil(x))
 
-def plots(ims, figsize=(12,6), rows=1, interp=False, titles=None):
+def plots(ims, figsize=(12, 6), rows=1, interp=False, titles=None):
     if type(ims[0]) is np.ndarray:
         ims = np.array(ims).astype(np.uint8)
         if (ims.shape[-1] != 3):
-            ims = ims.transpose((0,2,3,1))
+            ims = ims.transpose((0, 2, 3, 1))
     f = plt.figure(figsize=figsize)
-    cols = len(ims)//rows if len(ims) % 2 == 0 else len(ims)//rows + 1
+    cols = len(ims) // rows if len(ims) % 2 == 0 else len(ims) // rows + 1
     for i in range(len(ims)):
-        sp = f.add_subplot(rows, cols, i+1)
+        sp = f.add_subplot(rows, cols, i + 1)
         sp.axis('Off')
         if titles is not None:
             sp.set_title(titles[i], fontsize=16)
@@ -92,12 +54,12 @@ def plots(ims, figsize=(12,6), rows=1, interp=False, titles=None):
 
 
 def do_clip(arr, mx):
-    clipped = np.clip(arr, (1-mx)/1, mx)
-    return clipped/clipped.sum(axis=1)[:, np.newaxis]
+    clipped = np.clip(arr, (1 - mx) / 1, mx)
+    return clipped / clipped.sum(axis=1)[:, np.newaxis]
 
 
 def get_batches(dirname, gen=image.ImageDataGenerator(), shuffle=True, batch_size=4, class_mode='categorical',
-                target_size=(224,224)):
+                target_size=(224, 224)):
     return gen.flow_from_directory(dirname, target_size=target_size,
             class_mode=class_mode, shuffle=shuffle, batch_size=batch_size)
 
@@ -117,7 +79,7 @@ def copy_layers(layers): return [copy_layer(layer) for layer in layers]
 
 
 def copy_weights(from_layers, to_layers):
-    for from_layer,to_layer in zip(from_layers, to_layers):
+    for from_layer, to_layer in zip(from_layers, to_layers):
         to_layer.set_weights(from_layer.get_weights())
 
 
@@ -129,8 +91,8 @@ def copy_model(m):
 
 def insert_layer(model, new_layer, index):
     res = Sequential()
-    for i,layer in enumerate(model.layers):
-        if i==index: res.add(new_layer)
+    for i, layer in enumerate(model.layers):
+        if i == index: res.add(new_layer)
         copied = layer_from_config(wrap_config(layer))
         res.add(copied)
         copied.set_weights(layer.get_weights())
@@ -138,11 +100,11 @@ def insert_layer(model, new_layer, index):
 
 
 def adjust_dropout(weights, prev_p, new_p):
-    scal = (1-prev_p)/(1-new_p)
-    return [o*scal for o in weights]
+    scal = (1 - prev_p) / (1 - new_p)
+    return [o * scal for o in weights]
 
 
-def get_data(path, target_size=(224,224)):
+def get_data(path, target_size=(224, 224)):
     batches = get_batches(path, shuffle=False, batch_size=1, class_mode=None, target_size=target_size)
     return np.concatenate([batches.next() for i in range(batches.nb_sample)])
 
@@ -174,7 +136,7 @@ def plot_confusion_matrix(cm, classes, normalize=False, title='Confusion matrix'
 
 
 def save_array(fname, arr):
-    c=bcolz.carray(arr, rootdir=fname, mode='w')
+    c = bcolz.carray(arr, rootdir=fname, mode='w')
     c.flush()
 
 
@@ -183,27 +145,27 @@ def load_array(fname):
 
 
 def mk_size(img, r2c):
-    r,c,_ = img.shape
-    curr_r2c = r/c
-    new_r, new_c = r,c
-    if r2c>curr_r2c:
-        new_r = floor(c*r2c)
+    r, c, _ = img.shape
+    curr_r2c = r / c
+    new_r, new_c = r, c
+    if r2c > curr_r2c:
+        new_r = floor(c * r2c)
     else:
-        new_c = floor(r/r2c)
+        new_c = floor(r / r2c)
     arr = np.zeros((new_r, new_c, 3), dtype=np.float32)
-    r2=(new_r-r)//2
-    c2=(new_c-c)//2
-    arr[floor(r2):floor(r2)+r,floor(c2):floor(c2)+c] = img
+    r2 = (new_r - r) // 2
+    c2 = (new_c - c) // 2
+    arr[floor(r2):floor(r2) + r, floor(c2):floor(c2) + c] = img
     return arr
 
 
 def mk_square(img):
-    x,y,_ = img.shape
+    x, y, _ = img.shape
     maxs = max(img.shape[:2])
-    y2=(maxs-y)//2
-    x2=(maxs-x)//2
-    arr = np.zeros((maxs,maxs,3), dtype=np.float32)
-    arr[floor(x2):floor(x2)+x,floor(y2):floor(y2)+y] = img
+    y2 = (maxs - y) // 2
+    x2 = (maxs - x) // 2
+    arr = np.zeros((maxs, maxs, 3), dtype=np.float32)
+    arr[floor(x2):floor(x2) + x, floor(y2):floor(y2) + y] = img
     return arr
 
 
@@ -221,18 +183,18 @@ def vgg_ft_bn(out_dim):
 
 
 def get_classes(path):
-    batches = get_batches(path+'train', shuffle=False, batch_size=1)
-    val_batches = get_batches(path+'valid', shuffle=False, batch_size=1)
-    test_batches = get_batches(path+'test', shuffle=False, batch_size=1)
+    batches = get_batches(path + 'train', shuffle=False, batch_size=1)
+    val_batches = get_batches(path + 'valid', shuffle=False, batch_size=1)
+    test_batches = get_batches(path + 'test', shuffle=False, batch_size=1)
     return (val_batches.classes, batches.classes, onehot(val_batches.classes), onehot(batches.classes),
         val_batches.filenames, batches.filenames, test_batches.filenames)
 
 
 def split_at(model, layer_type):
     layers = model.layers
-    layer_idx = [index for index,layer in enumerate(layers)
+    layer_idx = [index for index, layer in enumerate(layers)
                  if type(layer) is layer_type][-1]
-    return layers[:layer_idx+1], layers[layer_idx+1:]
+    return layers[:layer_idx + 1], layers[layer_idx + 1:]
 
 
 class MixIterator(object):
@@ -261,3 +223,7 @@ class MixIterator(object):
             n0 = np.concatenate([n[0] for n in nexts])
             n1 = np.concatenate([n[1] for n in nexts])
             return (n0, n1)
+
+def makedirs(path):
+    if not os.path.exists(path):
+        os.makedirs(path)

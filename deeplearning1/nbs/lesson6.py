@@ -1,13 +1,22 @@
-
-# coding: utf-8
-
+from collections import OrderedDict
+from itertools import chain
+from keras.layers import Embedding, Input, LSTM, merge
+from keras.layers import GRU, SimpleRNN, TimeDistributed
+from keras.layers.core import Dense, Flatten
+from keras.layers.normalization import BatchNormalization
+from keras.models import Sequential, Model
+from keras.optimizers import Adam
+from keras.utils.data_utils import get_file
+from keras.utils.np_utils import to_categorical
+from numpy import newaxis
+from numpy.random import normal, random
+from theano import shared, tensor as T
 from theano.sandbox import cuda
+from theano.tensor.nnet import nnet
+import math
+import numpy as np
+import theano
 cuda.use('gpu1')
-
-
-import utils
-reload(utils)
-from utils import *
 
 
 # ## Setup

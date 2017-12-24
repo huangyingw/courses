@@ -1,15 +1,21 @@
-
-# coding: utf-8
-
-
-import utils
-reload(utils)
+from keras.layers import Embedding, Input, LSTM
+from keras.layers.convolutional import *
+from keras.layers.core import Dense, Dropout, Flatten
+from keras.models import Sequential, Model
+from keras.optimizers import Adam
+from keras.preprocessing import sequence
+from keras.regularizers import l2
+from keras.utils.data_utils import get_file
+from numpy.random import normal
 from utils import *
-
+from vgg16 import *
+from vgg16bn import *
+import cPickle as pickle
+import numpy as np
+import re
 
 model_path = 'data/imdb/models/'
-get_ipython().magic(u'mkdir -p $model_path')
-
+makedirs(model_path)
 
 # ## Setup data
 
@@ -197,7 +203,7 @@ def get_glove_dataset(dataset):
                '6B.200d': 'af271b46c04b0b2e41a84d8cd806178d',
                '6B.300d': '30290210376887dcc6d0a5a6374d8255'}
     glove_path = os.path.abspath('data/glove/results')
-    get_ipython().magic(u'mkdir -p $glove_path')
+    makedirs(glove_path)
     return get_file(dataset,
                     'http://files.fast.ai/models/glove/' + dataset + '.tgz',
                     cache_subdir=glove_path,

@@ -1,12 +1,14 @@
-
-# coding: utf-8
-
-
-import utils
-reload(utils)
-from utils import *
-
-
+from keras.layers import Embedding, Input, merge
+from keras.layers.core import Dense, Dropout, Flatten
+from keras.models import Model
+from keras.optimizers import Adam
+from keras.regularizers import l2
+from matplotlib import pyplot as plt
+from operator import itemgetter
+import numpy as np
+import os
+import pandas as pd
+import sys
 #path = "data/ml-20m/"
 path = "data/ml-small/"
 model_path = path + 'models/'
