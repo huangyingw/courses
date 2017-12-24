@@ -1,12 +1,18 @@
-# coding: utf-8
-
 # # Linear models with CNN features
 
 # Rather than importing everything manually, we'll make things easy
 #   and load them all in utils.py, and just import them from there.
-import utils
-reload(utils)
+from keras import backend as K
+from keras.layers.core import Dense
+from keras.models import Sequential
+from keras.optimizers import SGD, RMSprop
+from keras.preprocessing import image
+from numpy.random import random, permutation
+from sklearn.metrics import confusion_matrix
+from sklearn.preprocessing import OneHotEncoder
 from utils import *
+import numpy as np
+np.set_printoptions(precision=4, linewidth=100)
 
 
 # ## Introduction
@@ -24,34 +30,6 @@ from utils import *
 # A very simple solution to both of these problems is to learn a linear
 # model that is trained using the 1,000 predictions from the imagenet
 # model for each image as input, and the dog/cat label as target.
-
-import os
-import json
-from glob import glob
-import numpy as np
-import scipy
-from sklearn.preprocessing import OneHotEncoder
-from sklearn.metrics import confusion_matrix
-np.set_printoptions(precision=4, linewidth=100)
-from matplotlib import pyplot as plt
-import utils
-reload(utils)
-from utils import plots, get_batches, plot_confusion_matrix, get_data
-
-
-from numpy.random import random, permutation
-from scipy import misc, ndimage
-from scipy.ndimage.interpolation import zoom
-
-import keras
-from keras import backend as K
-from keras.utils.data_utils import get_file
-from keras.models import Sequential
-from keras.layers import Input
-from keras.layers.core import Flatten, Dense, Dropout, Lambda
-from keras.layers.convolutional import Convolution2D, MaxPooling2D, ZeroPadding2D
-from keras.optimizers import SGD, RMSprop
-from keras.preprocessing import image
 
 
 # ## Linear models in keras
@@ -122,8 +100,7 @@ lm.get_weights()
 path = "data/dogscats/sample/"
 # path = "data/dogscats/"
 model_path = path + 'models/'
-if not os.path.exists(model_path):
-    os.mkdir(model_path)
+makedirs(model_path)
 
 
 # We will process as many images at a time as our graphics card allows.

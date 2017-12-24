@@ -6,4 +6,4 @@ cd "$SCRIPTPATH"
 source /etc/profile
 source ~/.profile
 cd deeplearning1/nbs
-/media/volgrp/anaconda2/bin/python lesson5.py
+~/anaconda2/bin/python lesson3.py

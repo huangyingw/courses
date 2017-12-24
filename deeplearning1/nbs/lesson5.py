@@ -203,7 +203,7 @@ def get_glove_dataset(dataset):
                '6B.200d': 'af271b46c04b0b2e41a84d8cd806178d',
                '6B.300d': '30290210376887dcc6d0a5a6374d8255'}
     glove_path = os.path.abspath('data/glove/results')
-    get_ipython().magic(u'mkdir -p $glove_path')
+    makedirs(glove_path)
     return get_file(dataset,
                     'http://files.fast.ai/models/glove/' + dataset + '.tgz',
                     cache_subdir=glove_path,

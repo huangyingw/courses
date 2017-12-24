@@ -1,19 +1,22 @@
-
-# coding: utf-8
-
-# # Training a better model
-
-
-import utils
-reload(utils)
+from keras import backend as K
+from keras.layers.convolutional import *
+from keras.layers.core import Dense, Dropout, Flatten
+from keras.layers.normalization import BatchNormalization
+from keras.models import Sequential
+from keras.optimizers import Adam, RMSprop
+from keras.preprocessing import image
+from keras.regularizers import l1, l2
+from matplotlib import pyplot as plt
+from scipy import ndimage
 from utils import *
-
+from vgg16 import *
+from vgg16bn import *
+import numpy as np
 
 #path = "data/dogscats/sample/"
 path = "data/dogscats/"
 model_path = path + 'models/'
-if not os.path.exists(model_path):
-    os.mkdir(model_path)
+makedirs(model_path)
 
 batch_size = 64
 
