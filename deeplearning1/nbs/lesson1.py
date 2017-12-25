@@ -1,3 +1,11 @@
+from keras.layers.convolutional import Convolution2D, MaxPooling2D, ZeroPadding2D
+from keras.layers.core import Flatten, Dense, Dropout, Lambda
+from keras.models import Sequential
+from keras.preprocessing import image
+from keras.utils.data_utils import get_file
+from vgg16 import Vgg16
+import json
+import numpy as np
 # # Using Convolutional Neural Networks
 
 # Welcome to the first week of the first deep learning certificate! We're
@@ -35,21 +43,12 @@ path = "data/dogscats/"
 # A few basic libraries that we'll need for the initial exercises:
 
 
-import os
-import json
-from glob import glob
-import numpy as np
 np.set_printoptions(precision=4, linewidth=100)
-from matplotlib import pyplot as plt
 
 
 # We have created a file most imaginatively called 'utils.py' to store any
 # little convenience functions we'll want to use. We will discuss these as
 # we use them.
-
-import utils
-reload(utils)
-from utils import plots
 
 
 # # Use a pretrained VGG model with our **Vgg16** class
@@ -73,9 +72,6 @@ batch_size = 64
 
 
 # Import our class, and instantiate
-import vgg16
-reload(vgg16)
-from vgg16 import Vgg16
 
 
 vgg = Vgg16()
@@ -122,7 +118,7 @@ imgs, labels = next(batches)
 # and dog). If we had three categories (e.g. cats, dogs, and kangaroos),
 # then the arrays would each contain two 0's, and one 1.
 
-plots(imgs, titles=labels)
+#plots(imgs, titles=labels)
 
 
 # We can now pass the images to Vgg16's predict() function to get back
@@ -187,25 +183,6 @@ vgg.fit(batches, val_batches, nb_epoch=1)
 # understand these details. It will also help you in the future when you
 # debug any problems with your models, since you'll understand what's
 # going on behind the scenes.
-
-# ## Model setup
-#
-# We need to import all the modules we'll be using from numpy, scipy, and
-# keras:
-
-from numpy.random import random, permutation
-from scipy import misc, ndimage
-from scipy.ndimage.interpolation import zoom
-
-import keras
-from keras import backend as K
-from keras.utils.data_utils import get_file
-from keras.models import Sequential, Model
-from keras.layers.core import Flatten, Dense, Dropout, Lambda
-from keras.layers import Input
-from keras.layers.convolutional import Convolution2D, MaxPooling2D, ZeroPadding2D
-from keras.optimizers import SGD, RMSprop
-from keras.preprocessing import image
 
 
 # Let's import the mappings from VGG ids to imagenet category ids and
@@ -335,7 +312,7 @@ val_batches = get_batches('valid', batch_size=batch_size)
 imgs, labels = next(batches)
 
 # This shows the 'ground truth'
-plots(imgs, titles=labels)
+#plots(imgs, titles=labels)
 
 
 # The VGG model returns 1,000 probabilities for each image, representing
