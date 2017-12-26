@@ -6,30 +6,6 @@ from keras.utils.data_utils import get_file
 from vgg16 import Vgg16
 import json
 import numpy as np
-# # Using Convolutional Neural Networks
-
-# Welcome to the first week of the first deep learning certificate! We're
-# going to use convolutional neural networks (CNNs) to allow our computer
-# to see - something that is only possible thanks to deep learning.
-
-# ## Introduction to this week's task: 'Dogs vs Cats'
-
-# We're going to try to create a model to enter the [Dogs vs
-# Cats](https://www.kaggle.com/c/dogs-vs-cats) competition at Kaggle.
-# There are 25,000 labelled dog and cat photos available for training, and
-# 12,500 in the test set that we have to try to label for this
-# competition. According to the Kaggle web-site, when this competition was
-# launched (end of 2013): *"**State of the art**: The current literature
-# suggests machine classifiers can score above 80% accuracy on this
-# task"*. So if we can beat 80%, then we will be at the cutting edge as of
-# 2013!
-
-# ## Basic setup
-
-# There isn't too much to do to get started - just a few simple configuration steps.
-#
-# This shows plots in the web page itself - we always wants to use this
-# when using jupyter notebook:
 
 
 # Define path to data: (It's a good idea to put it in a subdirectory of
@@ -45,26 +21,6 @@ path = "data/dogscats/"
 
 np.set_printoptions(precision=4, linewidth=100)
 
-
-# We have created a file most imaginatively called 'utils.py' to store any
-# little convenience functions we'll want to use. We will discuss these as
-# we use them.
-
-
-# # Use a pretrained VGG model with our **Vgg16** class
-
-# Our first step is simply to use a model that has been fully created for us, which can recognise a wide variety (1,000 categories) of images. We will use 'VGG', which won the 2014 Imagenet competition, and is a very simple model to create and understand. The VGG Imagenet team created both a larger, slower, slightly more accurate model (*VGG  19*) and a smaller, faster model (*VGG 16*). We will be using VGG 16 since the much slower performance of VGG19 is generally not worth the very minor improvement in accuracy.
-#
-# We have created a python class, *Vgg16*, which makes using the VGG 16
-# model very straightforward.
-
-# ## The punchline: state of the art custom model in 7 lines of code
-#
-# Here's everything you need to do to get >97% accuracy on the Dogs vs
-# Cats dataset - we won't analyze how it works behind the scenes yet,
-# since at this stage we're just going to focus on the minimum necessary
-# to actually do useful work.
-
 # As large as you can, but no larger than 64 is recommended.
 # If you have an older or cheaper GPU, you'll run out of memory, so will
 # have to decrease this.
@@ -72,7 +28,6 @@ batch_size = 64
 
 
 # Import our class, and instantiate
-
 
 vgg = Vgg16()
 # Grab a few images at a time for training and validation.
@@ -83,33 +38,18 @@ vgg.finetune(batches)
 vgg.fit(batches, val_batches, nb_epoch=1)
 
 
-# The code above will work for any image recognition task, with any number of categories! All you have to do is to put your images into one folder per category, and run the code above.
-#
-# Let's take a look at how this works, step by step...
-
-# ## Use Vgg16 for basic image recognition
-#
-# Let's start off by using the *Vgg16* class to recognise the main imagenet category for each image.
-#
-# We won't be able to enter the Cats vs Dogs competition with an Imagenet model alone, since 'cat' and 'dog' are not categories in Imagenet - instead each individual breed is a separate category. However, we can use it to see how well it can recognise the images, which is a good first step.
-#
-# First, create a Vgg16 object:
-
-vgg = Vgg16()
-
-
 # Vgg16 is built on top of *Keras* (which we will be learning much more about shortly!), a flexible, easy to use deep learning library that sits on top of Theano or Tensorflow. Keras reads groups of images and labels in *batches*, using a fixed directory structure, where images from each category for training must be placed in a separate folder.
 #
 # Let's grab batches of data from our training folder:
 
-batches = vgg.get_batches(path + 'train', batch_size=4)
+#batches = vgg.get_batches(path + 'train', batch_size=4)
 
 
 # (BTW, when Keras refers to 'classes', it doesn't mean python classes - but rather it refers to the categories of the labels, such as 'pug', or 'tabby'.)
 #
 # *Batches* is just a regular python iterator. Each iteration returns both the images themselves, as well as the labels.
 
-imgs, labels = next(batches)
+#imgs, labels = next(batches)
 
 
 # As you can see, the labels for each image are an array, containing a 1 in the first position if it's a cat, and in the second position if it's a dog. This approach to encoding categorical variables, where an array containing just a single 1 in the position corresponding to the category, is very common in deep learning. It is called *one hot encoding*.
@@ -125,13 +65,13 @@ imgs, labels = next(batches)
 # probabilities, category indexes, and category names for each image's VGG
 # prediction.
 
-vgg.predict(imgs, True)
+#vgg.predict(imgs, True)
 
 
 # The category indexes are based on the ordering of categories used in the
 # VGG model - e.g here are the first four:
 
-vgg.classes[:4]
+#vgg.classes[:4]
 
 
 # (Note that, other than creating the Vgg16 object, none of these steps are necessary to build a model; they are just showing how to use the class to view imagenet predictions.)
