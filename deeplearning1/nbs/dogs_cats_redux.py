@@ -1,5 +1,18 @@
-
-# coding: utf-8
+from IPython.lib.display import FileLink
+from PIL import Image
+from keras.layers.convolutional import *
+from keras.preprocessing import image
+from matplotlib import pyplot as plt
+from numpy.random import permutation
+from sklearn.metrics import confusion_matrix
+from utils import *
+from vgg16 import *
+from vgg16bn import *
+import glob
+import numpy as np
+import os
+import shutil
+import sys
 
 # # Dogs vs Cat Redux
 
@@ -38,13 +51,7 @@
 # jupyter notebook
 # ```
 
-# Verify we are in the lesson1 directory
-get_ipython().magic(u'pwd')
-
-
 # Create references to important directories we will use over and over
-import os
-import sys
 current_dir = os.getcwd()
 LESSON_HOME_DIR = current_dir
 DATA_HOME_DIR = current_dir + '/data/redux'
@@ -73,80 +80,86 @@ from vgg16 import Vgg16
 # ## Create validation set and sample
 
 # Create directories
-get_ipython().magic(u'cd $DATA_HOME_DIR')
-get_ipython().magic(u'mkdir valid')
-get_ipython().magic(u'mkdir results')
-get_ipython().magic(u'mkdir -p sample/train')
-get_ipython().magic(u'mkdir -p sample/test')
-get_ipython().magic(u'mkdir -p sample/valid')
-get_ipython().magic(u'mkdir -p sample/results')
-get_ipython().magic(u'mkdir -p test/unknown')
+os.chdir(DATA_HOME_DIR)
+makedirs('valid')
+makedirs('results')
+makedirs('sample/train')
+makedirs('sample/test')
+makedirs('sample/valid')
+makedirs('sample/results')
+makedirs('test/unknown')
 
 
-get_ipython().magic(u'cd $DATA_HOME_DIR/train')
+os.chdir(DATA_HOME_DIR + '/train')
 
-
+'''
 g = glob('*.jpg')
 shuf = np.random.permutation(g)
 for i in range(2000):
     os.rename(shuf[i], DATA_HOME_DIR + '/valid/' + shuf[i])
+'''
 
 
-from shutil import copyfile
-
-
+'''
 g = glob('*.jpg')
 shuf = np.random.permutation(g)
 for i in range(200):
     copyfile(shuf[i], DATA_HOME_DIR + '/sample/train/' + shuf[i])
 
 
-get_ipython().magic(u'cd $DATA_HOME_DIR/valid')
+os.chdir(DATA_HOME_DIR + '/valid')
 
 
 g = glob('*.jpg')
 shuf = np.random.permutation(g)
 for i in range(50):
     copyfile(shuf[i], DATA_HOME_DIR + '/sample/valid/' + shuf[i])
+'''
 
 
 # ## Rearrange image files into their respective directories
 
 # Divide cat/dog images into separate directories
 
-get_ipython().magic(u'cd $DATA_HOME_DIR/sample/train')
-get_ipython().magic(u'mkdir cats')
-get_ipython().magic(u'mkdir dogs')
-get_ipython().magic(u'mv cat.*.jpg cats/')
-get_ipython().magic(u'mv dog.*.jpg dogs/')
+os.chdir(DATA_HOME_DIR + '/sample/train')
+makedirs('cats')
+makedirs('dogs')
 
-get_ipython().magic(u'cd $DATA_HOME_DIR/sample/valid')
-get_ipython().magic(u'mkdir cats')
-get_ipython().magic(u'mkdir dogs')
-get_ipython().magic(u'mv cat.*.jpg cats/')
-get_ipython().magic(u'mv dog.*.jpg dogs/')
+for file in glob.glob('cat.*.jpg'):
+    shutil.move(file, 'cats/')
 
-get_ipython().magic(u'cd $DATA_HOME_DIR/valid')
-get_ipython().magic(u'mkdir cats')
-get_ipython().magic(u'mkdir dogs')
-get_ipython().magic(u'mv cat.*.jpg cats/')
-get_ipython().magic(u'mv dog.*.jpg dogs/')
+for file in glob.glob('dog.*.jpg'):
+    shutil.move(file, 'dogs/')
 
-get_ipython().magic(u'cd $DATA_HOME_DIR/train')
-get_ipython().magic(u'mkdir cats')
-get_ipython().magic(u'mkdir dogs')
-get_ipython().magic(u'mv cat.*.jpg cats/')
-get_ipython().magic(u'mv dog.*.jpg dogs/')
+'''
+os.chdir(DATA_HOME_DIR + '/sample/valid')
+makedirs('cats')
+makedirs('dogs')
+os.rename('cat.*.jpg', 'cats/')
+os.rename('dog.*.jpg', 'dogs/')
+
+os.chdir(DATA_HOME_DIR + '/valid')
+makedirs('cats')
+makedirs('dogs')
+os.rename('cat.*.jpg', 'cats/')
+os.rename('dog.*.jpg', 'dogs/')
+
+os.chdir(DATA_HOME_DIR + '/train')
+makedirs('cats')
+makedirs('dogs')
+os.rename('cat.*.jpg', 'cats/')
+os.rename('dog.*.jpg', 'dogs/')
 
 
 # Create single 'unknown' class for test set
-get_ipython().magic(u'cd $DATA_HOME_DIR/test')
-get_ipython().magic(u'mv *.jpg unknown/')
+os.chdir(DATA_HOME_DIR + '/test')
+os.rename('*.jpg', 'unknown/')
+'''
 
 
 # ## Finetuning and Training
 
-get_ipython().magic(u'cd $DATA_HOME_DIR')
+os.chdir(DATA_HOME_DIR)
 
 # Set path to sample/ path if desired
 path = DATA_HOME_DIR + '/'  # '/sample/'
@@ -406,7 +419,7 @@ subm = np.stack([ids, isdog], axis=1)
 subm[:5]
 
 
-get_ipython().magic(u'cd $DATA_HOME_DIR')
+os.chdir(DATA_HOME_DIR)
 submission_file_name = 'submission1.csv'
 np.savetxt(
     submission_file_name,
@@ -417,7 +430,7 @@ np.savetxt(
 
 
 from IPython.display import FileLink
-get_ipython().magic(u'cd $LESSON_HOME_DIR')
+os.chdir(LESSON_HOME_DIR)
 FileLink('data/redux/' + submission_file_name)
 
 
