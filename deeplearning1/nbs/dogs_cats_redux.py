@@ -121,40 +121,26 @@ for i in range(50):
 
 # Divide cat/dog images into separate directories
 
-os.chdir(DATA_HOME_DIR + '/sample/train')
-makedirs('cats')
-makedirs('dogs')
+def makedirs_dogs_cat(path):
+    os.chdir(path)
+    makedirs('cats')
+    makedirs('dogs')
+    for file in glob.glob('cat.*.jpg'):
+        shutil.move(file, 'cats/')
+    for file in glob.glob('dog.*.jpg'):
+        shutil.move(file, 'dogs/')
 
-for file in glob.glob('cat.*.jpg'):
-    shutil.move(file, 'cats/')
-
-for file in glob.glob('dog.*.jpg'):
-    shutil.move(file, 'dogs/')
-
-'''
-os.chdir(DATA_HOME_DIR + '/sample/valid')
-makedirs('cats')
-makedirs('dogs')
-os.rename('cat.*.jpg', 'cats/')
-os.rename('dog.*.jpg', 'dogs/')
-
-os.chdir(DATA_HOME_DIR + '/valid')
-makedirs('cats')
-makedirs('dogs')
-os.rename('cat.*.jpg', 'cats/')
-os.rename('dog.*.jpg', 'dogs/')
-
-os.chdir(DATA_HOME_DIR + '/train')
-makedirs('cats')
-makedirs('dogs')
-os.rename('cat.*.jpg', 'cats/')
-os.rename('dog.*.jpg', 'dogs/')
-
+makedirs_dogs_cat(DATA_HOME_DIR + '/sample/train')
+makedirs_dogs_cat(DATA_HOME_DIR + '/sample/valid')
+makedirs_dogs_cat(DATA_HOME_DIR + '/valid')
+makedirs_dogs_cat(DATA_HOME_DIR + '/train')
+makedirs_dogs_cat(DATA_HOME_DIR + '/sample/train')
+makedirs_dogs_cat(DATA_HOME_DIR + '/sample/train')
 
 # Create single 'unknown' class for test set
 os.chdir(DATA_HOME_DIR + '/test')
-os.rename('*.jpg', 'unknown/')
-'''
+for file in glob.glob('*.jpg'):
+    shutil.move(file, 'unknown/')
 
 
 # ## Finetuning and Training
