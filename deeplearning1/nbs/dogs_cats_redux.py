@@ -138,6 +138,7 @@ no_of_epochs = 3
 # Finetune the model
 batches = vgg.get_batches(train_path, batch_size=batch_size)
 val_batches = vgg.get_batches(valid_path, batch_size=batch_size * 2)
+'''
 vgg.finetune(batches)
 
 # Not sure if we set this for all fits
@@ -153,6 +154,9 @@ for epoch in range(no_of_epochs):
     latest_weights_filename = 'ft%d.h5' % epoch
     vgg.model.save_weights(results_path + latest_weights_filename)
 print "Completed %s fit operations" % no_of_epochs
+'''
+latest_weights_filename = 'ft%d.h5' % (no_of_epochs - 1)
+vgg.model.load_weights(results_path + latest_weights_filename)
 
 
 # ## Generate Predictions
@@ -198,8 +202,6 @@ save_array(results_path + 'filenames.dat', filenames)
 # Calculate predictions on validation set, so we can find correct and
 # incorrect examples:
 
-vgg.model.load_weights(results_path + latest_weights_filename)
-
 
 val_batches, probs = vgg.test(valid_path, batch_size=batch_size)
 
@@ -226,37 +228,11 @@ n_view = 4
 
 
 '''
-# 1. A few correct labels at random
-correct = np.where(our_labels == expected_labels)[0]
-print "Found %d correct labels" % len(correct)
-idx = permutation(correct)[:n_view]
-plots_idx(idx, our_predictions[idx])
-
-
 # 2. A few incorrect labels at random
 incorrect = np.where(our_labels != expected_labels)[0]
 print "Found %d incorrect labels" % len(incorrect)
 idx = permutation(incorrect)[:n_view]
 plots_idx(idx, our_predictions[idx])
-
-
-# 3a. The images we most confident were cats, and are actually cats
-correct_cats = np.where((our_labels == 0) & (our_labels == expected_labels))[0]
-print "Found %d confident correct cats labels" % len(correct_cats)
-most_correct_cats = np.argsort(our_predictions[correct_cats])[::-1][:n_view]
-plots_idx(correct_cats[most_correct_cats],
-          our_predictions[correct_cats][most_correct_cats])
-
-
-# 3b. The images we most confident were dogs, and are actually dogs
-correct_dogs = np.where((our_labels == 1) & (our_labels == expected_labels))[0]
-print "Found %d confident correct dogs labels" % len(correct_dogs)
-most_correct_dogs = np.argsort(our_predictions[correct_dogs])[:n_view]
-plots_idx(correct_dogs[most_correct_dogs],
-          our_predictions[correct_dogs][most_correct_dogs])
-
-
-
 '''
 
 # 4a. The images we were most confident were cats, but are actually dogs
