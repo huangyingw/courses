@@ -1,16 +1,18 @@
 from IPython.display import FileLink
 from IPython.lib.display import FileLink
 from PIL import Image
+from glob import glob
 from keras.layers.convolutional import *
 from keras.preprocessing import image
 from matplotlib import pyplot as plt
 from numpy.random import permutation
 from sklearn.metrics import confusion_matrix
+from sklearn.metrics import log_loss
 from utils import *
 from vgg16 import *
 from vgg16 import Vgg16
 from vgg16bn import *
-from glob import glob
+import matplotlib.pyplot as plt
 import numpy as np
 import os
 import shutil
@@ -58,23 +60,6 @@ current_dir = os.getcwd()
 LESSON_HOME_DIR = current_dir
 DATA_HOME_DIR = current_dir + '/data/redux'
 
-
-# Allow relative imports to directories above lesson1/
-sys.path.insert(1, os.path.join(sys.path[0], '..'))
-
-
-# Instantiate plotting tool
-# In Jupyter notebooks, you will need to run this command before doing any
-# plotting
-
-
-# ## Action Plan
-# 1. Create Validation and Sample sets
-# 2. Rearrange image files into their respective directories
-# 3. Finetune and Train model
-# 4. Generate predictions
-# 5. Validate predictions
-# 6. Submit predictions to Kaggle
 
 # ## Create validation set and sample
 
@@ -147,7 +132,6 @@ train_path = path + '/train/'
 valid_path = path + '/valid/'
 
 
-# import Vgg16 helper class
 vgg = Vgg16()
 
 
@@ -193,7 +177,6 @@ print filenames[:5]
 
 
 # You can verify the column ordering by viewing some images
-from PIL import Image
 Image.open(test_path + filenames[2])
 
 
@@ -234,8 +217,6 @@ our_predictions = probs[:, 0]
 our_labels = np.round(1 - our_predictions)
 
 
-from keras.preprocessing import image
-
 # Helper function to plot images by index in the validation set
 # Plots is a helper function in utils.py
 
@@ -249,6 +230,7 @@ def plots_idx(idx, titles=None):
 n_view = 4
 
 
+'''
 # 1. A few correct labels at random
 correct = np.where(our_labels == expected_labels)[0]
 print "Found %d correct labels" % len(correct)
@@ -279,6 +261,9 @@ plots_idx(correct_dogs[most_correct_dogs],
           our_predictions[correct_dogs][most_correct_dogs])
 
 
+
+'''
+
 # 4a. The images we were most confident were cats, but are actually dogs
 incorrect_cats = np.where(
     (our_labels == 0) & (
@@ -308,13 +293,11 @@ if len(incorrect_dogs):
 most_uncertain = np.argsort(np.abs(our_predictions - 0.5))
 plots_idx(most_uncertain[:n_view], our_predictions[most_uncertain])
 
-
 # Perhaps the most common way to analyze the result of a classification
 # model is to use a [confusion
 # matrix](http://www.dataschool.io/simple-guide-to-confusion-matrix-terminology/).
 # Scikit-learn has a convenient function we can use for this purpose:
 
-from sklearn.metrics import confusion_matrix
 cm = confusion_matrix(expected_labels, our_labels)
 
 
@@ -364,9 +347,6 @@ print "Edge Predictions: " + str(isdog[(isdog == 1) | (isdog == 0)])
 # y-axis is log loss, x-axis is probabilty that label = 1
 # As you can see Log Loss increases rapidly as we approach 0
 # But increases slowly as our predicted probability gets closer to 1
-import matplotlib.pyplot as plt
-import numpy as np
-from sklearn.metrics import log_loss
 
 x = [i * .0001 for i in range(1, 10000)]
 y = [log_loss([1, 0], [i * .0001, 1 - (i * .0001)], eps=1e-15)

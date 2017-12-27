@@ -148,10 +148,6 @@ def save_array(fname, arr):
         mode='w')
     c.flush()
 
-
-def load_array(fname): return bcolz.open(fname)[:]
-
-
 # We have provided a simple function that joins the arrays from all the
 # batches - let's use this to grab the training and validation data:
 
