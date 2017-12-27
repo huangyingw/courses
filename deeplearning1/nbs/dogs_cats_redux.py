@@ -10,7 +10,7 @@ from utils import *
 from vgg16 import *
 from vgg16 import Vgg16
 from vgg16bn import *
-import glob
+from glob import glob
 import numpy as np
 import os
 import shutil
@@ -88,17 +88,26 @@ makedirs('sample/valid')
 makedirs('sample/results')
 makedirs('test/unknown')
 
-def mov_jpgs(path, count):
-    g = glob('*.jpg')
-    shuf = np.random.permutation(g)
-    for i in range(count):
-        os.rename(shuf[i], path + shuf[i])
-
 os.chdir(DATA_HOME_DIR + '/train')
-mov_jpgs(DATA_HOME_DIR + '/valid/', 2000)
-mov_jpgs(DATA_HOME_DIR + '/sample/train/', 200)
+
+'''
+g = glob('*.jpg')
+shuf = np.random.permutation(g)
+for i in range(2000):
+    os.rename(shuf[i], DATA_HOME_DIR + '/valid/' + shuf[i])
+
+g = glob('*.jpg')
+shuf = np.random.permutation(g)
+for i in range(200):
+    copyfile(shuf[i], DATA_HOME_DIR + '/sample/train/' + shuf[i])
+
 os.chdir(DATA_HOME_DIR + '/valid')
-mov_jpgs(DATA_HOME_DIR + '/sample/valid/', 50)
+
+g = glob('*.jpg')
+shuf = np.random.permutation(g)
+for i in range(50):
+    copyfile(shuf[i], DATA_HOME_DIR + '/sample/valid/' + shuf[i])
+'''
 
 # ## Rearrange image files into their respective directories
 
@@ -108,9 +117,9 @@ def makedirs_dogs_cat(path):
     os.chdir(path)
     makedirs('cats')
     makedirs('dogs')
-    for file in glob.glob('cat.*.jpg'):
+    for file in glob('cat.*.jpg'):
         shutil.move(file, 'cats/')
-    for file in glob.glob('dog.*.jpg'):
+    for file in glob('dog.*.jpg'):
         shutil.move(file, 'dogs/')
 
 makedirs_dogs_cat(DATA_HOME_DIR + '/sample/train')
@@ -122,7 +131,7 @@ makedirs_dogs_cat(DATA_HOME_DIR + '/sample/train')
 
 # Create single 'unknown' class for test set
 os.chdir(DATA_HOME_DIR + '/test')
-for file in glob.glob('*.jpg'):
+for file in glob('*.jpg'):
     shutil.move(file, 'unknown/')
 
 
