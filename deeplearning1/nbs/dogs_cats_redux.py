@@ -1,3 +1,4 @@
+from IPython.display import FileLink
 from IPython.lib.display import FileLink
 from PIL import Image
 from keras.layers.convolutional import *
@@ -7,6 +8,7 @@ from numpy.random import permutation
 from sklearn.metrics import confusion_matrix
 from utils import *
 from vgg16 import *
+from vgg16 import Vgg16
 from vgg16bn import *
 import glob
 import numpy as np
@@ -60,9 +62,6 @@ DATA_HOME_DIR = current_dir + '/data/redux'
 # Allow relative imports to directories above lesson1/
 sys.path.insert(1, os.path.join(sys.path[0], '..'))
 
-#import modules
-from utils import *
-from vgg16 import Vgg16
 
 # Instantiate plotting tool
 # In Jupyter notebooks, you will need to run this command before doing any
@@ -89,33 +88,17 @@ makedirs('sample/valid')
 makedirs('sample/results')
 makedirs('test/unknown')
 
+def mov_jpgs(path, count):
+    g = glob('*.jpg')
+    shuf = np.random.permutation(g)
+    for i in range(count):
+        os.rename(shuf[i], path + shuf[i])
 
 os.chdir(DATA_HOME_DIR + '/train')
-
-'''
-g = glob('*.jpg')
-shuf = np.random.permutation(g)
-for i in range(2000):
-    os.rename(shuf[i], DATA_HOME_DIR + '/valid/' + shuf[i])
-'''
-
-
-'''
-g = glob('*.jpg')
-shuf = np.random.permutation(g)
-for i in range(200):
-    copyfile(shuf[i], DATA_HOME_DIR + '/sample/train/' + shuf[i])
-
-
+mov_jpgs(DATA_HOME_DIR + '/valid/', 2000)
+mov_jpgs(DATA_HOME_DIR + '/sample/train/', 200)
 os.chdir(DATA_HOME_DIR + '/valid')
-
-
-g = glob('*.jpg')
-shuf = np.random.permutation(g)
-for i in range(50):
-    copyfile(shuf[i], DATA_HOME_DIR + '/sample/valid/' + shuf[i])
-'''
-
+mov_jpgs(DATA_HOME_DIR + '/sample/valid/', 50)
 
 # ## Rearrange image files into their respective directories
 
@@ -415,7 +398,6 @@ np.savetxt(
     comments='')
 
 
-from IPython.display import FileLink
 os.chdir(LESSON_HOME_DIR)
 FileLink('data/redux/' + submission_file_name)
 
