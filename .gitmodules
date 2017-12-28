@@ -17,3 +17,6 @@
 [submodule "numpy"]
 	path = numpy
 	url = https://github.com/numpy/numpy.git
+[submodule "matplotlib"]
+	path = matplotlib
+	url = https://github.com/matplotlib/matplotlib.git
