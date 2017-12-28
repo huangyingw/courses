@@ -3,11 +3,14 @@
 # Rather than importing everything manually, we'll make things easy
 #   and load them all in utils.py, and just import them from there.
 from keras import backend as K
+from vgg16 import Vgg16
+import bcolz
+import sympy as sp
 from keras.layers.core import Dense
 from keras.models import Sequential
 from keras.optimizers import SGD, RMSprop
 from keras.preprocessing import image
-from numpy.random import random, permutation
+from numpy.random import random
 from sklearn.metrics import confusion_matrix
 from sklearn.preprocessing import OneHotEncoder
 from utils import *
@@ -45,10 +48,12 @@ x = random((30, 2))
 y = np.dot(x, [2., 3.]) + 1.
 
 
-x[:5]
+print 'x[:5] --> '
+print x[:5]
 
 
-y[:5]
+print 'y[:5] --> '
+print y[:5]
 
 
 # We can use keras to create a simple linear model (*Dense()* - with no
@@ -59,25 +64,27 @@ lm = Sequential([Dense(1, input_shape=(2,))])
 lm.compile(optimizer=SGD(lr=0.1), loss='mse')
 
 
-# (See the *Optim Tutorial* notebook and associated Excel spreadsheet to learn all about SGD and related optimization algorithms.)
 #
 # This has now learnt internal weights inside the lm model, which we can
 # use to evaluate the loss function (MSE).
 
-lm.evaluate(x, y, verbose=0)
+print 'lm.evaluate(x, y, verbose=0) --> '
+print lm.evaluate(x, y, verbose=0)
 
 
 lm.fit(x, y, nb_epoch=5, batch_size=1)
 
 
-lm.evaluate(x, y, verbose=0)
+print 'lm.evaluate(x, y, verbose=0) --> '
+print lm.evaluate(x, y, verbose=0)
 
 
 # And, of course, we can also take a look at the weights - after fitting,
 # we should see that they are close to the weights we used to calculate y
 # (2.0, 3.0, and 1.0).
 
-lm.get_weights()
+print 'lm.get_weights() --> '
+print lm.get_weights()
 
 
 # ## Train linear model on predictions
@@ -114,7 +121,6 @@ batch_size = 4
 # We need to start with our VGG 16 model, since we'll be using its
 # predictions and features.
 
-from vgg16 import Vgg16
 vgg = Vgg16()
 model = vgg.model
 
@@ -138,8 +144,6 @@ batches = get_batches(path + 'train', shuffle=False, batch_size=1)
 # compresses the arrays, so we save disk space. Here are the functions
 # we'll use to save and load using bcolz.
 
-import bcolz
-
 
 def save_array(fname, arr):
     c = bcolz.carray(
@@ -150,6 +154,7 @@ def save_array(fname, arr):
 
 # We have provided a simple function that joins the arrays from all the
 # batches - let's use this to grab the training and validation data:
+
 
 val_data = get_data(path + 'valid')
 
@@ -287,6 +292,7 @@ def plots_idx(idx, titles=None):
            for i in idx], titles=titles)
 
 
+'''
 # 1. A few correct labels at random
 correct = np.where(preds == val_labels[:, 1])[0]
 idx = permutation(correct)[:n_view]
@@ -336,6 +342,7 @@ else:
 # 5. The most uncertain labels (ie those with probability closest to 0.5).
 most_uncertain = np.argsort(np.abs(probs - 0.5))
 plots_idx(most_uncertain[:n_view], probs[most_uncertain])
+'''
 
 
 # Perhaps the most common way to analyze the result of a classification
@@ -431,8 +438,12 @@ val_batches = gen.flow(
 # typing...
 
 def fit_model(model, batches, val_batches, nb_epoch=1):
-    model.fit_generator(batches, samples_per_epoch=batches.n, nb_epoch=nb_epoch,
-                        validation_data=val_batches, nb_val_samples=val_batches.n)
+    model.fit_generator(
+        batches,
+        samples_per_epoch=batches.n,
+        nb_epoch=nb_epoch,
+        validation_data=val_batches,
+        nb_val_samples=val_batches.n)
 
 
 # ...and now we can use it to train the last layer of our model!
@@ -496,7 +507,6 @@ plot_confusion_matrix(cm, {'cat': 0, 'dog': 1})
 # Let's check our calculation:
 
 # sympy let's us do symbolic differentiation (and much more!) in python
-import sympy as sp
 # we have to define our variables
 x = sp.var('x')
 # then we can request the derivative or any expression of that variable
