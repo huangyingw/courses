@@ -12,14 +12,8 @@ b = 8.
 n = 30
 x = random(n)
 y = lin(a, b, x)
-
-plt.scatter(x, y)
-plt.show()
-
-
 a_guess = -1.
 b_guess = 1.
-
 lr = 0.01
 # d[(y-(a*x+b))**2,b] = 2 (b + a x - y)      = 2 (y_pred - y)
 # d[(y-(a*x+b))**2,a] = 2 x (b + a x - y)    = x * dy/db
@@ -37,7 +31,6 @@ def upd():
 fig = plt.figure(dpi=100, figsize=(5, 4))
 plt.scatter(x, y)
 line, = plt.plot(x, lin(a_guess, b_guess, x))
-plt.show()
 
 
 def animate(i):

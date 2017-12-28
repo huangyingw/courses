@@ -48,12 +48,12 @@ x = random((30, 2))
 y = np.dot(x, [2., 3.]) + 1.
 
 
-print 'x[:5] --> '
-print x[:5]
+print 'x[:30] --> '
+print x[:30]
 
 
-print 'y[:5] --> '
-print y[:5]
+print 'y[:30] --> '
+print y[:30]
 
 
 # We can use keras to create a simple linear model (*Dense()* - with no
@@ -162,7 +162,8 @@ val_data = get_data(path + 'valid')
 trn_data = get_data(path + 'train')
 
 
-trn_data.shape
+print 'trn_data.shape --> '
+print trn_data.shape
 
 
 save_array(model_path + 'train_data.bc', trn_data)
@@ -176,7 +177,8 @@ trn_data = load_array(model_path + 'train_data.bc')
 val_data = load_array(model_path + 'valid_data.bc')
 
 
-val_data.shape
+print 'val_data.shape --> '
+print val_data.shape
 
 
 # Keras returns *classes* as a single column, so we convert to one hot encoding
@@ -191,13 +193,16 @@ val_labels = onehot(val_classes)
 trn_labels = onehot(trn_classes)
 
 
-trn_labels.shape
+print 'trn_labels.shape --> '
+print trn_labels.shape
 
 
-trn_classes[:4]
+print 'trn_classes[:4] --> '
+print trn_classes[:4]
 
 
-trn_labels[:4]
+print 'trn_labels[:4] --> '
+print trn_labels[:4]
 
 
 # ...and their 1,000 imagenet probabilties from VGG16--these will be the *features* for our linear model:
@@ -206,7 +211,8 @@ trn_features = model.predict(trn_data, batch_size=batch_size)
 val_features = model.predict(val_data, batch_size=batch_size)
 
 
-trn_features.shape
+print 'trn_features.shape --> '
+print trn_features.shape
 
 
 save_array(model_path + 'train_lastlayer_features.bc', trn_features)
@@ -243,7 +249,8 @@ lm.fit(trn_features, trn_labels, nb_epoch=3, batch_size=batch_size,
        validation_data=(val_features, val_labels))
 
 
-lm.summary()
+print 'lm.summary() --> '
+print lm.summary()
 
 
 # ### Viewing model prediction examples
@@ -270,10 +277,12 @@ lm.summary()
 preds = lm.predict_classes(val_features, batch_size=batch_size)
 # ...and the probabilities of being a cat
 probs = lm.predict_proba(val_features, batch_size=batch_size)[:, 0]
-probs[:8]
+print 'probs[:8] --> '
+print probs[:8]
 
 
-preds[:8]
+print 'preds[:8] --> '
+print preds[:8]
 
 
 # Get the filenames for the validation set, so we can view images:
