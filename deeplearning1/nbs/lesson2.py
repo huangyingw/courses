@@ -1,5 +1,4 @@
 # # Linear models with CNN features
-
 # Rather than importing everything manually, we'll make things easy
 #   and load them all in utils.py, and just import them from there.
 from keras import backend as K
@@ -17,9 +16,7 @@ from utils import *
 import numpy as np
 np.set_printoptions(precision=4, linewidth=100)
 
-
 # ## Introduction
-
 # We need to find a way to convert the imagenet predictions to a probability of being a cat or a dog, since that is what the Kaggle competition requires us to submit. We could use the imagenet hierarchy to download a list of all the imagenet categories in each of the dog and cat groups, and could then solve our problem in various ways, such as:
 #
 # - Finding the largest probability that's either a cat or a dog, and using that label
@@ -34,7 +31,6 @@ np.set_printoptions(precision=4, linewidth=100)
 # model that is trained using the 1,000 predictions from the imagenet
 # model for each image as input, and the dog/cat label as target.
 
-
 # ## Linear models in keras
 
 # It turns out that each of the Dense() layers is just a *linear model*, followed by a simple *activation function*. We'll learn about the activation function later - first, let's review how linear models work.
@@ -47,14 +43,10 @@ np.set_printoptions(precision=4, linewidth=100)
 x = random((30, 2))
 y = np.dot(x, [2., 3.]) + 1.
 
-
-print 'x[:30] --> '
-print x[:30]
-
-
-print 'y[:30] --> '
-print y[:30]
-
+print 'x --> '
+print x
+print 'y --> '
+print y
 
 # We can use keras to create a simple linear model (*Dense()* - with no
 # activation - in Keras) and optimize it using SGD to minimize mean
@@ -63,21 +55,16 @@ print y[:30]
 lm = Sequential([Dense(1, input_shape=(2,))])
 lm.compile(optimizer=SGD(lr=0.1), loss='mse')
 
-
-#
 # This has now learnt internal weights inside the lm model, which we can
 # use to evaluate the loss function (MSE).
 
 print 'lm.evaluate(x, y, verbose=0) --> '
 print lm.evaluate(x, y, verbose=0)
 
-
 lm.fit(x, y, nb_epoch=5, batch_size=1)
-
 
 print 'lm.evaluate(x, y, verbose=0) --> '
 print lm.evaluate(x, y, verbose=0)
-
 
 # And, of course, we can also take a look at the weights - after fitting,
 # we should see that they are close to the weights we used to calculate y
@@ -86,9 +73,7 @@ print lm.evaluate(x, y, verbose=0)
 print 'lm.get_weights() --> '
 print lm.get_weights()
 
-
 # ## Train linear model on predictions
-
 # Using a Dense() layer in this way, we can easily convert the 1,000
 # predictions given by our model into a probability of dog vs cat--simply
 # train a linear model to take the 1,000 predictions as input, and return
@@ -109,7 +94,6 @@ path = "data/dogscats/sample/"
 model_path = path + 'models/'
 makedirs(model_path)
 
-
 # We will process as many images at a time as our graphics card allows.
 # This is a case of trial and error to find the max batch size - the
 # largest size that doesn't give an out of memory error.
@@ -117,16 +101,13 @@ makedirs(model_path)
 # batch_size=100
 batch_size = 4
 
-
 # We need to start with our VGG 16 model, since we'll be using its
 # predictions and features.
 
 vgg = Vgg16()
 model = vgg.model
 
-
 # Our overall approach here will be:
-#
 # 1. Get the true labels for every image
 # 2. Get the 1,000 imagenet category predictions for every image
 # 3. Feed these predictions as input to a simple linear model.
@@ -136,7 +117,6 @@ model = vgg.model
 # Use batch size of 1 since we're just doing preprocessing on the CPU
 val_batches = get_batches(path + 'valid', shuffle=False, batch_size=1)
 batches = get_batches(path + 'train', shuffle=False, batch_size=1)
-
 
 # Loading and resizing the images every time we want to use them isn't
 # necessary - instead we should save the processed arrays. By far the
@@ -157,18 +137,13 @@ def save_array(fname, arr):
 
 
 val_data = get_data(path + 'valid')
-
-
 trn_data = get_data(path + 'train')
-
 
 print 'trn_data.shape --> '
 print trn_data.shape
 
-
 save_array(model_path + 'train_data.bc', trn_data)
 save_array(model_path + 'valid_data.bc', val_data)
-
 
 # We can load our training and validation data later without recalculating
 # them:
@@ -176,12 +151,11 @@ save_array(model_path + 'valid_data.bc', val_data)
 trn_data = load_array(model_path + 'train_data.bc')
 val_data = load_array(model_path + 'valid_data.bc')
 
-
 print 'val_data.shape --> '
 print val_data.shape
 
-
 # Keras returns *classes* as a single column, so we convert to one hot encoding
+
 
 def onehot(x): return np.array(
     OneHotEncoder().fit_transform(x.reshape(-1, 1)).todense())
@@ -192,32 +166,25 @@ trn_classes = batches.classes
 val_labels = onehot(val_classes)
 trn_labels = onehot(trn_classes)
 
-
+print 'val_labels.shape --> '
+print val_labels.shape
 print 'trn_labels.shape --> '
 print trn_labels.shape
-
-
-print 'trn_classes[:4] --> '
-print trn_classes[:4]
-
-
-print 'trn_labels[:4] --> '
-print trn_labels[:4]
-
+print 'trn_classes --> '
+print trn_classes
+print 'trn_labels --> '
+print trn_labels
 
 # ...and their 1,000 imagenet probabilties from VGG16--these will be the *features* for our linear model:
 
 trn_features = model.predict(trn_data, batch_size=batch_size)
 val_features = model.predict(val_data, batch_size=batch_size)
 
-
 print 'trn_features.shape --> '
 print trn_features.shape
 
-
 save_array(model_path + 'train_lastlayer_features.bc', trn_features)
 save_array(model_path + 'valid_lastlayer_features.bc', val_features)
-
 
 # We can load our training and validation features later without
 # recalculating them:
@@ -225,9 +192,7 @@ save_array(model_path + 'valid_lastlayer_features.bc', val_features)
 trn_features = load_array(model_path + 'train_lastlayer_features.bc')
 val_features = load_array(model_path + 'valid_lastlayer_features.bc')
 
-
 # Now we can define our linear model, just like we did earlier:
-
 # 1000 inputs, since that's the saved features, and 2 outputs, for dog and cat
 lm = Sequential([Dense(2, activation='softmax', input_shape=(1000,))])
 lm.compile(
@@ -238,23 +203,16 @@ lm.compile(
 
 
 # We're ready to fit the model!
-
 batch_size = 64
-
-
 batch_size = 4
-
 
 lm.fit(trn_features, trn_labels, nb_epoch=3, batch_size=batch_size,
        validation_data=(val_features, val_labels))
 
-
 print 'lm.summary() --> '
 print lm.summary()
 
-
 # ### Viewing model prediction examples
-
 # Keras' *fit()* function conveniently shows us the value of the loss function, and the accuracy, after every epoch ("*epoch*" refers to one full run through all training examples). The most important metrics for us to look at are for the validation set, since we want to check for over-fitting.
 #
 # - **Tip**: with our first model we should try to overfit before we start worrying about how to handle that - there's no point even thinking about regularization, data augmentation, etc if you're still under-fitting! (We'll be looking at these techniques shortly).
@@ -277,24 +235,20 @@ print lm.summary()
 preds = lm.predict_classes(val_features, batch_size=batch_size)
 # ...and the probabilities of being a cat
 probs = lm.predict_proba(val_features, batch_size=batch_size)[:, 0]
-print 'probs[:8] --> '
-print probs[:8]
 
-
-print 'preds[:8] --> '
-print preds[:8]
-
+print 'probs --> '
+print probs
+print 'preds --> '
+print preds
 
 # Get the filenames for the validation set, so we can view images:
-
 filenames = val_batches.filenames
-
 
 # Number of images to view for each visualization task
 n_view = 4
 
-
 # Helper function to plot images by index in the validation set:
+
 
 def plots_idx(idx, titles=None):
     plots([image.load_img(path + 'valid/' + filenames[i])
@@ -307,19 +261,16 @@ correct = np.where(preds == val_labels[:, 1])[0]
 idx = permutation(correct)[:n_view]
 plots_idx(idx, probs[idx])
 
-
 # 2. A few incorrect labels at random
 incorrect = np.where(preds != val_labels[:, 1])[0]
 idx = permutation(incorrect)[:n_view]
 plots_idx(idx, probs[idx])
-
 
 # 3. The images we most confident were cats, and are actually cats
 correct_cats = np.where((preds == 0) & (preds == val_labels[:, 1]))[0]
 most_correct_cats = np.argsort(probs[correct_cats])[::-1][:n_view]
 plots_idx(correct_cats[most_correct_cats],
           probs[correct_cats][most_correct_cats])
-
 
 # as above, but dogs
 correct_dogs = np.where((preds == 1) & (preds == val_labels[:, 1]))[0]
@@ -428,10 +379,6 @@ for layer in model.layers:
 
 model.add(Dense(2, activation='softmax'))
 
-
-vgg.finetune
-
-
 # ...and compile our updated model, and set up our batches to use the preprocessed images (note that now we will also *shuffle* the training batches, to add more randomness when using multiple epochs):
 
 gen = image.ImageDataGenerator()
@@ -492,7 +439,8 @@ model.evaluate(val_data, val_labels)
 
 preds = model.predict_classes(val_data, batch_size=batch_size)
 probs = model.predict_proba(val_data, batch_size=batch_size)[:, 0]
-probs[:8]
+print 'probs --> '
+print probs
 
 
 cm = confusion_matrix(val_classes, preds)
