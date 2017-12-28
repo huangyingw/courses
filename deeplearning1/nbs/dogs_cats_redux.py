@@ -1,3 +1,4 @@
+from pathlib import Path
 from IPython.display import FileLink
 from IPython.lib.display import FileLink
 from PIL import Image
@@ -93,6 +94,7 @@ for i in range(50):
 
 # Divide cat/dog images into separate directories
 
+
 def makedirs_dogs_cat(path):
     os.chdir(path)
     makedirs('cats')
@@ -101,6 +103,7 @@ def makedirs_dogs_cat(path):
         shutil.move(file, 'cats/')
     for file in glob('dog.*.jpg'):
         shutil.move(file, 'dogs/')
+
 
 makedirs_dogs_cat(DATA_HOME_DIR + '/sample/train')
 makedirs_dogs_cat(DATA_HOME_DIR + '/sample/valid')
@@ -138,25 +141,26 @@ no_of_epochs = 3
 # Finetune the model
 batches = vgg.get_batches(train_path, batch_size=batch_size)
 val_batches = vgg.get_batches(valid_path, batch_size=batch_size * 2)
-'''
-vgg.finetune(batches)
 
-# Not sure if we set this for all fits
-vgg.model.optimizer.lr = 0.01
-
-
-# Notice we are passing in the validation dataset to the fit() method
-# For each epoch we test our model against the validation set
-latest_weights_filename = None
-for epoch in range(no_of_epochs):
-    print "Running epoch: %d" % epoch
-    vgg.fit(batches, val_batches, nb_epoch=1)
-    latest_weights_filename = 'ft%d.h5' % epoch
-    vgg.model.save_weights(results_path + latest_weights_filename)
-print "Completed %s fit operations" % no_of_epochs
-'''
 latest_weights_filename = 'ft%d.h5' % (no_of_epochs - 1)
-vgg.model.load_weights(results_path + latest_weights_filename)
+weights_file = Path(results_path + latest_weights_filename)
+if weights_file.is_file():
+    vgg.model.load_weights(weights_file)
+else:
+    vgg.finetune(batches)
+
+    # Not sure if we set this for all fits
+    vgg.model.optimizer.lr = 0.01
+
+    # Notice we are passing in the validation dataset to the fit() method
+    # For each epoch we test our model against the validation set
+    latest_weights_filename = None
+    for epoch in range(no_of_epochs):
+        print "Running epoch: %d" % epoch
+        vgg.fit(batches, val_batches, nb_epoch=1)
+        latest_weights_filename = 'ft%d.h5' % epoch
+        vgg.model.save_weights(results_path + latest_weights_filename)
+    print "Completed %s fit operations" % no_of_epochs
 
 
 # ## Generate Predictions
