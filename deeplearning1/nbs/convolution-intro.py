@@ -1,15 +1,7 @@
-
-# coding: utf-8
-
 import numpy as np
-from matplotlib import pyplot as plt, rcParams, rc
+from matplotlib import pyplot as plt
 from skimage.measure import block_reduce
 from scipy.ndimage.filters import correlate, convolve
-from ipywidgets import interactive
-from ipywidgets.widgets import *
-rc('animation', html='html5')
-rcParams['figure.figsize'] = 3, 6
-get_ipython().magic(u'precision 4')
 np.set_printoptions(precision=4, linewidth=100)
 
 
@@ -29,18 +21,20 @@ def plots(ims, interp=False, titles=None):
     f = plt.figure(figsize=(12, 24))
     for i in range(len(ims)):
         sp = f.add_subplot(1, len(ims), i + 1)
-        if not titles is None:
+        if titles is not None:
             sp.set_title(titles[i], fontsize=18)
         plt.imshow(
             ims[i],
             interpolation=None if interp else 'none',
             vmin=mn,
             vmax=mx)
+    plt.show()
 
 
 def plot(im, interp=False):
-    f = plt.figure(figsize=(3, 6), frameon=True)
+    plt.figure(figsize=(3, 6), frameon=True)
     plt.imshow(im, interpolation=None if interp else 'none')
+    plt.show()
 
 
 plt.gray()
@@ -68,36 +62,8 @@ top = [[-1, -1, -1],
        [0, 0, 0]]
 
 plot(top)
-
-
-r = (0, 28)
-
-
-def zoomim(x1=0, x2=28, y1=0, y2=28):
-    plot(images[0, y1:y2, x1:x2])
-
-
-w = interactive(zoomim, x1=r, x2=r, y1=r, y2=r)
-w
-
-
-k = w.kwargs
-dims = np.index_exp[k['y1']:k['y2']:1, k['x1']:k['x2']]
-images[0][dims]
-
-
 corrtop = correlate(images[0], top)
-
-
-corrtop[dims]
-
-
-plot(corrtop[dims])
-
-
 plot(corrtop)
-
-
 np.rot90(top, 1)
 
 

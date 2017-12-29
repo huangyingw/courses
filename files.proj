@@ -738,7 +738,6 @@
 "./Theano/theano/typed_list/type.py"
 "./Theano/theano/updates.py"
 "./Theano/theano/version.py"
-"./basic_animation.py"
 "./convert.sh"
 "./copy.sh"
 "./deeplearning1/nbs/SF_Dir_Organization.py"

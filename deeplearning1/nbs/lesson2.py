@@ -426,11 +426,7 @@ fit_model(model, batches, val_batches, nb_epoch=2)
 # keeping a research journal of your results.
 
 model.save_weights(model_path + 'finetune1.h5')
-
-
 model.load_weights(model_path + 'finetune1.h5')
-
-
 model.evaluate(val_data, val_labels)
 
 
@@ -442,10 +438,7 @@ probs = model.predict_proba(val_data, batch_size=batch_size)[:, 0]
 print 'probs --> '
 print probs
 
-
 cm = confusion_matrix(val_classes, preds)
-
-
 plot_confusion_matrix(cm, {'cat': 0, 'dog': 1})
 
 
