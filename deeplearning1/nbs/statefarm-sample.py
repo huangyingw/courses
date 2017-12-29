@@ -1,18 +1,12 @@
-
-# coding: utf-8
-
-# # Enter State Farm
-
 from theano.sandbox import cuda
+from shutil import copyfile
+from glob import glob
+from utils import *
 cuda.use('gpu1')
 
 
-from __future__ import print_function, division
 #path = "data/state/"
 path = "data/state/sample/"
-import utils
-reload(utils)
-from utils import *
 
 
 batch_size = 64
@@ -24,23 +18,17 @@ batch_size = 64
 # remember that the training and validation set should contain *different
 # drivers*, as mentioned on the Kaggle competition page.
 
-get_ipython().magic(u'cd data/state')
+os.chdir('data/state')
+os.chdir('train')
 
-
-get_ipython().magic(u'cd train')
-
-
-get_ipython().magic(u'mkdir ../sample')
-get_ipython().magic(u'mkdir ../sample/train')
-get_ipython().magic(u'mkdir ../sample/valid')
+makedirs('../sample')
+makedirs('../sample/train')
+makedirs('../sample/valid')
 
 
 for d in glob('c?'):
-    os.mkdir('../sample/train/' + d)
-    os.mkdir('../sample/valid/' + d)
-
-
-from shutil import copyfile
+    makedirs('../sample/train/' + d)
+    makedirs('../sample/valid/' + d)
 
 
 g = glob('c?/*.jpg')
@@ -49,7 +37,7 @@ for i in range(1500):
     copyfile(shuf[i], '../sample/train/' + shuf[i])
 
 
-get_ipython().magic(u'cd ../valid')
+os.chdir('../valid')
 
 
 g = glob('c?/*.jpg')
@@ -58,14 +46,9 @@ for i in range(1000):
     copyfile(shuf[i], '../sample/valid/' + shuf[i])
 
 
-get_ipython().magic(u'cd ../../..')
-
-
-get_ipython().magic(u'mkdir data/state/results')
-
-
-get_ipython().magic(u'mkdir data/state/sample/test')
-
+os.chdir('../../..')
+makedirs('data/state/results')
+makedirs('data/state/sample/test')
 
 # ## Create batches
 
@@ -98,8 +81,12 @@ model = Sequential([
 # As you can see below, this training is going nowhere...
 
 model.compile(Adam(), loss='categorical_crossentropy', metrics=['accuracy'])
-model.fit_generator(batches, batches.nb_sample, nb_epoch=2, validation_data=val_batches,
-                    nb_val_samples=val_batches.nb_sample)
+model.fit_generator(
+    batches,
+    batches.nb_sample,
+    nb_epoch=2,
+    validation_data=val_batches,
+    nb_val_samples=val_batches.nb_sample)
 
 
 # Let's first check the number of parameters to see that there's enough
@@ -139,8 +126,12 @@ model.compile(
         lr=1e-5),
     loss='categorical_crossentropy',
     metrics=['accuracy'])
-model.fit_generator(batches, batches.nb_sample, nb_epoch=2, validation_data=val_batches,
-                    nb_val_samples=val_batches.nb_sample)
+model.fit_generator(
+    batches,
+    batches.nb_sample,
+    nb_epoch=2,
+    validation_data=val_batches,
+    nb_val_samples=val_batches.nb_sample)
 
 
 # Great - we found our way out of that hole... Now we can increase the
@@ -149,8 +140,12 @@ model.fit_generator(batches, batches.nb_sample, nb_epoch=2, validation_data=val_
 model.optimizer.lr = 0.001
 
 
-model.fit_generator(batches, batches.nb_sample, nb_epoch=4, validation_data=val_batches,
-                    nb_val_samples=val_batches.nb_sample)
+model.fit_generator(
+    batches,
+    batches.nb_sample,
+    nb_epoch=4,
+    validation_data=val_batches,
+    nb_val_samples=val_batches.nb_sample)
 
 
 # We're stabilizing at validation accuracy of 0.39. Not great, but a lot
@@ -191,15 +186,23 @@ model.compile(
         lr=10e-5),
     loss='categorical_crossentropy',
     metrics=['accuracy'])
-model.fit_generator(batches, batches.nb_sample, nb_epoch=2, validation_data=val_batches,
-                    nb_val_samples=val_batches.nb_sample)
+model.fit_generator(
+    batches,
+    batches.nb_sample,
+    nb_epoch=2,
+    validation_data=val_batches,
+    nb_val_samples=val_batches.nb_sample)
 
 
 model.optimizer.lr = 0.001
 
 
-model.fit_generator(batches, batches.nb_sample, nb_epoch=4, validation_data=val_batches,
-                    nb_val_samples=val_batches.nb_sample)
+model.fit_generator(
+    batches,
+    batches.nb_sample,
+    nb_epoch=4,
+    validation_data=val_batches,
+    nb_val_samples=val_batches.nb_sample)
 
 
 # Looks like we can get a bit over 50% accuracy this way. This will be a
@@ -223,12 +226,20 @@ model.compile(
         lr=1e-5),
     loss='categorical_crossentropy',
     metrics=['accuracy'])
-model.fit_generator(batches, batches.nb_sample, nb_epoch=2, validation_data=val_batches,
-                    nb_val_samples=val_batches.nb_sample)
+model.fit_generator(
+    batches,
+    batches.nb_sample,
+    nb_epoch=2,
+    validation_data=val_batches,
+    nb_val_samples=val_batches.nb_sample)
 
 model.optimizer.lr = 0.01
-model.fit_generator(batches, batches.nb_sample, nb_epoch=5, validation_data=val_batches,
-                    nb_val_samples=val_batches.nb_sample)
+model.fit_generator(
+    batches,
+    batches.nb_sample,
+    nb_epoch=5,
+    validation_data=val_batches,
+    nb_val_samples=val_batches.nb_sample)
 
 
 # Not looking very encouraging... which isn't surprising since we know
@@ -260,11 +271,19 @@ def conv1(batches):
             lr=1e-4),
         loss='categorical_crossentropy',
         metrics=['accuracy'])
-    model.fit_generator(batches, batches.nb_sample, nb_epoch=2, validation_data=val_batches,
-                        nb_val_samples=val_batches.nb_sample)
+    model.fit_generator(
+        batches,
+        batches.nb_sample,
+        nb_epoch=2,
+        validation_data=val_batches,
+        nb_val_samples=val_batches.nb_sample)
     model.optimizer.lr = 0.001
-    model.fit_generator(batches, batches.nb_sample, nb_epoch=4, validation_data=val_batches,
-                        nb_val_samples=val_batches.nb_sample)
+    model.fit_generator(
+        batches,
+        batches.nb_sample,
+        nb_epoch=4,
+        validation_data=val_batches,
+        nb_val_samples=val_batches.nb_sample)
     return model
 
 
@@ -332,8 +351,12 @@ model = conv1(batches)
 
 # And finally, putting it all together!
 
-gen_t = image.ImageDataGenerator(rotation_range=15, height_shift_range=0.05,
-                                 shear_range=0.1, channel_shift_range=20, width_shift_range=0.1)
+gen_t = image.ImageDataGenerator(
+    rotation_range=15,
+    height_shift_range=0.05,
+    shear_range=0.1,
+    channel_shift_range=20,
+    width_shift_range=0.1)
 batches = get_batches(path + 'train', gen_t, batch_size=batch_size)
 
 
@@ -346,14 +369,22 @@ model = conv1(batches)
 # our learning rate and running more epochs, before we make a decisions.
 
 model.optimizer.lr = 0.0001
-model.fit_generator(batches, batches.nb_sample, nb_epoch=5, validation_data=val_batches,
-                    nb_val_samples=val_batches.nb_sample)
+model.fit_generator(
+    batches,
+    batches.nb_sample,
+    nb_epoch=5,
+    validation_data=val_batches,
+    nb_val_samples=val_batches.nb_sample)
 
 
 # Lucky we tried that - we starting to make progress! Let's keep going.
 
-model.fit_generator(batches, batches.nb_sample, nb_epoch=25, validation_data=val_batches,
-                    nb_val_samples=val_batches.nb_sample)
+model.fit_generator(
+    batches,
+    batches.nb_sample,
+    nb_epoch=25,
+    validation_data=val_batches,
+    nb_val_samples=val_batches.nb_sample)
 
 
 # Amazingly, using nothing but a small sample, a simple (not pre-trained) model with no dropout, and data augmentation, we're getting results that would get us into the top 50% of the competition! This looks like a great foundation for our futher experiments.

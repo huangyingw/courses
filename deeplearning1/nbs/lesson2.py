@@ -367,7 +367,6 @@ plot_confusion_matrix(cm, val_batches.class_indices)
 
 vgg.model.summary()
 
-
 model.pop()
 for layer in model.layers:
     layer.trainable = False
