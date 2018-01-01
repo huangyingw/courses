@@ -1,16 +1,9 @@
-from keras import backend as K
 from keras.layers.convolutional import Convolution2D, MaxPooling2D
 from keras.layers.core import Dense, Dropout, Flatten
-from keras.layers.normalization import BatchNormalization
-from keras.models import Sequential
-from keras.optimizers import Adam, RMSprop
-from keras.preprocessing import image
-from keras.regularizers import l1, l2
-from matplotlib import pyplot as plt
-from scipy import ndimage
-from utils import get_batches, makedirs, vgg_ft, onehot, save_array, load_array, split_at, copy_weights
-from vgg16bn import Vgg16BN
-import numpy as np
+from keras.models import Sequential, load_model
+from keras.optimizers import RMSprop
+from pathlib import Path
+from utils import get_batches, load_array, makedirs, onehot, save_array, vgg_ft
 
 #path = "data/dogscats/sample/"
 path = "data/dogscats/"
@@ -68,10 +61,12 @@ last_conv_idx = [index for index, layer in enumerate(layers)
                  if isinstance(layer, Convolution2D)][-1]
 
 
-last_conv_idx
+print 'last_conv_idx --> '
+print last_conv_idx
 
 
-layers[last_conv_idx]
+print 'layers[last_conv_idx] --> '
+print layers[last_conv_idx]
 
 
 conv_layers = layers[:last_conv_idx + 1]
@@ -94,24 +89,27 @@ val_labels = onehot(val_classes)
 trn_labels = onehot(trn_classes)
 
 
-batches.class_indices
+print 'batches.class_indices --> '
+print batches.class_indices
+
+trn_features_file = Path(model_path + 'train_convlayer_features.bc')
+if trn_features_file.is_file():
+    trn_features = load_array(trn_features_file)
+else:
+    trn_features = conv_model.predict_generator(batches, batches.nb_sample)
+    save_array(trn_features_file, trn_features)
+
+val_features_file = Path(model_path + 'valid_convlayer_features.bc')
+if val_features_file.is_file():
+    val_features = load_array(val_features_file)
+else:
+    val_features = conv_model.predict_generator(
+        val_batches, val_batches.nb_sample)
+    save_array(val_features_file, val_features)
 
 
-val_features = conv_model.predict_generator(val_batches, val_batches.nb_sample)
-
-
-trn_features = conv_model.predict_generator(batches, batches.nb_sample)
-
-
-save_array(model_path + 'train_convlayer_features.bc', trn_features)
-save_array(model_path + 'valid_convlayer_features.bc', val_features)
-
-
-trn_features = load_array(model_path + 'train_convlayer_features.bc')
-val_features = load_array(model_path + 'valid_convlayer_features.bc')
-
-
-trn_features.shape
+print 'trn_features.shape --> '
+print trn_features.shape
 
 
 # For our new fully connected model, we'll create it using the exact same
@@ -154,13 +152,23 @@ fc_model = get_fc_model()
 
 # And fit the model in the usual way:
 
-fc_model.fit(trn_features, trn_labels, nb_epoch=8,
-             batch_size=batch_size, validation_data=(val_features, val_labels))
+
+model_file = Path(model_path + 'no_dropout.h5')
+if model_file.is_file():
+    fc_model = load_model(model_file)
+else:
+    fc_model.fit(
+        trn_features,
+        trn_labels,
+        nb_epoch=8,
+        batch_size=batch_size,
+        validation_data=(
+            val_features,
+            val_labels))
+    fc_model.save(model_file)
 
 
-fc_model.save_weights(model_path + 'no_dropout.h5')
-
-
+'''
 fc_model.load_weights(model_path + 'no_dropout.h5')
 
 
@@ -469,3 +477,4 @@ final_model.fit_generator(
 
 
 bn_model.save_weights(model_path + 'final3.h5')
+'''

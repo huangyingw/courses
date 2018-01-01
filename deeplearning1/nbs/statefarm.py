@@ -1,20 +1,8 @@
-
-# coding: utf-8
-
-# # Enter State Farm
-
 from theano.sandbox import cuda
 from keras.models import load_model
-cuda.use('gpu0')
-
-
-from __future__ import print_function, division
 path = "data/state/"
 #path = "data/state/sample/"
-import utils
-reload(utils)
-from utils import *
-from IPython.display import FileLink
+cuda.use('gpu0')
 
 
 model_path = path + 'models/'
@@ -84,11 +72,19 @@ def conv1(batches):
             lr=1e-4),
         loss='categorical_crossentropy',
         metrics=['accuracy'])
-    model.fit_generator(batches, batches.nb_sample, nb_epoch=2, validation_data=val_batches,
-                        nb_val_samples=val_batches.nb_sample)
+    model.fit_generator(
+        batches,
+        batches.nb_sample,
+        nb_epoch=2,
+        validation_data=val_batches,
+        nb_val_samples=val_batches.nb_sample)
     model.optimizer.lr = 0.001
-    model.fit_generator(batches, batches.nb_sample, nb_epoch=4, validation_data=val_batches,
-                        nb_val_samples=val_batches.nb_sample)
+    model.fit_generator(
+        batches,
+        batches.nb_sample,
+        nb_epoch=4,
+        validation_data=val_batches,
+        nb_val_samples=val_batches.nb_sample)
     return model
 
 
@@ -107,8 +103,12 @@ model.load_weights(model_path + 'statefarm1.h5')
 
 # ### Data augmentation
 
-gen_t = image.ImageDataGenerator(rotation_range=15, height_shift_range=0.05,
-                                 shear_range=0.1, channel_shift_range=20, width_shift_range=0.1)
+gen_t = image.ImageDataGenerator(
+    rotation_range=15,
+    height_shift_range=0.05,
+    shear_range=0.1,
+    channel_shift_range=20,
+    width_shift_range=0.1)
 batches = get_batches(path + 'train', gen_t, batch_size=batch_size)
 
 
@@ -122,8 +122,12 @@ model = load_model(model_path + 'statefarm2.h5')
 
 
 model.optimizer.lr = 0.0001
-model.fit_generator(batches, batches.nb_sample, nb_epoch=15, validation_data=val_batches,
-                    nb_val_samples=val_batches.nb_sample)
+model.fit_generator(
+    batches,
+    batches.nb_sample,
+    nb_epoch=15,
+    validation_data=val_batches,
+    nb_val_samples=val_batches.nb_sample)
 
 
 # I'm shocked by *how* good these results are! We're regularly seeing
@@ -138,8 +142,12 @@ model.fit_generator(batches, batches.nb_sample, nb_epoch=15, validation_data=val
 # accuracy jumps from epoch to epoch. Perhaps a deeper model with some
 # dropout would help.
 
-gen_t = image.ImageDataGenerator(rotation_range=15, height_shift_range=0.05,
-                                 shear_range=0.1, channel_shift_range=20, width_shift_range=0.1)
+gen_t = image.ImageDataGenerator(
+    rotation_range=15,
+    height_shift_range=0.05,
+    shear_range=0.1,
+    channel_shift_range=20,
+    width_shift_range=0.1)
 batches = get_batches(path + 'train', gen_t, batch_size=batch_size)
 
 
@@ -172,22 +180,34 @@ model.compile(
     metrics=['accuracy'])
 
 
-model.fit_generator(batches, batches.nb_sample, nb_epoch=2, validation_data=val_batches,
-                    nb_val_samples=val_batches.nb_sample)
+model.fit_generator(
+    batches,
+    batches.nb_sample,
+    nb_epoch=2,
+    validation_data=val_batches,
+    nb_val_samples=val_batches.nb_sample)
 
 
 model.optimizer.lr = 0.001
 
 
-model.fit_generator(batches, batches.nb_sample, nb_epoch=10, validation_data=val_batches,
-                    nb_val_samples=val_batches.nb_sample)
+model.fit_generator(
+    batches,
+    batches.nb_sample,
+    nb_epoch=10,
+    validation_data=val_batches,
+    nb_val_samples=val_batches.nb_sample)
 
 
 model.optimizer.lr = 0.00001
 
 
-model.fit_generator(batches, batches.nb_sample, nb_epoch=10, validation_data=val_batches,
-                    nb_val_samples=val_batches.nb_sample)
+model.fit_generator(
+    batches,
+    batches.nb_sample,
+    nb_epoch=10,
+    validation_data=val_batches,
+    nb_val_samples=val_batches.nb_sample)
 
 
 # This is looking quite a bit better - the accuracy is similar, but the
@@ -293,8 +313,12 @@ bn_model.save(path + 'models/conv8.h5')
 
 # We'll use our usual data augmentation parameters:
 
-gen_t = image.ImageDataGenerator(rotation_range=15, height_shift_range=0.05,
-                                 shear_range=0.1, channel_shift_range=20, width_shift_range=0.1)
+gen_t = image.ImageDataGenerator(
+    rotation_range=15,
+    height_shift_range=0.05,
+    shear_range=0.1,
+    channel_shift_range=20,
+    width_shift_range=0.1)
 da_batches = get_batches(
     path + 'train',
     gen_t,
@@ -495,8 +519,12 @@ for l in conv_model.layers[last_conv_idx + 1:]:
 comb = np.concatenate([trn, val])
 
 
-gen_t = image.ImageDataGenerator(rotation_range=8, height_shift_range=0.04,
-                                 shear_range=0.03, channel_shift_range=10, width_shift_range=0.08)
+gen_t = image.ImageDataGenerator(
+    rotation_range=8,
+    height_shift_range=0.04,
+    shear_range=0.03,
+    channel_shift_range=10,
+    width_shift_range=0.08)
 
 
 batches = gen_t.flow(comb, comb_pseudo, batch_size=batch_size)
@@ -515,15 +543,23 @@ conv_model.compile(
     metrics=['accuracy'])
 
 
-conv_model.fit_generator(batches, batches.N, nb_epoch=1, validation_data=val_batches,
-                         nb_val_samples=val_batches.N)
+conv_model.fit_generator(
+    batches,
+    batches.N,
+    nb_epoch=1,
+    validation_data=val_batches,
+    nb_val_samples=val_batches.N)
 
 
 conv_model.optimizer.lr = 0.0001
 
 
-conv_model.fit_generator(batches, batches.N, nb_epoch=3, validation_data=val_batches,
-                         nb_val_samples=val_batches.N)
+conv_model.fit_generator(
+    batches,
+    batches.N,
+    nb_epoch=3,
+    validation_data=val_batches,
+    nb_val_samples=val_batches.N)
 
 
 for l in conv_model.layers[16:]:
@@ -533,8 +569,12 @@ for l in conv_model.layers[16:]:
 conv_model.optimizer.lr = 0.00001
 
 
-conv_model.fit_generator(batches, batches.N, nb_epoch=8, validation_data=val_batches,
-                         nb_val_samples=val_batches.N)
+conv_model.fit_generator(
+    batches,
+    batches.N,
+    nb_epoch=8,
+    validation_data=val_batches,
+    nb_val_samples=val_batches.N)
 
 
 conv_model.save_weights(path + 'models/conv8_ps.h5')
