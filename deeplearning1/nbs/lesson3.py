@@ -1,5 +1,5 @@
 from keras import backend as K
-from keras.layers.convolutional import *
+from keras.layers.convolutional import Convolution2D, MaxPooling2D
 from keras.layers.core import Dense, Dropout, Flatten
 from keras.layers.normalization import BatchNormalization
 from keras.models import Sequential
@@ -8,9 +8,8 @@ from keras.preprocessing import image
 from keras.regularizers import l1, l2
 from matplotlib import pyplot as plt
 from scipy import ndimage
-from utils import *
-from vgg16 import *
-from vgg16bn import *
+from utils import get_batches, makedirs, vgg_ft, onehot, save_array, load_array, split_at, copy_weights
+from vgg16bn import Vgg16BN
 import numpy as np
 
 #path = "data/dogscats/sample/"
@@ -199,9 +198,15 @@ fc_model.load_weights(model_path + 'no_dropout.h5')
 # dim_ordering='tf' uses tensorflow dimension ordering,
 #   which is the same order as matplotlib uses for display.
 # Therefore when just using for display purposes, this is more convenient
-gen = image.ImageDataGenerator(rotation_range=10, width_shift_range=0.1,
-                               height_shift_range=0.1, shear_range=0.15, zoom_range=0.1,
-                               channel_shift_range=10., horizontal_flip=True, dim_ordering='tf')
+gen = image.ImageDataGenerator(
+    rotation_range=10,
+    width_shift_range=0.1,
+    height_shift_range=0.1,
+    shear_range=0.15,
+    zoom_range=0.1,
+    channel_shift_range=10.,
+    horizontal_flip=True,
+    dim_ordering='tf')
 
 
 # Let's take a look at how this generator changes a single image (the
@@ -229,7 +234,7 @@ plt.imshow(img[0])
 # checking the results of different augmentation approaches.
 
 # Augmented data
-plots(aug_imgs, (20, 7), 2)
+#plots(aug_imgs, (20, 7), 2)
 
 
 # Ensure that we return to theano dimension ordering
@@ -244,8 +249,12 @@ K.set_image_dim_ordering('th')
 # will use a generator with augmentation configured. Here's how we set up
 # the generator, and create batches from it:
 
-gen = image.ImageDataGenerator(rotation_range=15, width_shift_range=0.1,
-                               height_shift_range=0.1, zoom_range=0.1, horizontal_flip=True)
+gen = image.ImageDataGenerator(
+    rotation_range=15,
+    width_shift_range=0.1,
+    height_shift_range=0.1,
+    zoom_range=0.1,
+    horizontal_flip=True)
 
 
 batches = get_batches(path + 'train', gen, batch_size=batch_size)
@@ -279,12 +288,20 @@ conv_model.compile(
     metrics=['accuracy'])
 
 
-conv_model.fit_generator(batches, samples_per_epoch=batches.nb_sample, nb_epoch=8,
-                         validation_data=val_batches, nb_val_samples=val_batches.nb_sample)
+conv_model.fit_generator(
+    batches,
+    samples_per_epoch=batches.nb_sample,
+    nb_epoch=8,
+    validation_data=val_batches,
+    nb_val_samples=val_batches.nb_sample)
 
 
-conv_model.fit_generator(batches, samples_per_epoch=batches.nb_sample, nb_epoch=3,
-                         validation_data=val_batches, nb_val_samples=val_batches.nb_sample)
+conv_model.fit_generator(
+    batches,
+    samples_per_epoch=batches.nb_sample,
+    nb_epoch=3,
+    validation_data=val_batches,
+    nb_val_samples=val_batches.nb_sample)
 
 
 conv_model.save_weights(model_path + 'aug1.h5')
@@ -348,7 +365,6 @@ def load_fc_weights_from_vgg16bn(model):
     "Load weights for model from the dense layers of the Vgg16BN model."
     # See imagenet_batchnorm.ipynb for info on how the weights for
     # Vgg16BN can be generated from the standard Vgg16 weights.
-    from vgg16bn import Vgg16BN
     vgg16_bn = Vgg16BN()
     _, fc_layers = split_at(vgg16_bn.model, Convolution2D)
     copy_weights(fc_layers, model.layers)
@@ -419,15 +435,23 @@ final_model.compile(optimizer=Adam(),
                     loss='categorical_crossentropy', metrics=['accuracy'])
 
 
-final_model.fit_generator(batches, samples_per_epoch=batches.nb_sample, nb_epoch=1,
-                          validation_data=val_batches, nb_val_samples=val_batches.nb_sample)
+final_model.fit_generator(
+    batches,
+    samples_per_epoch=batches.nb_sample,
+    nb_epoch=1,
+    validation_data=val_batches,
+    nb_val_samples=val_batches.nb_sample)
 
 
 final_model.save_weights(model_path + 'final1.h5')
 
 
-final_model.fit_generator(batches, samples_per_epoch=batches.nb_sample, nb_epoch=4,
-                          validation_data=val_batches, nb_val_samples=val_batches.nb_sample)
+final_model.fit_generator(
+    batches,
+    samples_per_epoch=batches.nb_sample,
+    nb_epoch=4,
+    validation_data=val_batches,
+    nb_val_samples=val_batches.nb_sample)
 
 
 final_model.save_weights(model_path + 'final2.h5')
@@ -436,8 +460,12 @@ final_model.save_weights(model_path + 'final2.h5')
 final_model.optimizer.lr = 0.001
 
 
-final_model.fit_generator(batches, samples_per_epoch=batches.nb_sample, nb_epoch=4,
-                          validation_data=val_batches, nb_val_samples=val_batches.nb_sample)
+final_model.fit_generator(
+    batches,
+    samples_per_epoch=batches.nb_sample,
+    nb_epoch=4,
+    validation_data=val_batches,
+    nb_val_samples=val_batches.nb_sample)
 
 
 bn_model.save_weights(model_path + 'final3.h5')
