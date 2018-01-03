@@ -92,15 +92,15 @@ trn_labels = onehot(trn_classes)
 print 'batches.class_indices --> '
 print batches.class_indices
 
-trn_features_file = Path(model_path + 'train_convlayer_features.bc')
-if trn_features_file.is_file():
+trn_features_file = model_path + 'train_convlayer_features.bc'
+if Path(trn_features_file).is_dir():
     trn_features = load_array(trn_features_file)
 else:
     trn_features = conv_model.predict_generator(batches, batches.nb_sample)
     save_array(trn_features_file, trn_features)
 
-val_features_file = Path(model_path + 'valid_convlayer_features.bc')
-if val_features_file.is_file():
+val_features_file = model_path + 'valid_convlayer_features.bc'
+if Path(val_features_file).is_dir():
     val_features = load_array(val_features_file)
 else:
     val_features = conv_model.predict_generator(
@@ -153,8 +153,8 @@ fc_model = get_fc_model()
 # And fit the model in the usual way:
 
 
-model_file = Path(model_path + 'no_dropout.h5')
-if model_file.is_file():
+model_file = model_path + 'no_dropout.h5'
+if Path(model_file).is_file():
     fc_model = load_model(model_file)
 else:
     fc_model.fit(

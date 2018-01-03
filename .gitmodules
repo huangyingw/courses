@@ -20,6 +20,3 @@
 [submodule "matplotlib"]
 	path = matplotlib
 	url = https://github.com/matplotlib/matplotlib.git
-[submodule "ai_docker"]
-	path = ai_docker
-	url = git@github.com:huangyingw/ai_docker.git
