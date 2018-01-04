@@ -50,8 +50,8 @@ ratings.movieId = ratings.movieId.apply(lambda x: movieid2idx[x])
 ratings.userId = ratings.userId.apply(lambda x: userid2idx[x])
 
 
-user_min, user_max, movie_min, movie_max = (ratings.userId.min(),
-                                            ratings.userId.max(), ratings.movieId.min(), ratings.movieId.max())
+user_min, user_max, movie_min, movie_max = (ratings.userId.min(
+), ratings.userId.max(), ratings.movieId.min(), ratings.movieId.max())
 user_min, user_max, movie_min, movie_max
 
 

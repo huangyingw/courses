@@ -1,4 +1,5 @@
 "./.git/modules/Theano/config"
+"./.git/modules/ai_docker/config"
 "./.git/modules/deeplearning1/nbs/data/dogscats/config"
 "./.git/modules/keras/config"
 "./.git/modules/matplotlib/config"

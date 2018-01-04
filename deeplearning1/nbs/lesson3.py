@@ -1,11 +1,15 @@
+from keras import backend as K
 from keras.layers.convolutional import Convolution2D, MaxPooling2D
 from keras.layers.core import Dense, Dropout, Flatten
 from keras.models import Sequential, load_model
 from keras.optimizers import RMSprop
+from keras.preprocessing import image
 from pathlib import Path
+from scipy import ndimage
 from utils import get_batches, load_array, makedirs, onehot, save_array, vgg_ft
+import numpy as np
 
-#path = "data/dogscats/sample/"
+# path = "data/dogscats/sample/"
 path = "data/dogscats/"
 model_path = path + 'models/'
 makedirs(model_path)
@@ -168,11 +172,7 @@ else:
     fc_model.save(model_file)
 
 
-'''
-fc_model.load_weights(model_path + 'no_dropout.h5')
-
-
-# # Reducing overfitting
+# Reducing overfitting
 
 # Now that we've gotten the model to overfit, we can take a number of
 # steps to reduce this.
@@ -232,7 +232,7 @@ aug_imgs = [next(aug_iter)[0].astype(np.uint8) for i in range(8)]
 
 
 # The original
-plt.imshow(img[0])
+# plt.imshow(img[0])
 
 
 # As you can see below, there's no magic to data augmentation - it's a
@@ -242,7 +242,7 @@ plt.imshow(img[0])
 # checking the results of different augmentation approaches.
 
 # Augmented data
-#plots(aug_imgs, (20, 7), 2)
+# plots(aug_imgs, (20, 7), 2)
 
 
 # Ensure that we return to theano dimension ordering
@@ -296,27 +296,24 @@ conv_model.compile(
     metrics=['accuracy'])
 
 
-conv_model.fit_generator(
-    batches,
-    samples_per_epoch=batches.nb_sample,
-    nb_epoch=8,
-    validation_data=val_batches,
-    nb_val_samples=val_batches.nb_sample)
+model_file = model_path + 'aug1.h5'
+if Path(model_file).is_file():
+    conv_model = load_model(model_file)
+else:
+    conv_model.fit_generator(
+        batches,
+        samples_per_epoch=batches.nb_sample,
+        nb_epoch=8,
+        validation_data=val_batches,
+        nb_val_samples=val_batches.nb_sample)
 
-
-conv_model.fit_generator(
-    batches,
-    samples_per_epoch=batches.nb_sample,
-    nb_epoch=3,
-    validation_data=val_batches,
-    nb_val_samples=val_batches.nb_sample)
-
-
-conv_model.save_weights(model_path + 'aug1.h5')
-
-
-conv_model.load_weights(model_path + 'aug1.h5')
-
+    conv_model.fit_generator(
+        batches,
+        samples_per_epoch=batches.nb_sample,
+        nb_epoch=3,
+        validation_data=val_batches,
+        nb_val_samples=val_batches.nb_sample)
+    conv_model.save(model_file)
 
 # ## Batch normalization
 
@@ -408,20 +405,18 @@ bn_model.add(Dense(2, activation='softmax'))
 bn_model.compile(Adam(), 'categorical_crossentropy', metrics=['accuracy'])
 
 
-bn_model.fit(
-    trn_features,
-    trn_labels,
-    nb_epoch=8,
-    validation_data=(
-        val_features,
-        val_labels))
-
-
-bn_model.save_weights(model_path + 'bn.h5')
-
-
-bn_model.load_weights(model_path + 'bn.h5')
-
+model_file = model_path + 'bn.h5'
+if Path(model_file).is_file():
+    bn_model = load_model(model_file)
+else:
+    bn_model.fit(
+        trn_features,
+        trn_labels,
+        nb_epoch=8,
+        validation_data=(
+            val_features,
+            val_labels))
+    bn_model.save(model_file)
 
 bn_layers = get_bn_layers(0.6)
 bn_layers.pop()
@@ -443,38 +438,42 @@ final_model.compile(optimizer=Adam(),
                     loss='categorical_crossentropy', metrics=['accuracy'])
 
 
-final_model.fit_generator(
-    batches,
-    samples_per_epoch=batches.nb_sample,
-    nb_epoch=1,
-    validation_data=val_batches,
-    nb_val_samples=val_batches.nb_sample)
+model_file = model_path + 'final1.h5'
+if Path(model_file).is_file():
+    final_model = load_model(model_file)
+else:
+    final_model.fit_generator(
+        batches,
+        samples_per_epoch=batches.nb_sample,
+        nb_epoch=1,
+        validation_data=val_batches,
+        nb_val_samples=val_batches.nb_sample)
+    final_model.save(model_file)
 
 
-final_model.save_weights(model_path + 'final1.h5')
-
-
-final_model.fit_generator(
-    batches,
-    samples_per_epoch=batches.nb_sample,
-    nb_epoch=4,
-    validation_data=val_batches,
-    nb_val_samples=val_batches.nb_sample)
-
-
-final_model.save_weights(model_path + 'final2.h5')
-
+model_file = model_path + 'final2.h5'
+if Path(model_file).is_file():
+    final_model = load_model(model_file)
+else:
+    final_model.fit_generator(
+        batches,
+        samples_per_epoch=batches.nb_sample,
+        nb_epoch=4,
+        validation_data=val_batches,
+        nb_val_samples=val_batches.nb_sample)
+    final_model.save(model_file)
 
 final_model.optimizer.lr = 0.001
 
 
-final_model.fit_generator(
-    batches,
-    samples_per_epoch=batches.nb_sample,
-    nb_epoch=4,
-    validation_data=val_batches,
-    nb_val_samples=val_batches.nb_sample)
-
-
-bn_model.save_weights(model_path + 'final3.h5')
-'''
+model_file = model_path + 'final3.h5'
+if Path(model_file).is_file():
+    final_model = load_model(model_file)
+else:
+    final_model.fit_generator(
+        batches,
+        samples_per_epoch=batches.nb_sample,
+        nb_epoch=4,
+        validation_data=val_batches,
+        nb_val_samples=val_batches.nb_sample)
+    final_model.save(model_file)
