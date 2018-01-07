@@ -7,14 +7,14 @@ import pandas as pd
 
 import datetime
 
-from keras.layers import Input, Dense, Embedding, merge, Flatten, Merge, BatchNormalization
+from keras.layers import Dense, Embedding, Flatten, Input, merge
 from keras.models import Model, load_model
 from keras.regularizers import l2
 import keras.backend as K
 from keras.optimizers import SGD
 import numpy as np
 
-from sklearn.cluster import MeanShift, estimate_bandwidth
+from sklearn.cluster import MeanShift
 
 import utils
 
@@ -22,9 +22,7 @@ import data
 
 from sklearn.model_selection import train_test_split
 
-from bcolz_array_iterator import BcolzArrayIterator
 
-import bcolz
 
 from keras_tqdm import TQDMNotebookCallback
 from keras.callbacks import ModelCheckpoint
@@ -101,8 +99,22 @@ utils.save_array(data_path + 'train/meta_train.bc', meta.as_matrix())
 # in the paper using pandas. I didn't bother seeing how the author did it
 # as it was extremely obtuse and involved the fuel module.
 
-train = pd.DataFrame(utils.load_array(data_path + 'train/train.bc'), columns=['TRIP_ID', 'CALL_TYPE', 'ORIGIN_CALL', 'ORIGIN_STAND', 'TAXI_ID',
-                                                                              'TIMESTAMP', 'DAY_TYPE', 'MISSING_DATA', 'POLYLINE', 'LATITUDE', 'LONGITUDE'])
+train = pd.DataFrame(
+    utils.load_array(
+        data_path +
+        'train/train.bc'),
+    columns=[
+        'TRIP_ID',
+        'CALL_TYPE',
+        'ORIGIN_CALL',
+        'ORIGIN_STAND',
+        'TAXI_ID',
+        'TIMESTAMP',
+        'DAY_TYPE',
+        'MISSING_DATA',
+        'POLYLINE',
+        'LATITUDE',
+        'LONGITUDE'])
 
 
 train.head()
@@ -128,8 +140,8 @@ train['DAY_OF_WEEK'] = pd.Series(
 
 # Quarter hour of the day, i.e. 1 of the `4*24 = 96` quarter hours of the day
 
-train['QUARTER_HOUR'] = pd.Series([int((datetime.datetime.fromtimestamp(t).hour * 60 + datetime.datetime.fromtimestamp(t).minute) / 15)
-                                   for t in train['TIMESTAMP']])
+train['QUARTER_HOUR'] = pd.Series([int((datetime.datetime.fromtimestamp(
+    t).hour * 60 + datetime.datetime.fromtimestamp(t).minute) / 15) for t in train['TIMESTAMP']])
 
 
 # Self-explanatory
@@ -271,8 +283,8 @@ def feature_ext(data, test=False):
     data['DAY_OF_WEEK'] = pd.Series(
         [datetime.datetime.fromtimestamp(t).weekday() for t in data['TIMESTAMP']])
 
-    data['QUARTER_HOUR'] = pd.Series([int((datetime.datetime.fromtimestamp(t).hour * 60 + datetime.datetime.fromtimestamp(t).minute) / 15)
-                                      for t in data['TIMESTAMP']])
+    data['QUARTER_HOUR'] = pd.Series([int((datetime.datetime.fromtimestamp(
+        t).hour * 60 + datetime.datetime.fromtimestamp(t).minute) / 15) for t in data['TIMESTAMP']])
 
     data['WEEK_OF_YEAR'] = pd.Series([datetime.datetime.fromtimestamp(
         t).isocalendar()[1] for t in data['TIMESTAMP']])
@@ -304,9 +316,27 @@ train.head()
 
 # Meanshift clustering as performed in the paper
 
-train = pd.DataFrame(utils.load_array(data_path + 'train/train_features.bc'), columns=['TRIP_ID', 'CALL_TYPE', 'ORIGIN_CALL', 'ORIGIN_STAND', 'TAXI_ID',
-                                                                                       'TIMESTAMP', 'DAY_TYPE', 'MISSING_DATA', 'POLYLINE', 'LATITUDE', 'LONGITUDE', 'DAY_OF_WEEK',
-                                                                                       'QUARTER_HOUR', "WEEK_OF_YEAR", "TARGET", "COORD_FEATURES"])
+train = pd.DataFrame(
+    utils.load_array(
+        data_path +
+        'train/train_features.bc'),
+    columns=[
+        'TRIP_ID',
+        'CALL_TYPE',
+        'ORIGIN_CALL',
+        'ORIGIN_STAND',
+        'TAXI_ID',
+        'TIMESTAMP',
+        'DAY_TYPE',
+        'MISSING_DATA',
+        'POLYLINE',
+        'LATITUDE',
+        'LONGITUDE',
+        'DAY_OF_WEEK',
+        'QUARTER_HOUR',
+        "WEEK_OF_YEAR",
+        "TARGET",
+        "COORD_FEATURES"])
 
 
 # Clustering performed on the targets
@@ -314,7 +344,7 @@ train = pd.DataFrame(utils.load_array(data_path + 'train/train_features.bc'), co
 y_targ = np.vstack(train["TARGET"].as_matrix())
 
 
-from sklearn.cluster import MeanShift, estimate_bandwidth
+from sklearn.cluster import MeanShift
 
 
 # Can use the commented out code for a estimate of bandwidth, which causes clustering to converge much quicker.
@@ -345,9 +375,27 @@ utils.save_array(data_path + "cluster_centers_bw_001.bc", cluster_centers)
 
 # ## Formatting Features for Bcolz iterator / garbage
 
-train = pd.DataFrame(utils.load_array(data_path + 'train/train_features.bc'), columns=['TRIP_ID', 'CALL_TYPE', 'ORIGIN_CALL', 'ORIGIN_STAND', 'TAXI_ID',
-                                                                                       'TIMESTAMP', 'DAY_TYPE', 'MISSING_DATA', 'POLYLINE', 'LATITUDE', 'LONGITUDE', 'TARGET',
-                                                                                       'COORD_FEATURES', "DAY_OF_WEEK", "QUARTER_HOUR", "WEEK_OF_YEAR"])
+train = pd.DataFrame(
+    utils.load_array(
+        data_path +
+        'train/train_features.bc'),
+    columns=[
+        'TRIP_ID',
+        'CALL_TYPE',
+        'ORIGIN_CALL',
+        'ORIGIN_STAND',
+        'TAXI_ID',
+        'TIMESTAMP',
+        'DAY_TYPE',
+        'MISSING_DATA',
+        'POLYLINE',
+        'LATITUDE',
+        'LONGITUDE',
+        'TARGET',
+        'COORD_FEATURES',
+        "DAY_OF_WEEK",
+        "QUARTER_HOUR",
+        "WEEK_OF_YEAR"])
 
 
 cluster_centers = utils.load_array(data_path + "cluster_centers_bw_001.bc")
@@ -361,16 +409,21 @@ X_train, X_val = train_test_split(train, test_size=0.2, random_state=42)
 
 
 def get_features(data):
-    return [np.vstack(data['COORD_FEATURES'].as_matrix()), np.vstack(data['ORIGIN_CALL'].as_matrix()),
-            np.vstack(
-        data['TAXI_ID'].as_matrix()), np.vstack(
-        data['ORIGIN_STAND'].as_matrix()),
+    return [
         np.vstack(
-        data['QUARTER_HOUR'].as_matrix()), np.vstack(
-        data['DAY_OF_WEEK'].as_matrix()),
-        np.vstack(data['WEEK_OF_YEAR'].as_matrix()), np.array(
-                [long for i in range(0, data.shape[0])]),
-        np.array([lat for i in range(0, data.shape[0])])]
+            data['COORD_FEATURES'].as_matrix()), np.vstack(
+            data['ORIGIN_CALL'].as_matrix()), np.vstack(
+                data['TAXI_ID'].as_matrix()), np.vstack(
+                    data['ORIGIN_STAND'].as_matrix()), np.vstack(
+                        data['QUARTER_HOUR'].as_matrix()), np.vstack(
+                            data['DAY_OF_WEEK'].as_matrix()), np.vstack(
+                                data['WEEK_OF_YEAR'].as_matrix()), np.array(
+                                    [
+                                        long for i in range(
+                                            0, data.shape[0])]), np.array(
+                                                [
+                                                    lat for i in range(
+                                                        0, data.shape[0])])]
 
 
 def get_target(data):
@@ -393,9 +446,27 @@ utils.save_array(
 
 # Load training data and cluster centers
 
-train = pd.DataFrame(utils.load_array(data_path + 'train/train_features.bc'), columns=['TRIP_ID', 'CALL_TYPE', 'ORIGIN_CALL', 'ORIGIN_STAND', 'TAXI_ID',
-                                                                                       'TIMESTAMP', 'DAY_TYPE', 'MISSING_DATA', 'POLYLINE', 'LATITUDE', 'LONGITUDE', 'TARGET',
-                                                                                       'COORD_FEATURES', "DAY_OF_WEEK", "QUARTER_HOUR", "WEEK_OF_YEAR"])
+train = pd.DataFrame(
+    utils.load_array(
+        data_path +
+        'train/train_features.bc'),
+    columns=[
+        'TRIP_ID',
+        'CALL_TYPE',
+        'ORIGIN_CALL',
+        'ORIGIN_STAND',
+        'TAXI_ID',
+        'TIMESTAMP',
+        'DAY_TYPE',
+        'MISSING_DATA',
+        'POLYLINE',
+        'LATITUDE',
+        'LONGITUDE',
+        'TARGET',
+        'COORD_FEATURES',
+        "DAY_OF_WEEK",
+        "QUARTER_HOUR",
+        "WEEK_OF_YEAR"])
 
 
 # Validation cuts
@@ -454,14 +525,50 @@ utils.save_array(data_path + 'train/X_train.bc', X_train.as_matrix())
 utils.save_array(data_path + 'valid/X_val.bc', X_valid.as_matrix())
 
 
-X_train = pd.DataFrame(utils.load_array(data_path + 'train/X_train.bc'), columns=['TRIP_ID', 'CALL_TYPE', 'ORIGIN_CALL', 'ORIGIN_STAND', 'TAXI_ID',
-                                                                                  'TIMESTAMP', 'DAY_TYPE', 'MISSING_DATA', 'POLYLINE', 'LATITUDE', 'LONGITUDE', 'TARGET',
-                                                                                  'COORD_FEATURES', "DAY_OF_WEEK", "QUARTER_HOUR", "WEEK_OF_YEAR"])
+X_train = pd.DataFrame(
+    utils.load_array(
+        data_path +
+        'train/X_train.bc'),
+    columns=[
+        'TRIP_ID',
+        'CALL_TYPE',
+        'ORIGIN_CALL',
+        'ORIGIN_STAND',
+        'TAXI_ID',
+        'TIMESTAMP',
+        'DAY_TYPE',
+        'MISSING_DATA',
+        'POLYLINE',
+        'LATITUDE',
+        'LONGITUDE',
+        'TARGET',
+        'COORD_FEATURES',
+        "DAY_OF_WEEK",
+        "QUARTER_HOUR",
+        "WEEK_OF_YEAR"])
 
 
-X_val = pd.DataFrame(utils.load_array(data_path + 'valid/X_val.bc'), columns=['TRIP_ID', 'CALL_TYPE', 'ORIGIN_CALL', 'ORIGIN_STAND', 'TAXI_ID',
-                                                                              'TIMESTAMP', 'DAY_TYPE', 'MISSING_DATA', 'POLYLINE', 'LATITUDE', 'LONGITUDE', 'TARGET',
-                                                                              'COORD_FEATURES', "DAY_OF_WEEK", "QUARTER_HOUR", "WEEK_OF_YEAR"])
+X_val = pd.DataFrame(
+    utils.load_array(
+        data_path +
+        'valid/X_val.bc'),
+    columns=[
+        'TRIP_ID',
+        'CALL_TYPE',
+        'ORIGIN_CALL',
+        'ORIGIN_STAND',
+        'TAXI_ID',
+        'TIMESTAMP',
+        'DAY_TYPE',
+        'MISSING_DATA',
+        'POLYLINE',
+        'LATITUDE',
+        'LONGITUDE',
+        'TARGET',
+        'COORD_FEATURES',
+        "DAY_OF_WEEK",
+        "QUARTER_HOUR",
+        "WEEK_OF_YEAR"])
 
 
 # The equirectangular loss function mentioned in the paper.
@@ -477,8 +584,8 @@ def equirectangular_loss(y_true, y_pred):
     long_2 = y_pred[:, 0] * deg2rad
     lat_1 = y_true[:, 1] * deg2rad
     lat_2 = y_pred[:, 1] * deg2rad
-    return 6371 * K.sqrt(K.square((long_1 - long_2) * K.cos((lat_1 + lat_2) / 2.))
-                         + K.square(lat_1 - lat_2))
+    return 6371 * K.sqrt(K.square((long_1 - long_2) * \
+                         K.cos((lat_1 + lat_2) / 2.)) + K.square(lat_1 - lat_2))
 
 
 def embedding_input(name, n_in, n_out, reg):
@@ -560,7 +667,7 @@ def data_iter(data, batch_size, cluster_centers):
     long = [c[0] for c in cluster_centers]
     lat = [c[1] for c in cluster_centers]
     i = 0
-    N = data.shape[0]
+    data.shape[0]
     while True:
         yield ([np.vstack(data['COORD_FEATURES'][i:i + batch_size].as_matrix()), np.vstack(data['ORIGIN_CALL'][i:i + batch_size].as_matrix()),
                 np.vstack(data['TAXI_ID'][i:i + batch_size].as_matrix()
@@ -724,9 +831,26 @@ best_model = load_model(
 best_model.evaluate(X_val_feat, X_val_target)
 
 
-test = pd.DataFrame(utils.load_array(data_path + 'test/test_features.bc'), columns=['TRIP_ID', 'CALL_TYPE', 'ORIGIN_CALL', 'ORIGIN_STAND', 'TAXI_ID',
-                                                                                    'TIMESTAMP', 'DAY_TYPE', 'MISSING_DATA', 'POLYLINE', 'LATITUDE', 'LONGITUDE',
-                                                                                    'COORD_FEATURES', "DAY_OF_WEEK", "QUARTER_HOUR", "WEEK_OF_YEAR"])
+test = pd.DataFrame(
+    utils.load_array(
+        data_path +
+        'test/test_features.bc'),
+    columns=[
+        'TRIP_ID',
+        'CALL_TYPE',
+        'ORIGIN_CALL',
+        'ORIGIN_STAND',
+        'TAXI_ID',
+        'TIMESTAMP',
+        'DAY_TYPE',
+        'MISSING_DATA',
+        'POLYLINE',
+        'LATITUDE',
+        'LONGITUDE',
+        'COORD_FEATURES',
+        "DAY_OF_WEEK",
+        "QUARTER_HOUR",
+        "WEEK_OF_YEAR"])
 
 
 test['ORIGIN_CALL'] = pd.read_csv(
@@ -856,7 +980,6 @@ c = np.load(data_path + 'original/arrival-clusters.pkl')
 
 # ### hd5f files
 
-from fuel.utils import find_in_data_path
 from fuel.datasets import H5PYDataset
 
 
